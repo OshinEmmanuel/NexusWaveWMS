@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+  <title>Inventory Search & Export - Nexus Wave WMS</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts for Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <!-- SheetJS Library for Excel Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    /* Global Reset and Background */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 0;
+      background-color: #f4f7f6;
+      padding: 20px;
+    }
+    /* Full-screen blurred background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url("../assets/img/inventory2.jpg") no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(5px);
+      opacity: 0.5;
+      z-index: -1;
+    }
+    /* Fixed, Transparent Navigation Bar */
+    .navbar {
+      background: transparent;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    .back-btn {
+      margin-right: 1rem;
+    }
+    /* Main container styling */
+    .container {
+      max-width: 1200px;
+      margin: 70px auto 100px auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+    h2 {
+      color: #007bff;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    /* Search section */
+    .row.g-2.mb-3 {
+      margin-bottom: 20px;
+    }
+    /* Table styling */
+    .table-responsive {
+      margin-top: 20px;
+      max-height: 800px;
+    }
+    .table thead th {
+      background-color: #007bff;
+      color: #fff;
+      font-weight: 600;
+    }
+    .table th, .table td {
+      white-space: nowrap;
+      text-align: center;
+      vertical-align: middle;
+      border: 1px solid white !important;
+    }
+    /* Footer styling */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #6c757d;
+      background-color: #f4f7f6;
+      padding: 10px 0;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed Navigation Bar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <!-- Back Button -->
+      <a class="btn btn-secondary back-btn" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <!-- Logo linking to Home -->
+      <a class="navbar-brand me-auto" href="../index.html">
+        <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- Home Link -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Main Container -->
+  <div class="container">
+    <h2>Inventory Search & Export</h2>
+    
+    <!-- Search Section -->
+    <div class="row g-2 mb-3">
+      <div class="col-md-4">
+        <input type="number" id="searchProductCode" class="form-control" placeholder="Enter Product Code">
+      </div>
+      <div class="col-md-2">
+        <button id="searchBtn" class="btn btn-primary w-100">
+          <i class="fas fa-search"></i> Search
+        </button>
+      </div>
+      <div class="col-md-2">
+        <button id="downloadBtn" class="btn btn-success w-100">
+          <i class="fas fa-file-excel"></i> Download Excel
+        </button>
+      </div>
+    </div>
+    
+    <!-- Table to display results -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th><i class="fas fa-barcode"></i> Product Code</th>
+            <th><i class="fas fa-info-circle"></i> Product Description</th>
+            <th><i class="fas fa-boxes"></i> Total Available Qty</th>
+            <th><i class="fas fa-truck-loading"></i> Total On Order Qty</th>
+            <th><i class="fas fa-layer-group"></i> Total Inventory Qty</th>
+            <th><i class="fas fa-exclamation-triangle"></i> Reorder Level</th>
+            <th><i class="fas fa-layer-group"></i> Maximum Stock Level</th>
+            <th><i class="fas fa-dollar-sign"></i> Avg. Unit Cost</th>
+            <th><i class="fas fa-calculator"></i> Total Inventory Value</th>
+          </tr>
+        </thead>
+        <tbody id="inventorySummaryBody">
+          <!-- Data will be inserted here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
+  </footer>
+  
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Endpoints (note: the API controller uses "Inventories" in the route)
+    const baseUrl = 'https://localhost:7014/api/Inventories';
+    const getAllUrl = `${baseUrl}/GetAllSummaries`;
+    const productsUrl = 'https://localhost:7014/api/Products'; // Endpoint to fetch products
+    
+    // Global variable to store last fetched data
+    let lastFetchedData = [];
+    // Global variable to store product data (mapping by productCode)
+    let productMap = {};
+    
+    // DOM Elements
+    const searchBtn = document.getElementById('searchBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const searchInput = document.getElementById('searchProductCode');
+    const tbody = document.getElementById('inventorySummaryBody');
+    
+    // Function to fetch all products and build a productMap (key: productCode)
+    function fetchAllProducts() {
+      return fetch(productsUrl, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      })
+      .then(response => response.json())
+      .then(products => {
+        productMap = {};
+        products.forEach(p => {
+          productMap[p.productCode] = p;
+        });
+        return productMap;
+      })
+      .catch(error => {
+        console.error("Error fetching products:", error);
+        return {};
+      });
+    }
+    
+    // Function to update summary with product data (for reorderLevel & maxStockLevel)
+    function updateSummaryWithProductData(summary) {
+      const prod = productMap[summary.productCode];
+      if (prod) {
+        summary.reorderLevel = prod.reorderLevel;
+        summary.maximumStockLevel = prod.maximumStockLevel;
+        // Optionally, update unitCost and product description if needed.
+        summary.unitCost = prod.unitCost;
+        if (!summary.productDescription) {
+          summary.productDescription = prod.productDescription;
+        }
+      }
+      return summary;
+    }
+    
+    // Function to render table rows from an array of summaries with nice formatting
+    function renderSummaries(data) {
+      lastFetchedData = data; // Store the fetched data globally
+      tbody.innerHTML = ""; // Clear existing data
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">No data available.</td></tr>`;
+        return;
+      }
+      // Update each summary with product data from productMap
+      data = data.map(updateSummaryWithProductData);
+      data.forEach(summary => {
+        const totalInventoryQty = summary.totalAvailableQty 
+          + summary.totalOnOrderQty 
+          + summary.totalBlockedQty 
+          + summary.totalDamagedQty 
+          + summary.totalBondedQty;
+        const totalAvailable = Number(summary.totalAvailableQty).toLocaleString();
+        const totalOnOrder = Number(summary.totalOnOrderQty).toLocaleString();
+        const totalInventoryFormatted = Number(totalInventoryQty).toLocaleString();
+        const avgUnitCost = Number(summary.unitCost).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const totalInventoryValue = (totalInventoryQty * summary.unitCost).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${summary.productCode}</td>
+          <td>${summary.productDescription || ''}</td>
+          <td>${totalAvailable}</td>
+          <td>${totalOnOrder}</td>
+          <td>${totalInventoryFormatted}</td>
+          <td>${Number(summary.reorderLevel).toLocaleString()}</td>
+          <td>${Number(summary.maximumStockLevel).toLocaleString()}</td>
+          <td>${avgUnitCost}</td>
+          <td>${totalInventoryValue}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+    
+    // Function to fetch all summaries and update with product data
+    function fetchAllSummaries() {
+      // First fetch products, then summaries.
+      fetchAllProducts().then(() => {
+        fetch(getAllUrl, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        })
+        .then(response => {
+          console.log("Response status:", response.status);
+          return response.json();
+        })
+        .then(data => {
+          console.log("Received summaries:", data);
+          renderSummaries(data);
+        })
+        .catch(error => console.error('Error fetching summaries:', error));
+      });
+    }
+    
+    // Function to fetch summary for a given product code and update with product data
+    function fetchSummaryByProductCode(productCode) {
+      // First, fetch product data for this product code.
+      fetch(`${productsUrl}/${productCode}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      })
+      .then(response => response.json())
+      .then(prod => {
+        productMap[prod.productCode] = prod; // Update global map
+        // Now fetch summary for this product code.
+        return fetch(`${baseUrl}/GetSummary/${productCode}`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+      })
+      .then(response => {
+        console.log("Response status for product code", productCode, ":", response.status);
+        if (!response.ok) {
+          throw new Error(`No data found for product code ${productCode}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Received single summary:", data);
+        renderSummaries([data]);
+      })
+      .catch(error => {
+        console.error('Error fetching summary:', error);
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">${error.message}</td></tr>`;
+      });
+    }
+    
+    // Function to export table data to Excel using SheetJS
+    function exportTableToExcel() {
+      // Check if data exists
+      if (!lastFetchedData || lastFetchedData.length === 0) {
+        alert("No data available to download.");
+        return;
+      }
+      // Get the table element
+      const table = document.querySelector('.table-responsive table');
+      // Convert table to workbook using SheetJS
+      const workbook = XLSX.utils.table_to_book(table, { sheet: "Inventory Summary" });
+      // Trigger the file download
+      XLSX.writeFile(workbook, "InventorySummary.xlsx");
+    }
+    
+    // Event listener for Search button
+    searchBtn.addEventListener('click', () => {
+      const productCode = searchInput.value.trim();
+      if (productCode) {
+        fetchSummaryByProductCode(productCode);
+      } else {
+        // If search field is empty, automatically fetch all summaries.
+        fetchAllSummaries();
+      }
+    });
+    
+    // Event listener for Download Excel button
+    downloadBtn.addEventListener('click', () => {
+      exportTableToExcel();
+    });
+    
+    // Optionally, load all summaries on page load
+    // fetchAllSummaries();
+  </script>
+</body>
+</html>

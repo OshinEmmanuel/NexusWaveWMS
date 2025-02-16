@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orders Management - Nexus Wave WMS</title>
+  <!-- Favicon -->
+  <link rel="icon" href="../assets/img/favicon.png" type="image/png" />
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- XLSX Library for Excel download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    /* Global Styles */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+    }
+    /* Full-screen blurred background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url("../assets/img/background7.jpg") no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(5px);
+      opacity: 0.4;
+      z-index: -1;
+    }
+    /* Flex layout for content */
+    body {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 0;
+    }
+    /* Navbar styling */
+    .navbar {
+      background-color: transparent !important;
+    }
+    .back-btn {
+      margin-right: 1rem;
+    }
+    /* Main container styling - increased max-width for more screen space */
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 80px auto 100px auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+    .form-heading {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+    /* Form Labels with Icons */
+    .form-label i {
+      margin-right: 5px;
+    }
+    /* Table styling */
+    table {
+      width: 100%;
+      /* Allow table columns to size automatically */
+      table-layout: auto;
+    }
+    table th, table td {
+      vertical-align: middle;
+      word-wrap: break-word;
+      white-space: nowrap;
+    }
+    /* Set minimum widths for problematic columns */
+    th.order-date { min-width: 180px; }
+    th.order-status { min-width: 120px; }
+    th.actions { min-width: 120px; }
+    /* Optional: Set widths for other columns if desired */
+    th.order-id      { width: 8%; }
+    th.shipment-id   { width: 12%; }
+    th.customer-name { width: 20%; }
+    th.total-amount  { width: 12%; }
+    th.delivery-date { width: 13%; }
+    /* Pagination controls - centered */
+    #paginationControls {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    /* Fixed footer styling */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #6c757d;
+      background-color: #f8f9fa;
+      padding: 10px 0;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar with Back Button -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <a class="btn btn-secondary back-btn" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <a class="navbar-brand me-auto" href="../index.html">
+        <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <h3 class="form-heading"><i class="fas fa-box-open"></i> Orders Management</h3>
+    
+    <!-- Query Form -->
+    <div class="order-list mb-4">
+      <form id="queryForm" class="mb-3">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label for="orderId" class="form-label"><i class="fas fa-hashtag"></i> Order ID</label>
+            <input type="number" id="orderId" class="form-control" placeholder="Enter Order ID">
+          </div>
+          <div class="col-md-3">
+            <label for="customerID" class="form-label"><i class="fas fa-user"></i> Customer ID</label>
+            <input type="number" id="customerID" class="form-control" placeholder="Enter Customer ID">
+          </div>
+          <div class="col-md-3">
+            <label for="shipmentId" class="form-label"><i class="fas fa-truck"></i> Shipment ID</label>
+            <input type="number" id="shipmentId" class="form-control" placeholder="Enter Shipment ID">
+          </div>
+          <div class="col-md-3">
+            <label for="status" class="form-label"><i class="fas fa-info-circle"></i> Status</label>
+            <select id="status" class="form-select">
+              <option value="">-- Select Status --</option>
+              <option value="InProgress">In Progress</option>
+              <option value="Loading">Loading</option>
+              <option value="Shipped">Shipped</option>
+              <option value="Cancelled">Cancelled</option>
+              <option value="Deleted">Deleted</option>
+            </select>
+          </div>
+        </div>
+        <div class="btn-container text-center mt-3">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search"></i> Search Orders
+          </button>
+          <button type="button" id="downloadOrdersBtn" class="btn btn-success ms-3">
+            <i class="fas fa-download"></i> Download All Orders to Excel
+          </button>
+        </div>
+      </form>
+
+      <!-- Orders Table -->
+      <div class="table-responsive mt-3" id="reportContainer">
+        <table class="table table-bordered table-striped" id="purchaseOrdersTable">
+          <thead class="table-dark">
+            <tr>
+              <th class="order-id"><i class="fas fa-hashtag"></i> Order ID</th>
+              <th class="shipment-id"><i class="fas fa-truck"></i> Shipment ID</th>
+              <th class="customer-name"><i class="fas fa-user"></i> Customer Name</th>
+              <th class="order-date"><i class="fas fa-calendar-alt"></i> Order Date</th>
+              <th class="total-amount"><i class="fas fa-dollar-sign"></i> Total Amount</th>
+              <th class="delivery-date"><i class="fas fa-calendar-check"></i> Delivery Date</th>
+              <th class="order-status"><i class="fas fa-info-circle"></i> Status</th>
+              <th class="actions"><i class="fas fa-cogs"></i> Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr>
+              <td colspan="8" class="text-center">No orders found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <nav id="paginationControls" class="mt-3 d-none"></nav>
+    </div>
+    
+    <div id="responseMessage" class="mt-3"></div>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content shadow-lg">
+        <div class="modal-header">
+          <h5 class="modal-title" id="orderDetailsModalLabel"><i class="fas fa-info-circle"></i> Order Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="orderDetailsContent">
+          <!-- Dynamic content will be injected here -->
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" id="downloadOrderDetailsBtn">
+            <i class="fas fa-download"></i> Download Order Details to Excel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Template for Order Row (if needed for dynamic generation) -->
+  <template id="orderRowTemplate">
+    <tr>
+      <td class="order-id"></td>
+      <td class="shipment-id"></td>
+      <td class="customer-name"></td>
+      <td class="order-date"></td>
+      <td class="total-amount"></td>
+      <td class="delivery-date"></td>
+      <td class="order-status"></td>
+      <td class="actions"></td>
+    </tr>
+  </template>
+
+  <!-- Footer -->
+  <footer class="text-center">
+    <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+  <script>
+    let currentPage = 1;
+    const pageSize = 10;
+    let totalPages = 1;
+    let allOrdersData = [];
+    let currentOrderDetails = null; // For Excel download
+
+    const queryForm = document.getElementById('queryForm');
+    const ordersTableBody = document.getElementById('ordersTableBody');
+    const responseMessage = document.getElementById('responseMessage');
+    const orderDetailsContent = document.getElementById('orderDetailsContent');
+    const downloadOrderDetailsBtn = document.getElementById('downloadOrderDetailsBtn');
+    const downloadOrdersBtn = document.getElementById('downloadOrdersBtn');
+    const paginationControls = document.getElementById('paginationControls');
+
+    // Helper function to format delivery date
+    function formatDeliveryDate(dateString) {
+      if (!dateString || dateString.indexOf("0001-01-01") !== -1) {
+        return "N/A";
+      }
+      const dt = new Date(dateString);
+      return isNaN(dt.getTime()) ? "N/A" : dt.toLocaleString();
+    }
+
+    queryForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const orderId = document.getElementById('orderId').value;
+      const customerID = document.getElementById('customerID').value;
+      const shipmentId = document.getElementById('shipmentId').value;
+      const status = document.getElementById('status').value;
+
+      let queryParams = [];
+      if (orderId) queryParams.push(`orderId=${orderId}`);
+      if (customerID) queryParams.push(`customerID=${customerID}`);
+      if (shipmentId) queryParams.push(`shipmentId=${shipmentId}`);
+      if (status) queryParams.push(`status=${status}`);
+
+      const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+      const apiUrl = `https://localhost:7014/api/Orders/GetAllOrders${queryString}`;
+
+      ordersTableBody.innerHTML = '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
+      responseMessage.innerHTML = '';
+      paginationControls.innerHTML = '';
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          allOrdersData = data; // Store orders for download and pagination
+          if (data.length > 0) {
+            totalPages = Math.ceil(data.length / pageSize);
+            currentPage = 1;
+            renderOrdersPage(currentPage);
+            renderPaginationControls();
+          } else {
+            ordersTableBody.innerHTML = '<tr><td colspan="8" class="text-center">No orders found.</td></tr>';
+          }
+        } else {
+          const error = await response.json();
+          responseMessage.innerHTML = `<div class="alert alert-danger">Error: ${error.message || 'An unexpected error occurred.'}</div>`;
+        }
+      } catch (error) {
+        responseMessage.innerHTML = `<div class="alert alert-danger">Error: ${error.message || 'A network error occurred.'}</div>`;
+      }
+    });
+
+    function renderOrdersPage(page) {
+      ordersTableBody.innerHTML = '';
+      const startIndex = (page - 1) * pageSize;
+      const pageData = allOrdersData.slice(startIndex, startIndex + pageSize);
+
+      pageData.forEach(order => {
+        const deliveryDate = formatDeliveryDate(order.deliveryDate);
+        const shipmentIdDisplay = order.shipmentId != null ? order.shipmentId : "N/A";
+        const row = `
+          <tr>
+            <td>${order.orderId}</td>
+            <td>${shipmentIdDisplay}</td>
+            <td>${order.customerName}</td>
+            <td>${new Date(order.orderDate).toLocaleString()}</td>
+            <td>${order.totalAmount}</td>
+            <td>${deliveryDate}</td>
+            <td>${order.orderStatus}</td>
+            <td>
+              <div class="d-flex justify-content-center align-items-center gap-2">
+                <button class="btn btn-info btn-sm view-details" data-id="${order.orderId}" data-bs-toggle="modal" data-bs-target="#orderDetailsModal">
+                  <i class="fas fa-eye"></i> View Details
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+        ordersTableBody.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    function renderPaginationControls() {
+      paginationControls.innerHTML = '';
+      const totalPages = Math.ceil(allOrdersData.length / pageSize);
+      if (totalPages <= 1) {
+        paginationControls.classList.add('d-none');
+        return;
+      }
+      paginationControls.classList.remove('d-none');
+      let paginationHtml = '<ul class="pagination">';
+      // Previous button
+      paginationHtml += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" data-page="${currentPage - 1}">&laquo;</a>
+      </li>`;
+      // Page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        paginationHtml += `<li class="page-item ${currentPage === i ? 'active' : ''}">
+          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>`;
+      }
+      // Next button
+      paginationHtml += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+        <a class="page-link" href="#" data-page="${currentPage + 1}">&raquo;</a>
+      </li>`;
+      paginationHtml += '</ul>';
+      paginationControls.innerHTML = paginationHtml;
+      
+      // Add event listeners for page links
+      const pageLinks = paginationControls.querySelectorAll('a.page-link');
+      pageLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const selectedPage = parseInt(e.target.getAttribute('data-page'));
+          if (selectedPage && selectedPage !== currentPage && selectedPage >= 1 && selectedPage <= totalPages) {
+            currentPage = selectedPage;
+            renderOrdersPage(currentPage);
+            renderPaginationControls();
+          }
+        });
+      });
+    }
+
+    async function viewOrderDetails(orderId) {
+      const apiUrl = `https://localhost:7014/api/Orders/GetOrderBy${orderId}`;
+      orderDetailsContent.innerHTML = '<p>Loading...</p>';
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          currentOrderDetails = data;
+          renderOrderDetails(data);
+        } else {
+          const error = await response.json();
+          orderDetailsContent.innerHTML = `<div class="alert alert-danger">Error: ${error.message || 'Failed to load order details.'}</div>`;
+        }
+      } catch (error) {
+        orderDetailsContent.innerHTML = `<div class="alert alert-danger">Error: ${error.message || 'A network error occurred.'}</div>`;
+      }
+    }
+
+    function renderOrderDetails(order) {
+      const deliveryDate = formatDeliveryDate(order.deliveryDate);
+      let itemsHtml = '';
+      order.orderItems.forEach(item => {
+        itemsHtml += `
+          <tr>
+            <td>${item.productCode}</td>
+            <td>${item.productName}</td>
+            <td>${item.qty}</td>
+            <td>${item.unitCost}</td>
+            <td>${item.batchNumber}</td>
+            <td>${item.location || 'N/A'}</td>
+            <td>${item.bestBeforeDate === "0001-01-01T00:00:00" ? "N/A" : new Date(item.bestBeforeDate).toLocaleString()}</td>
+          </tr>
+        `;
+      });
+
+      orderDetailsContent.innerHTML = `
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead class="table-light">
+              <tr>
+                <th><i class="fas fa-barcode"></i> Product Code</th>
+                <th><i class="fas fa-box"></i> Product Name</th>
+                <th><i class="fas fa-sort-numeric-down"></i> Quantity</th>
+                <th><i class="fas fa-dollar-sign"></i> Unit Cost</th>
+                <th><i class="fas fa-hashtag"></i> Batch Number</th>
+                <th><i class="fas fa-map-marker-alt"></i> Location</th>
+                <th><i class="fas fa-calendar-alt"></i> Best Before Date</th>
+              </tr>
+            </thead>
+            <tbody>${itemsHtml}</tbody>
+          </table>
+        </div>
+        <h5>Order ID: ${order.orderId}</h5>
+        <p><strong>Customer Name:</strong> ${order.customerName}</p>
+        <p><strong>Order Date:</strong> ${new Date(order.orderDate).toLocaleString()}</p>
+        <p><strong>Total Amount:</strong> ${order.totalAmount}</p>
+        <p><strong>Delivery Date:</strong> ${deliveryDate}</p>
+        <p><strong>Status:</strong> ${order.orderStatus}</p>
+      `;
+    }
+
+    // When the modal is about to be shown, retrieve the order id from the triggering button and load its details.
+    const orderDetailsModal = document.getElementById('orderDetailsModal');
+    orderDetailsModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const orderId = button.getAttribute('data-id');
+      viewOrderDetails(orderId);
+    });
+
+    downloadOrderDetailsBtn.addEventListener('click', function () {
+      if (!currentOrderDetails) {
+        alert("No order details to download.");
+        return;
+      }
+
+      const order = currentOrderDetails;
+      const itemsData = order.orderItems.map(item => ({
+        'Product Code': item.productCode,
+        'Product Name': item.productName,
+        'Quantity': item.qty,
+        'Unit Cost': item.unitCost,
+        'Batch Number': item.batchNumber,
+        'Location': item.location || 'N/A',
+        'Best Before Date': item.bestBeforeDate === "0001-01-01T00:00:00" ? "N/A" : new Date(item.bestBeforeDate).toLocaleString()
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(itemsData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, `Order_${order.orderId}_Details`);
+      XLSX.writeFile(workbook, `Order_${order.orderId}_Details.xlsx`);
+    });
+
+    downloadOrdersBtn.addEventListener('click', function () {
+      if (allOrdersData.length === 0) {
+        alert("No orders to download.");
+        return;
+      }
+
+      const ordersData = allOrdersData.map(order => ({
+        'Order ID': order.orderId,
+        'Shipment ID': order.shipmentId != null ? order.shipmentId : "N/A",
+        'Customer Name': order.customerName,
+        'Order Date': new Date(order.orderDate).toLocaleString(),
+        'Total Amount': order.totalAmount,
+        'Delivery Date': formatDeliveryDate(order.deliveryDate),
+        'Status': order.orderStatus
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(ordersData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'All_Orders');
+      XLSX.writeFile(workbook, 'All_Orders.xlsx');
+    });
+  </script>
+</body>
+</html>

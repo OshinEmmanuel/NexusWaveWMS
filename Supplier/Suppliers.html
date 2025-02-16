@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search Suppliers - Nexus Wave WMS</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Font Awesome for icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <!-- Google Fonts for Poppins -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* Global Reset and Background */
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f7f6;
+      position: relative;
+      z-index: 0;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      /* Update the URL to your background image as needed */
+      background: url("../assets/img/inventory2.jpg") no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(3px);
+      opacity: 0.5;
+      z-index: -1;
+    }
+    /* Fixed Transparent Navbar */
+    .navbar {
+      background: transparent;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    /* Main Content Wrapper */
+    .wrapper {
+      margin-top: 70px; /* Space for the navbar */
+      padding: 20px;
+    }
+    /* Container Card Styling */
+    .container-card {
+      max-width: 900px;
+      margin: 20px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+    /* Form Elements */
+    .form-label {
+      font-weight: 600;
+    }
+    /* Ensure table cells have enough width */
+    table.table th,
+    table.table td {
+      min-width: 120px;
+      vertical-align: middle;
+    }
+    /* Footer Styles */
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed Transparent Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <!-- Back Button -->
+      <a class="btn btn-secondary me-2" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <!-- Logo linking to Home -->
+      <a class="navbar-brand me-auto" href="../index.html">
+        <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;" />
+      </a>
+      <!-- Home Link -->
+      <div class="collapse navbar-collapse justify-content-end">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Wrapper -->
+  <div class="wrapper">
+    <div class="container-card">
+      <!-- Header Row: Title and Download Button -->
+      <div class="row align-items-center mb-4">
+        <div class="col">
+          <h2 class="mb-0"><i class="fas fa-search"></i> Search Suppliers</h2>
+        </div>
+        <div class="col-auto">
+          <button id="downloadExcelBtn" class="btn btn-success">
+            <i class="fas fa-download"></i> Download Excel
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Form -->
+      <form id="supplierForm" class="mb-4">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-building"></i></span>
+              <input
+                type="text"
+                id="companyName"
+                class="form-control"
+                placeholder="Company Name"
+              />
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+              <input
+                type="number"
+                id="supplierId"
+                class="form-control"
+                placeholder="Supplier ID"
+              />
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-toggle-on"></i></span>
+              <select id="isActive" class="form-select">
+                <option value="">All (Is Active)</option>
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-check-circle"></i></span>
+              <select id="isValid" class="form-select">
+                <option value="">All (Is Valid)</option>
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-truck"></i></span>
+              <select id="supplierTypeFilter" class="form-select">
+                <option value="">All Supplier Types</option>
+                <option value="ProductSupplier">Product Supplier</option>
+                <option value="Transporter">Transporter</option>
+                <option value="GeneralSupplier">General Supplier</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 text-center">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search"></i> Search Suppliers
+          </button>
+        </div>
+      </form>
+
+      <!-- Response Message -->
+      <div id="responseMessage" class="alert d-none"></div>
+
+      <!-- Displayed Suppliers Table (wrapped in a responsive container) -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover d-none" id="supplierTable">
+          <thead class="table-dark">
+            <tr>
+              <th><i class="fas fa-id-badge"></i> Supplier ID</th>
+              <th><i class="fas fa-building"></i> Company Name</th>
+              <th><i class="fas fa-envelope"></i> Email</th>
+              <th><i class="fas fa-phone"></i> Phone Number</th>
+              <th><i class="fas fa-truck"></i> Supplier Type</th>
+              <th><i class="fas fa-map-marker-alt"></i> State</th>
+              <th><i class="fas fa-flag"></i> Country</th>
+            </tr>
+          </thead>
+          <tbody id="supplierTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <footer>
+      <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <!-- Bootstrap Bundle with Popper.js -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+  ></script>
+  <!-- Custom Script -->
+  <script>
+    // Global variable to store full supplier data for Excel download
+    let suppliersFullData = [];
+
+    // Fetch Suppliers logic
+    document.getElementById("supplierForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const companyName = document.getElementById("companyName").value;
+      const supplierId = document.getElementById("supplierId").value;
+      const isActive = document.getElementById("isActive").value;
+      const isValid = document.getElementById("isValid").value;
+      const supplierTypeFilter = document.getElementById("supplierTypeFilter").value;
+
+      const url = new URL("https://localhost:7014/api/Suppliers/all-suppliers");
+      if (companyName) url.searchParams.append("companyName", companyName);
+      if (supplierId) url.searchParams.append("supplierId", supplierId);
+      if (isActive) url.searchParams.append("isActive", isActive);
+      if (isValid) url.searchParams.append("isValid", isValid);
+      if (supplierTypeFilter) url.searchParams.append("supplierType", supplierTypeFilter);
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        // Store full data for Excel download
+        suppliersFullData = data;
+
+        const tableBody = document.getElementById("supplierTableBody");
+        tableBody.innerHTML = ""; // Clear existing data
+
+        if (response.ok) {
+          if (data && data.length > 0) {
+            data.forEach(supplier => {
+              const row = `<tr>
+                <td>${supplier.supplierId ?? "N/A"}</td>
+                <td>${supplier.supplierCompanyName ?? "N/A"}</td>
+                <td>${supplier.email ?? "N/A"}</td>
+                <td>${supplier.phoneNumber ?? "N/A"}</td>
+                <td>${supplier.supplierType || supplier.supplierTypeString || supplier.supplierTypeEnum || "N/A"}</td>
+                <td>${supplier.state ?? "N/A"}</td>
+                <td>${supplier.country ?? "N/A"}</td>
+              </tr>`;
+              tableBody.insertAdjacentHTML("beforeend", row);
+            });
+            document.getElementById("supplierTable").classList.remove("d-none");
+            document.getElementById("responseMessage").classList.add("d-none");
+          } else {
+            document.getElementById("supplierTable").classList.add("d-none");
+            document.getElementById("responseMessage").className = "alert alert-warning";
+            document.getElementById("responseMessage").classList.remove("d-none");
+            document.getElementById("responseMessage").textContent = "No suppliers found.";
+          }
+        } else {
+          throw new Error(data.message || "Failed to fetch suppliers.");
+        }
+      } catch (error) {
+        document.getElementById("supplierTable").classList.add("d-none");
+        document.getElementById("responseMessage").className = "alert alert-danger";
+        document.getElementById("responseMessage").classList.remove("d-none");
+        document.getElementById("responseMessage").textContent = error.message;
+      }
+    });
+
+    // Download Excel (CSV) logic using full supplier details (excluding password fields)
+    document.getElementById("downloadExcelBtn").addEventListener("click", function() {
+      if (!suppliersFullData || suppliersFullData.length === 0) {
+        alert("No supplier data to download.");
+        return;
+      }
+
+      // Dynamically generate CSV header columns from the first supplier, excluding "passwordHash"
+      const sampleSupplier = suppliersFullData[0];
+      let header = Object.keys(sampleSupplier).filter(key => key !== "passwordHash");
+
+      // Create CSV header line
+      let csvContent = header.join(",") + "\n";
+
+      suppliersFullData.forEach(supplier => {
+        const row = header.map(key => {
+          let cell = supplier[key];
+          // If key is "user" and it's an object, remove its password field before stringifying
+          if (key === "user" && typeof cell === "object" && cell !== null) {
+            let userClone = { ...cell };
+            delete userClone.passwordHash;
+            cell = JSON.stringify(userClone);
+          } else if (cell === null || cell === undefined) {
+            cell = "N/A";
+          } else if (key === "createdAt" || key === "updatedAt" || key === "deletedAt") {
+            cell = new Date(cell).toLocaleString();
+          }
+          return `"${cell}"`;
+        });
+        csvContent += row.join(",") + "\n";
+      });
+
+      // Create a Blob and trigger download
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "suppliers.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+  </script>
+</body>
+</html>

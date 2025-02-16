@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Customer - Nexus Wave WMS</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* Global Styles */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+    }
+    /* Use flex layout to push footer to the bottom */
+    body {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 0;
+    }
+    /* Full-screen blurred background image */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; 
+      left: 0; 
+      right: 0; 
+      bottom: 0;
+      background: url("../assets/img/background7.jpg") no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(5px);
+      opacity: 0.4;
+      z-index: -1;
+    }
+    /* Main Content Container */
+    .wrapper {
+      flex: 1;
+    }
+    .container {
+      max-width: 600px;
+      margin: 80px auto 120px auto; /* extra bottom margin to avoid footer overlap */
+      position: relative;
+      z-index: 1;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    /* Navbar styling */
+    .navbar {
+      background-color: rgba(0, 0, 0, 0.75) !important;
+    }
+    .navbar-brand, .nav-link {
+      color: #fff !important;
+    }
+    .back-btn {
+      margin-right: 1rem;
+    }
+    /* Form Heading */
+    .form-heading {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+    /* Container card for forms */
+    .container-card {
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid #e3e6ea;
+      border-radius: 8px;
+      background: #fdfdfd;
+    }
+    /* Form Labels with Icons */
+    .form-label {
+      font-weight: 600;
+    }
+    .form-label i {
+      margin-right: 5px;
+    }
+    .form-control, .form-select {
+      border-radius: 6px;
+    }
+    /* Button styling */
+    .btn-primary, .btn-success {
+      transition: all 0.3s ease-in-out;
+      border-radius: 8px;
+    }
+    .btn-primary:hover, .btn-success:hover {
+      transform: scale(1.05);
+    }
+    /* Footer styling */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      color: #1d3557;
+      text-align: center;
+      padding: 10px 0;
+      z-index: 1000;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+      background-color: transparent;
+    }
+    /* Style for the "Create Another Customer" button */
+    .add-another-btn {
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Merged Top Navigation Bar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <!-- Back Button -->
+      <a class="btn btn-secondary back-btn me-2" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <!-- Logo linking to the homepage -->
+      <a class="navbar-brand me-auto" href="../index.html">
+        <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- Home link in navbar -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <div class="wrapper">
+    <div class="container">
+      <h2 class="form-heading"><i class="fas fa-user-plus"></i> Create Customer</h2>
+
+      <!-- Customer Type Selection Form -->
+      <form id="selectCustomerTypeForm" class="mb-4 container-card">
+        <div class="mb-3">
+          <label for="customerType" class="form-label"><i class="fas fa-user-cog"></i> Select Customer Type</label>
+          <select class="form-select" id="customerType" required>
+            <option value="">-- Select --</option>
+            <option value="Corporate">Corporate</option>
+            <option value="Individual">Individual</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="fas fa-arrow-right"></i> Next
+        </button>
+      </form>
+
+      <!-- Response Message Display -->
+      <div id="responseMessage"></div>
+
+      <!-- Corporate Customer Form -->
+      <form id="corporateCustomerForm" class="d-none container-card">
+        <h4 class="mb-3"><i class="fas fa-building"></i> Corporate Customer Details</h4>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="companyName" class="form-label"><i class="fas fa-briefcase"></i> Company Name</label>
+            <input type="text" class="form-control" id="companyName" required />
+          </div>
+          <div class="col-md-6">
+            <label for="corporateEmail" class="form-label"><i class="fas fa-envelope"></i> Email</label>
+            <input type="email" class="form-control" id="corporateEmail" required />
+          </div>
+        </div>
+        <div class="row g-3 mt-3">
+          <div class="col-md-6">
+            <label for="corporatePhoneNumber" class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
+            <input type="text" class="form-control" id="corporatePhoneNumber" required />
+          </div>
+          <div class="col-md-6">
+            <label for="taxIdentificationNumber" class="form-label"><i class="fas fa-file-invoice"></i> Tax Identification Number</label>
+            <input type="text" class="form-control" id="taxIdentificationNumber" required />
+          </div>
+        </div>
+        <div class="row g-3 mt-3">
+          <div class="col-md-6">
+            <label for="companyRegistrationCertificate" class="form-label"><i class="fas fa-file-alt"></i> Registration Certificate (Optional)</label>
+            <input type="file" class="form-control" id="companyRegistrationCertificate" accept=".jpg, .jpeg, .png, .pdf" />
+          </div>
+          <div class="col-md-6">
+            <label for="companyTaxCertificate" class="form-label"><i class="fas fa-file-alt"></i> Tax Certificate (Optional)</label>
+            <input type="file" class="form-control" id="companyTaxCertificate" accept=".jpg, .jpeg, .png, .pdf" />
+          </div>
+        </div>
+        <div class="mb-3 mt-3">
+          <label for="corporatePassword" class="form-label"><i class="fas fa-lock"></i> Password</label>
+          <input type="password" class="form-control" id="corporatePassword" required />
+        </div>
+        <div class="mb-3 mt-3">
+          <label for="corporateAddress" class="form-label"><i class="fas fa-map-marker-alt"></i> Address</label>
+          <input type="text" class="form-control" id="corporateAddress" required placeholder="House and Street Address" />
+        </div>
+        <div class="row g-3 mt-2">
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="corporateCity" required placeholder="City" />
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="corporateState" required placeholder="State" />
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="corporateCountry" required placeholder="Country" />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success w-100 mt-3">
+          <i class="fas fa-user-plus"></i> Create Corporate Customer
+        </button>
+      </form>
+
+      <!-- Individual Customer Form -->
+      <form id="individualCustomerForm" class="d-none container-card">
+        <h4 class="mb-3"><i class="fas fa-user"></i> Individual Customer Details</h4>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="firstName" class="form-label"><i class="fas fa-user"></i> First Name</label>
+            <input type="text" class="form-control" id="firstName" required />
+          </div>
+          <div class="col-md-6">
+            <label for="lastName" class="form-label"><i class="fas fa-user"></i> Last Name</label>
+            <input type="text" class="form-control" id="lastName" required />
+          </div>
+        </div>
+        <div class="row g-3 mt-3">
+          <div class="col-md-6">
+            <label for="gender" class="form-label"><i class="fas fa-venus-mars"></i> Gender</label>
+            <select class="form-select" id="gender" required>
+              <option value="">-- Select Gender --</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="individualEmail" class="form-label"><i class="fas fa-envelope"></i> Email</label>
+            <input type="email" class="form-control" id="individualEmail" required />
+          </div>
+        </div>
+        <div class="row g-3 mt-3">
+          <div class="col-md-6">
+            <label for="individualPhoneNumber" class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
+            <input type="text" class="form-control" id="individualPhoneNumber" required />
+          </div>
+          <div class="col-md-6">
+            <label for="validID" class="form-label"><i class="fas fa-file-alt"></i> Valid ID (Optional)</label>
+            <input type="file" class="form-control" id="validID" accept=".jpg, .jpeg, .png, .pdf" />
+          </div>
+        </div>
+        <div class="mb-3 mt-3">
+          <label for="individualPassword" class="form-label"><i class="fas fa-lock"></i> Password</label>
+          <input type="password" class="form-control" id="individualPassword" required />
+        </div>
+        <div class="mb-3 mt-3">
+          <label for="individualAddress" class="form-label"><i class="fas fa-map-marker-alt"></i> Address</label>
+          <input type="text" class="form-control" id="individualAddress" required placeholder="House and Street Address" />
+        </div>
+        <div class="row g-3 mt-2">
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="individualCity" required placeholder="City" />
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="individualState" required placeholder="State" />
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="individualCountry" required placeholder="Country" />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success w-100 mt-3">
+          <i class="fas fa-user-plus"></i> Create Individual Customer
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
+  </footer>
+
+  <!-- Bootstrap JS Bundle with Popper.js -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Retrieve the auth token from localStorage.
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      // Redirect to login page if no token is found.
+      window.location.href = "login.html";
+    }
+  
+    // Helper function to handle API responses with fallback messaging.
+    async function handleApiResponse(response) {
+      const contentType = response.headers.get('content-type');
+      let result;
+      if (contentType && contentType.indexOf('application/json') !== -1) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        result = { message: text, success: response.ok };
+      }
+      if (!result.message && !result.Message) {
+        switch(response.status) {
+          case 200: result.message = "Operation completed successfully."; break;
+          case 400: result.message = "Bad Request."; break;
+          case 401: result.message = "Unauthorized access."; break;
+          case 404: result.message = "Resource not found."; break;
+          case 500: result.message = "Internal server error."; break;
+          default: result.message = "An unexpected error occurred.";
+        }
+      }
+      return result;
+    }
+  
+    // Helper function: file to base64
+    async function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) {
+          resolve(null);
+          return;
+        }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+    }
+  
+    // Handle Customer Type Selection.
+    document.getElementById('selectCustomerTypeForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const customerType = document.getElementById('customerType').value;
+      document.getElementById('corporateCustomerForm').classList.add('d-none');
+      document.getElementById('individualCustomerForm').classList.add('d-none');
+      if (customerType === 'Corporate') {
+        document.getElementById('corporateCustomerForm').classList.remove('d-none');
+      } else if (customerType === 'Individual') {
+        document.getElementById('individualCustomerForm').classList.remove('d-none');
+      }
+    });
+  
+    // Function to display the success message and a centered "Create Another Customer" button.
+    function showAddAnotherButton(successMessage) {
+      // Hide the selection and customer forms.
+      document.getElementById('selectCustomerTypeForm').style.display = "none";
+      document.getElementById('corporateCustomerForm').style.display = "none";
+      document.getElementById('individualCustomerForm').style.display = "none";
+  
+      const responseDiv = document.getElementById('responseMessage');
+      // Clear any existing content and display the success message centered.
+      responseDiv.innerHTML = `<div class="alert alert-success text-center">${successMessage}</div>`;
+  
+      // Create the "Create Another Customer" button (centered).
+      const addAnotherBtn = document.createElement('button');
+      addAnotherBtn.className = 'btn btn-info add-another-btn d-block mx-auto';
+      addAnotherBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Create Another Customer';
+      addAnotherBtn.addEventListener('click', () => {
+        window.location.reload();
+      });
+  
+      // Append the button below the success message.
+      responseDiv.appendChild(addAnotherBtn);
+    }
+  
+    // Handle Corporate Customer Submission.
+    document.getElementById('corporateCustomerForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      try {
+        const data = {
+          companyName: document.getElementById('companyName').value,
+          email: document.getElementById('corporateEmail').value,
+          phoneNumber: document.getElementById('corporatePhoneNumber').value,
+          taxIdentificationNumber: document.getElementById('taxIdentificationNumber').value,
+          password: document.getElementById('corporatePassword').value,
+          houseAndStreetAddress: document.getElementById('corporateAddress').value,
+          city: document.getElementById('corporateCity').value,
+          state: document.getElementById('corporateState').value,
+          country: document.getElementById('corporateCountry').value,
+          companyRegistrationCertificate: null,
+          companyTaxCertificate: null
+        };
+  
+        // Convert files to Base64 if provided.
+        const companyRegCert = document.getElementById('companyRegistrationCertificate').files[0];
+        const companyTaxCert = document.getElementById('companyTaxCertificate').files[0];
+        const [regCertBase64, taxCertBase64] = await Promise.all([
+          toBase64(companyRegCert),
+          toBase64(companyTaxCert)
+        ]);
+        data.companyRegistrationCertificate = regCertBase64;
+        data.companyTaxCertificate = taxCertBase64;
+  
+        console.log("Sending Corporate Customer Data:", data);
+  
+        const response = await fetch('https://localhost:7014/api/Customers/CorporateCustomer', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
+          body: JSON.stringify(data)
+        });
+  
+        const result = await handleApiResponse(response);
+        const displayMessage = result.message || result.Message || "Corporate customer created successfully.";
+  
+        if (result.success) {
+          // Display the success message without any prefix.
+          showAddAnotherButton(displayMessage);
+        } else {
+          document.getElementById('responseMessage').innerHTML = `
+            <div class="alert alert-danger">${displayMessage}</div>
+          `;
+        }
+      } catch (error) {
+        console.error("Corporate Customer Request error:", error);
+        document.getElementById('responseMessage').innerHTML = `
+          <div class="alert alert-danger">An error occurred: ${error.message}</div>
+        `;
+      }
+    });
+  
+    // Handle Individual Customer Submission.
+    document.getElementById('individualCustomerForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      try {
+        const data = {
+          firstName: document.getElementById('firstName').value,
+          lastName: document.getElementById('lastName').value,
+          gender: document.getElementById('gender').value,
+          email: document.getElementById('individualEmail').value,
+          phoneNumber: document.getElementById('individualPhoneNumber').value,
+          password: document.getElementById('individualPassword').value,
+          houseAndStreetAddress: document.getElementById('individualAddress').value,
+          city: document.getElementById('individualCity').value,
+          state: document.getElementById('individualState').value,
+          country: document.getElementById('individualCountry').value,
+          validID: null
+        };
+  
+        // Convert file to Base64 if provided.
+        const validIDFile = document.getElementById('validID').files[0];
+        data.validID = await toBase64(validIDFile);
+  
+        console.log("Sending Individual Customer Data:", data);
+  
+        const response = await fetch('https://localhost:7014/api/Customers/AddIndividualCustomer', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
+          body: JSON.stringify(data)
+        });
+  
+        const result = await handleApiResponse(response);
+        const displayMessage = result.message || result.Message || "Individual customer created successfully.";
+  
+        if (result.success) {
+          // Display the success message without any prefix.
+          showAddAnotherButton(displayMessage);
+        } else {
+          document.getElementById('responseMessage').innerHTML = `
+            <div class="alert alert-danger">${displayMessage}</div>
+          `;
+        }
+      } catch (error) {
+        console.error("Individual Customer Request error:", error);
+        document.getElementById('responseMessage').innerHTML = `
+          <div class="alert alert-danger">An error occurred: ${error.message}</div>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

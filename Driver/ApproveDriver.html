@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Approve Driver - Nexus Wave WMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Ensure full height for html and body */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    /* Use flex layout to push footer to the bottom */
+    body {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 0;
+    }
+    /* Blurred full-screen background image */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url("../assets/img/truck3.jpg") no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(3px);
+      opacity: 0.5;
+      z-index: -1;
+    }
+    /* Wrapper to hold the main content */
+    .wrapper {
+      flex: 1;
+    }
+    /* Container for the card (main content) */
+    .container {
+      max-width: 600px;
+      margin: 80px auto 20px auto;
+      position: relative;
+      z-index: 1;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    /* Heading styling */
+    .form-heading {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+    /* Form Label styling with icons */
+    .form-label {
+      font-weight: 600;
+    }
+    .form-label i {
+      margin-right: 5px;
+    }
+    .form-control {
+      border-radius: 6px;
+    }
+    /* Button styling */
+    .btn-custom {
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 15px;
+      border-radius: 6px;
+      transition: 0.3s ease-in-out;
+    }
+    .btn-submit,
+    .btn-delete {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+    }
+    .btn-submit:hover,
+    .btn-delete:hover {
+      background-color: #0056b3;
+    }
+    /* Fixed Footer Styling */
+    footer {
+      background-color: #f8f9fa;
+      text-align: center;
+      color: #666;
+      padding: 10px 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    }
+    /* Approve Another Driver Container styling */
+    #approveAnotherContainer {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- Merged Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid">
+        <!-- Back button -->
+        <a class="btn btn-secondary back-btn me-2" href="javascript:history.back()">
+          <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <!-- Logo linking to the homepage -->
+        <a class="navbar-brand me-auto" href="../index.html">
+          <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Home link in navbar -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">
+                <i class="fas fa-home"></i> Home
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  
+    <!-- Approve Driver Form Container -->
+    <div id="formContainer" class="container">
+      <h3 class="form-heading"><i class="fas fa-id-card"></i> Approve Driver</h3>
+      <form id="approveDriverForm">
+        <div class="mb-3">
+          <label for="driverId" class="form-label"><i class="fas fa-id-badge"></i> Driver ID</label>
+          <input type="number" class="form-control" id="driverId" placeholder="Enter Driver ID" required>
+        </div>
+        <!-- Driver Details Section: hidden until a valid driver is fetched -->
+        <div id="driverDetailsSection" style="display:none;">
+          <div class="mb-3">
+            <label for="driverName" class="form-label"><i class="fas fa-user"></i> Driver Name</label>
+            <input type="text" class="form-control" id="driverName" placeholder="Driver Name" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="transportCompany" class="form-label"><i class="fas fa-truck"></i> Transport Company</label>
+            <input type="text" class="form-control" id="transportCompany" placeholder="Transport Company" readonly>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="driverApprovalStatus" class="form-label"><i class="fas fa-clipboard-check"></i> Approval Status</label>
+          <select class="form-select" id="driverApprovalStatus" required>
+            <option value="">-- Select Status --</option>
+            <option value="1">Pending</option>
+            <option value="2">Approved</option>
+            <option value="3">Rejected</option>
+            <option value="4">Suspended</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="approvedBy" class="form-label"><i class="fas fa-user-check"></i> Approved By</label>
+          <input type="text" class="form-control" id="approvedBy" placeholder="Approver's Name" required>
+        </div>
+        <div class="mb-3">
+          <label for="remarks" class="form-label"><i class="fas fa-comment-dots"></i> Remarks</label>
+          <textarea class="form-control" id="remarks" placeholder="Enter remarks" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 btn-custom btn-submit">
+          <i class="fas fa-check-circle"></i> Approve Driver
+        </button>
+      </form>
+      <div id="responseMessage" class="mt-3"></div>
+    </div>
+
+    <!-- Approve Another Driver Container (hidden by default) -->
+    <div id="approveAnotherContainer" class="container" style="display: none;">
+      <div id="backendMessage" class="alert alert-success"></div>
+      <button id="approveAnotherButton" class="btn btn-primary w-100 btn-custom">
+        <i class="fas fa-user-plus"></i> Approve Another Driver
+      </button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
+  </footer>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Retrieve the auth token from localStorage and redirect if not found.
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      window.location.href = "login.html";
+    }
+
+    // For demonstration purposes, we'll use a hardcoded current user id.
+    const currentUserId = 2;
+
+    // Global variable to cache the logged-in user's full name.
+    let currentUserFullName = '';
+
+    // Function to fetch and populate the Approved By field.
+    async function populateApprovedBy() {
+      try {
+        const userResponse = await fetch(`https://localhost:7014/api/Users/GetUser${currentUserId}`, {
+          headers: {
+            'Authorization': 'Bearer ' + authToken
+          }
+        });
+        if (!userResponse.ok) {
+          throw new Error("Failed to retrieve user info");
+        }
+        const userData = await userResponse.json();
+        console.log("Fetched user data:", userData); // Debug logging
+        const firstName = userData.firstName || "";
+        const lastName = userData.lastName || "";
+        currentUserFullName = `${firstName} ${lastName}`.trim();
+        document.getElementById('approvedBy').value = currentUserFullName;
+      } catch (error) {
+        console.warn("Unable to auto-fill Approved By:", error.message);
+      }
+    }
+
+    // On initial load, populate the Approved By field.
+    window.onload = async function () {
+      await populateApprovedBy();
+    };
+
+    // Fetch and display Driver details once a Driver ID is entered.
+    document.getElementById('driverId').addEventListener('blur', async () => {
+      const driverIdVal = document.getElementById('driverId').value.trim();
+      const driverDetailsSection = document.getElementById('driverDetailsSection');
+      const driverNameField = document.getElementById('driverName');
+      const transportCompanyField = document.getElementById('transportCompany');
+
+      if (!driverIdVal) {
+        driverDetailsSection.style.display = 'none';
+        driverNameField.value = "";
+        transportCompanyField.value = "";
+        return;
+      }
+
+      try {
+        const driverResponse = await fetch(`https://localhost:7014/api/Drivers/${driverIdVal}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + authToken
+          }
+        });
+        const driverData = await driverResponse.json();
+        if (!driverResponse.ok || !driverData.success || !driverData.data) {
+          throw new Error(driverData.message || "Failed to fetch driver details.");
+        }
+        const driver = driverData.data;
+        driverNameField.value = `${driver.firstName || ""} ${driver.lastName || ""}`.trim();
+        transportCompanyField.value = driver.transportCompanyName || "N/A";
+        driverDetailsSection.style.display = 'block';
+      } catch (error) {
+        driverDetailsSection.style.display = 'none';
+        driverNameField.value = "";
+        transportCompanyField.value = "";
+        alert(error.message);
+      }
+    });
+
+    // Handle the Approve Driver form submission.
+    document.getElementById('approveDriverForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const data = {
+        driverApprovalStatus: document.getElementById('driverApprovalStatus').value,
+        approvedBy: document.getElementById('approvedBy').value,
+        remarks: document.getElementById('remarks').value
+      };
+      const driverId = document.getElementById('driverId').value;
+      const responseMessage = document.getElementById('responseMessage');
+      try {
+        const response = await fetch(`https://localhost:7014/api/Drivers/approve?driverId=${driverId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
+          body: JSON.stringify(data)
+        });
+        if (response.ok) {
+          const result = await response.json();
+          const returnedMessage = result.message || result.Message || 'Driver updated successfully!';
+          responseMessage.innerHTML = `<div class="alert alert-success">${returnedMessage}</div>`;
+          document.getElementById('formContainer').style.display = 'none';
+          document.getElementById('backendMessage').innerHTML = `<strong>${returnedMessage}</strong>`;
+          document.getElementById('approveAnotherContainer').style.display = 'block';
+        } else {
+          const errorResult = await response.json();
+          const errorMsg = errorResult.message || errorResult.Message || 'Failed to approve driver.';
+          responseMessage.innerHTML = `<div class="alert alert-danger">Error: ${errorMsg}</div>`;
+        }
+      } catch (error) {
+        responseMessage.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+      }
+    });
+
+    // Reset and show the form for approving another driver.
+    document.getElementById('approveAnotherButton').addEventListener('click', function () {
+      document.getElementById('approveAnotherContainer').style.display = 'none';
+      document.getElementById('approveDriverForm').reset();
+      document.getElementById('responseMessage').innerHTML = "";
+      document.getElementById('formContainer').style.display = 'block';
+      document.getElementById('driverDetailsSection').style.display = 'none';
+      // Re-populate the Approved By field using the cached user info.
+      document.getElementById('approvedBy').value = currentUserFullName;
+    });
+  </script>
+</body>
+</html>

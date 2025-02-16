@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product List - Nexus Wave WMS</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Font Awesome -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    rel="stylesheet"
+  />
+  <!-- Google Fonts (Optional) -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      background-color: #f4f7f6;
+      font-family: 'Poppins', sans-serif;
+      padding: 20px;
+    }
+    /* Full-screen blurred background image */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; 
+      left: 0; 
+      right: 0; 
+      bottom: 0;
+      background: url("../assets/img/background7.jpg") no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(5px);
+      opacity: 0.4;
+      z-index: -1;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 50px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      /* Extra bottom margin so content isn't hidden behind the fixed footer */
+      margin-bottom: 100px;
+    }
+    h2 {
+      color: #007bff;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .btn-custom {
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 15px;
+      border-radius: 6px;
+      transition: 0.3s ease-in-out;
+    }
+    .btn-submit {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+    }
+    .btn-submit:hover {
+      background-color: #0056b3;
+    }
+    .table-responsive {
+      margin-top: 20px;
+    }
+    .table thead th {
+      background-color: #007bff;
+      color: #fff;
+      font-weight: 600;
+    }
+    /* Prevent text wrapping in table cells */
+    .table thead th, 
+    .table tbody td {
+      white-space: nowrap;
+    }
+    /* Fixed footer styling */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #6c757d;
+      background-color: #f4f7f6;
+      padding: 10px 0;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- Merged Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid">
+        <!-- Back button -->
+        <a class="btn btn-secondary back-btn me-2" href="javascript:history.back()">
+          <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <!-- Logo linking to the homepage -->
+        <a class="navbar-brand me-auto" href="../index.html">
+          <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Home link in navbar -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">
+                <i class="fas fa-home"></i> Home
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    
+    <div class="container">
+      <h2><i class="fas fa-boxes"></i> Product List</h2>
+
+      <!-- Filter Section with Input Groups -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+            <input type="number" id="filterProductCode" class="form-control" placeholder="Filter by Product Code">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-toggle-on"></i></span>
+            <select id="filterStatus" class="form-select">
+              <option value="">All Status</option>
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mb-4">
+        <button id="fetchProducts" class="btn btn-custom btn-submit">
+          <i class="fas fa-sync-alt"></i> Fetch Products
+        </button>
+      </div>
+      <div id="responseMessage"></div>
+      <div id="productTableContainer" class="table-responsive d-none">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th><i class="fas fa-hashtag"></i> Product Code</th>
+              <th><i class="fas fa-box"></i> Product Name</th>
+              <th><i class="fas fa-info-circle"></i> Description</th>
+              <th><i class="fas fa-tag"></i> Type</th>
+              <th><i class="fas fa-ruler-horizontal"></i> UoM</th>
+              <th><i class="fas fa-level-up-alt"></i> Reorder Level</th>
+              <th><i class="fas fa-layer-group"></i> Max Stock</th>
+              <th><i class="fas fa-dollar-sign"></i> Unit Cost</th>
+              <th><i class="fas fa-toggle-on"></i> Status</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody">
+            <!-- Product rows will be inserted here dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
+  </footer>
+
+  <script>
+    document.getElementById('fetchProducts').addEventListener('click', async function () {
+      const responseMessage = document.getElementById('responseMessage');
+      const productTableContainer = document.getElementById('productTableContainer');
+      const productTableBody = document.getElementById('productTableBody');
+      const filterProductCode = document.getElementById('filterProductCode').value;
+      const filterStatus = document.getElementById('filterStatus').value;
+  
+      // Clear previous messages and hide table container
+      responseMessage.innerHTML = '';
+      productTableContainer.classList.add('d-none');
+  
+      try {
+        const response = await fetch('https://localhost:7014/api/Products', {
+          method: 'GET'
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          let filteredData = data;
+  
+          // Apply Product Code filter if provided
+          if (filterProductCode) {
+            filteredData = filteredData.filter(product => product.productCode == filterProductCode);
+          }
+  
+          // Apply Status filter if provided
+          if (filterStatus !== "") {
+            const statusBool = (filterStatus === "true");
+            filteredData = filteredData.filter(product => product.isActive === statusBool);
+          }
+  
+          productTableBody.innerHTML = '';
+  
+          if (filteredData.length > 0) {
+            filteredData.forEach(product => {
+              const row = `
+                <tr>
+                  <td>${product.productCode}</td>
+                  <td>${product.productName}</td>
+                  <td>${product.productDescription}</td>
+                  <td>${product.productType}</td>
+                  <td>${product.uoM}</td>
+                  <td>${product.reorderLevel}</td>
+                  <td>${product.maximumStockLevel}</td>
+                  <td>${product.unitCost}</td>
+                  <td>${product.isActive ? "Active" : "Inactive"}</td>
+                </tr>
+              `;
+              productTableBody.insertAdjacentHTML('beforeend', row);
+            });
+  
+            productTableContainer.classList.remove('d-none');
+            responseMessage.innerHTML = '<div class="alert alert-success mt-3">Products retrieved successfully!</div>';
+          } else {
+            responseMessage.innerHTML = '<div class="alert alert-info mt-3">No products found with the applied filters.</div>';
+          }
+        } else {
+          const error = await response.json();
+          responseMessage.innerHTML = `<div class="alert alert-danger mt-3">Error: ${error.message || 'Failed to fetch products.'}</div>`;
+        }
+      } catch (error) {
+        responseMessage.innerHTML = `<div class="alert alert-danger mt-3">Error: ${error.message}</div>`;
+      }
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

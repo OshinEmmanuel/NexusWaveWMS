@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+  <meta name="description" content="POS - Bootstrap Admin Template">
+  <meta name="keywords" content="admin, estimates, bootstrap, business, corporate, creative, invoice, html5, responsive, Projects">
+  <meta name="author" content="Dreamguys - Bootstrap Admin Template">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Login - Pos admin template</title>
+
+  <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.jpg">
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/plugins/fontawesome/css/fontawesome.min.css">
+  <link rel="stylesheet" href="assets/plugins/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+
+  <!-- CSS for rotating loader logo -->
+  <style>
+    /* Rotating loader logo */
+    .rotate {
+      animation: spin 2s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .loading-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body class="account-page">
+
+  <div class="main-wrapper">
+    <div class="account-content">
+      <div class="login-wrapper">
+        <div class="login-content">
+          <div class="login-userset">
+            <div class="login-logo">
+              <!-- Your provided logo -->
+              <img src="assets/img/logo.png" alt="logo">
+            </div>
+            <div class="login-userheading">
+              <h3>Sign In</h3>
+              <h4>Please login to your account</h4>
+            </div>
+            <div class="form-login">
+              <label>Email</label>
+              <div class="form-addons">
+                <input type="text" id="email" placeholder="Enter your email address">
+                <img src="assets/img/icons/mail.svg" alt="email-icon">
+              </div>
+            </div>
+            <div class="form-login">
+              <label>Password</label>
+              <div class="pass-group">
+                <input type="password" id="password" class="pass-input" placeholder="Enter your password">
+                <span class="fas toggle-password fa-eye-slash"></span>
+              </div>
+            </div>
+            <div class="form-login">
+              <div class="alreadyuser">
+                <h4><a href="forgetpassword.html" class="hover-a">Forgot Password?</a></h4>
+              </div>
+            </div>
+            <div class="form-login">
+              <button class="btn btn-login" id="loginBtn">Sign In</button>
+            </div>
+            <div class="signinform text-center">
+              <h4>Don’t have an account? <a href="Customers/CreateCustomer.html" class="hover-a">Sign Up</a></h4>
+            </div>
+          </div>
+        </div>
+        <div class="login-img">
+          <img src="assets/img/login.jpg" alt="login-image">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container for response messages / loader -->
+  <div id="responseMessage" class="text-center mt-3"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/jquery-3.6.0.min.js"></script>
+  <script src="assets/js/feather.min.js"></script>
+  <script src="assets/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("DOM fully loaded.");
+      var loginBtn = document.getElementById('loginBtn');
+      if (!loginBtn) {
+        console.error("Login button not found.");
+        return;
+      }
+      loginBtn.addEventListener('click', async function() {
+        console.log("Sign In button clicked.");
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        var responseMessage = document.getElementById('responseMessage');
+
+        // Display the loader with the rotating logo
+        responseMessage.innerHTML = `
+          <div class="alert alert-info loading-container">
+            <img src="assets/img/logo.png" alt="logo" class="rotate" style="width:30px; height:30px; margin-right:10px;">
+            <span>Logging in...</span>
+          </div>
+        `;
+
+        // Simulate API call delay (for testing purposes)
+        setTimeout(async function() {
+          // Uncomment the following block to use your actual API call:
+          
+          try {
+            const response = await fetch('https://localhost:7014/api/Auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password }),
+            });
+            const contentType = response.headers.get('Content-Type');
+            let data;
+            if (contentType && contentType.includes('application/json')) {
+              data = await response.json();
+            } else {
+              data = await response.text();
+            }
+            console.log("API response:", data);
+            if (response.ok) {
+              const token = data.token;
+              if (!token) {
+                throw new Error("Token not found in the response.");
+              }
+              localStorage.setItem("authToken", token);
+              responseMessage.innerHTML = `<div class="alert alert-success">Login successful.....redirecting to your Dashboard</div>`;
+              setTimeout(() => {
+                window.location.href = "Dashboard.html";
+              }, 2000);
+            } else {
+              let errorMessage = "Invalid login credentials";
+              if (typeof data === "object" && data.Message) {
+                errorMessage = data.Message;
+              } else if (typeof data === "string") {
+                errorMessage = data;
+              }
+              responseMessage.innerHTML = `<div class="alert alert-danger">Error: ${errorMessage}</div>`;
+            }
+          } catch (error) {
+            console.error("Login error:", error);
+            responseMessage.innerHTML = `<div class="alert alert-danger">Error: ${error.message || "An unexpected error occurred"}</div>`;
+          }
+          
+
+          // Simulated successful response (for testing)
+          console.log("Simulated API call completed.");
+          responseMessage.innerHTML = `<div class="alert alert-success">Login successful.....redirecting to your Dashboard</div>`;
+          setTimeout(() => {
+            window.location.href = "Dashboard.html";
+          }, 2000);
+          
+        }, 1000); // 1-second delay simulation
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0" />
+  <title>Get All Customers - Nexus Wave WMS</title>
+  <!-- Bootstrap, Font Awesome, and SheetJS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    /* Global Styles */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+    /* Flex layout to push footer to the bottom */
+    body {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 0;
+    }
+    /* Full-screen blurred background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url("../assets/img/background7.jpg") no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(5px);
+      opacity: 0.4;
+      z-index: -1;
+    }
+    /* Wrapper to hold content - add bottom padding to prevent overlap with fixed footer */
+    .wrapper {
+      flex: 1;
+      padding-bottom: 60px; /* Height of footer */
+    }
+    /* Merged Top Navigation Bar styling */
+    .navbar {
+      background-color: rgba(0, 0, 0, 0.75) !important;
+    }
+    .back-btn {
+      margin-right: 1rem;
+    }
+    /* Main Container for content - increased width for better table display */
+    .container {
+      max-width: 1200px;
+      width: 90%;
+      margin: 100px auto 20px auto; /* leave space for fixed top nav */
+      position: relative;
+      z-index: 1;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+    /* Form Heading */
+    .form-heading {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+    /* Form Labels with Icons */
+    .form-label {
+      font-weight: 600;
+    }
+    .form-label i {
+      margin-right: 5px;
+    }
+    /* Table styling */
+    .table-responsive {
+      margin-top: 20px;
+    }
+    .table thead th {
+      background-color: #007bff;
+      color: #fff;
+      font-weight: 600;
+      text-align: center;
+    }
+    .table thead th i {
+      margin-right: 5px;
+    }
+    .table th, .table td {
+      white-space: nowrap;
+      text-align: center;
+      vertical-align: middle;
+    }
+    /* Pagination Container */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    /* Footer styling */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      color: #1d3557;
+      text-align: center;
+      padding: 10px 0;
+      z-index: 1000;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed Transparent Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <!-- Back Button -->
+      <a class="btn btn-secondary back-btn me-2" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <!-- Logo linking to Home -->
+      <a class="navbar-brand me-auto" href="../index.html">
+        <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+      </a>
+      <!-- Home Link -->
+      <div class="collapse navbar-collapse justify-content-end">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Wrapper -->
+  <div class="wrapper">
+    <div class="container">
+      <h2 class="form-heading"><i class="fas fa-boxes"></i> Get All Customers</h2>
+      <!-- Get All Customers Form -->
+      <form id="getAllCustomersForm" class="mt-4">
+        <div class="row">
+          <div class="mb-3 col-md-4">
+            <label for="customerType" class="form-label">
+              <i class="fas fa-user-cog"></i> Customer Type
+            </label>
+            <select class="form-select" id="customerType" name="customerType">
+              <option value="">-- Select --</option>
+              <option value="Individual">Individual</option>
+              <option value="Corporate">Corporate</option>
+            </select>
+          </div>
+          <div class="mb-3 col-md-4">
+            <label for="isActive" class="form-label"><i class="fas fa-toggle-on"></i> Is Active</label>
+            <select class="form-select" id="isActive" name="isActive">
+              <option value="">-- Select --</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+          </div>
+          <div class="mb-3 col-md-4">
+            <label for="isDeleted" class="form-label"><i class="fas fa-trash-alt"></i> Is Deleted</label>
+            <select class="form-select" id="isDeleted" name="isDeleted">
+              <option value="">-- Select --</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="mb-3 col-md-4">
+            <label for="isVerified" class="form-label"><i class="fas fa-user-check"></i> Is Verified</label>
+            <select class="form-select" id="isVerified" name="isVerified">
+              <option value="">-- Select --</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+          </div>
+          <div class="mb-3 col-md-4">
+            <label for="customerName" class="form-label"><i class="fas fa-user"></i> Customer Name</label>
+            <input type="text" class="form-control" id="customerName" name="customerName">
+          </div>
+          <div class="mb-3 col-md-4">
+            <label for="customerID" class="form-label"><i class="fas fa-id-badge"></i> Customer ID</label>
+            <input type="number" class="form-control" id="customerID" name="customerID">
+          </div>
+        </div>
+        <div class="row">
+          <div class="mb-3 col-md-6">
+            <label for="page" class="form-label"><i class="fas fa-list-ol"></i> Page</label>
+            <input type="number" class="form-control" id="page" name="page" value="1">
+          </div>
+          <div class="mb-3 col-md-6">
+            <label for="pageSize" class="form-label"><i class="fas fa-sort-numeric-down"></i> Page Size</label>
+            <input type="number" class="form-control" id="pageSize" name="pageSize" value="5">
+          </div>
+        </div>
+        <!-- Centered Get Customers Button -->
+        <div class="row">
+          <div class="col-12 text-center">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fas fa-search"></i> Get Customers
+            </button>
+          </div>
+        </div>
+      </form>
+      <!-- Centered Download Excel Button -->
+      <div class="d-flex justify-content-center mb-3 mt-3">
+        <button id="downloadExcel" class="btn btn-success">
+          <i class="fas fa-file-excel"></i> Download to Excel
+        </button>
+      </div>
+      <!-- Response Message and Customers Table -->
+      <div id="responseMessage" class="mt-3">
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped table-hover mt-3 results-table" id="customersTable" style="display: none;">
+            <thead class="table-dark">
+              <tr>
+                <th><i class="fas fa-id-badge"></i> Customer ID</th>
+                <th><i class="fas fa-user"></i> User ID</th>
+                <th><i class="fas fa-building"></i> Company Name</th>
+                <th><i class="fas fa-user"></i> First Name</th>
+                <th><i class="fas fa-user"></i> Last Name</th>
+                <th><i class="fas fa-venus-mars"></i> Gender</th>
+                <th><i class="fas fa-envelope"></i> Email</th>
+                <th><i class="fas fa-phone"></i> Phone Number</th>
+                <th><i class="fas fa-cogs"></i> Actions</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody">
+              <!-- Customer rows will be inserted here dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Pagination Controls -->
+      <div class="pagination-container d-none">
+        <button type="button" id="prevPageBtn" class="btn btn-secondary">
+          <i class="fas fa-arrow-left"></i> Prev
+        </button>
+        <span id="currentPageLabel">Page 1</span>
+        <button type="button" id="nextPageBtn" class="btn btn-secondary">
+          Next <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center mt-4">
+    <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
+  </footer>
+
+  <!-- Bootstrap JS Bundle with Popper.js -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let fullCustomersData = []; // Global variable to store full customer data for Excel download
+
+    // Handle Get All Customers Form Submission.
+    document.getElementById('getAllCustomersForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const queryParams = new URLSearchParams(formData).toString();
+
+      try {
+        const response = await fetch(`https://localhost:7014/api/Customers/GetAllCustomers?${queryParams}`, {
+          method: 'GET'
+        });
+        const data = await response.json();
+
+        // Ensure data is an array before assigning it.
+        if (Array.isArray(data)) {
+          fullCustomersData = data;
+        } else {
+          fullCustomersData = [];
+        }
+
+        if (response.ok && fullCustomersData.length > 0) {
+          const table = document.getElementById('customersTable');
+          const tbody = table.querySelector('tbody');
+          tbody.innerHTML = '';
+
+          fullCustomersData.forEach(customer => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${customer.customerID}</td>
+              <td>${customer.userId}</td>
+              <td>${customer.companyName || ''}</td>
+              <td>${customer.firstName || ''}</td>
+              <td>${customer.lastName || ''}</td>
+              <td>${customer.gender || ''}</td>
+              <td>${customer.email}</td>
+              <td>${customer.phoneNumber}</td>
+              <td><button class="btn btn-info btn-sm" onclick="viewDetails(${customer.customerID})"><i class="fas fa-eye"></i> View Details</button></td>
+            `;
+            tbody.appendChild(row);
+          });
+          table.style.display = 'table';
+          // Clear any previous error messages.
+          document.getElementById('responseMessage').querySelector('.alert')?.remove();
+        } else {
+          document.getElementById('responseMessage').innerHTML = `<div class="alert alert-danger">Error: ${data.message || 'No customers found.'}</div>`;
+        }
+      } catch (error) {
+        document.getElementById('responseMessage').innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+      }
+    });
+
+    // Download to Excel using SheetJS
+    document.getElementById('downloadExcel').addEventListener('click', function () {
+      if (!fullCustomersData.length) {
+        alert('No data available to download! Please fetch the customer data first.');
+        return;
+      }
+      // Remove sensitive fields if necessary.
+      const dataForExcel = fullCustomersData.map(item => {
+        const newItem = { ...item };
+        delete newItem.password;
+        delete newItem.Password;
+        return newItem;
+      });
+      const worksheet = XLSX.utils.json_to_sheet(dataForExcel);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Customers');
+      XLSX.writeFile(workbook, 'customers.xlsx');
+    });
+
+    // Function to view full customer details in a modal.
+    async function viewDetails(customerId) {
+      try {
+        const response = await fetch(`https://localhost:7014/api/Customers/${customerId}`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (response.ok) {
+          const customerData = await response.json();
+          // Build a table of full customer details.
+          let detailsHTML = `
+            <table class="table table-bordered">
+              <tbody>
+                <tr><th>Customer ID</th><td>${customerData.customerID || customerData.CustomerID || customerId}</td></tr>
+                <tr><th>User ID</th><td>${customerData.userId}</td></tr>
+                <tr><th>Company Name</th><td>${customerData.companyName || 'N/A'}</td></tr>
+                <tr><th>First Name</th><td>${customerData.firstName || 'N/A'}</td></tr>
+                <tr><th>Last Name</th><td>${customerData.lastName || 'N/A'}</td></tr>
+                <tr><th>Gender</th><td>${customerData.gender || 'N/A'}</td></tr>
+                <tr><th>Email</th><td>${customerData.email || customerData.Email || 'N/A'}</td></tr>
+                <tr><th>Phone Number</th><td>${customerData.phoneNumber || 'N/A'}</td></tr>
+                <tr><th>Tax Identification Number</th><td>${customerData.taxIdentificationNumber || 'N/A'}</td></tr>
+                <tr><th>State</th><td>${customerData.state || 'N/A'}</td></tr>
+                <tr><th>Country</th><td>${customerData.country || 'N/A'}</td></tr>
+                <tr><th>Customer Status</th><td>${customerData.customerStatus || 'N/A'}</td></tr>
+                <tr><th>Customer Type</th><td>${customerData.customerType || 'N/A'}</td></tr>
+                <tr><th>Is Verified</th><td>${customerData.isVerified}</td></tr>
+                <tr><th>Is Active</th><td>${customerData.isActive}</td></tr>
+              </tbody>
+            </table>
+          `;
+          document.getElementById('customerDetailsBody').innerHTML = detailsHTML;
+          let modal = new bootstrap.Modal(document.getElementById('customerDetailsModal'));
+          modal.show();
+        } else {
+          console.error("Error fetching customer details for view.");
+        }
+      } catch (error) {
+        console.error("Error in viewDetails:", error);
+      }
+    }
+  </script>
+  <!-- Bootstrap Modal for Customer Details -->
+  <div class="modal fade" id="customerDetailsModal" tabindex="-1" aria-labelledby="customerDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="customerDetailsModalLabel"><i class="fas fa-info-circle"></i> Customer Full Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="customerDetailsBody">
+          <!-- Full customer details will be injected here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i> Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

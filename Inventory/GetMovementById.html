@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View Inventory Movement - Nexus Wave WMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts for Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Global reset and background */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 0;
+      background-color: #f4f7f6;
+    }
+    /* Full-screen blurred background image */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; 
+      left: 0; 
+      right: 0; 
+      bottom: 0;
+      background: url("../assets/img/inventory2.jpg") no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(3px);
+      opacity: 0.5;
+      z-index: -1;
+    }
+    /* Fixed, transparent Navigation Bar */
+    .navbar {
+      background: transparent;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    /* Wrapper for main content; add top margin to account for navbar */
+    .wrapper {
+      flex: 1;
+      margin-top: 70px;
+      padding: 20px;
+    }
+    /* Container Card styling */
+    .container-card {
+      max-width: 800px;
+      margin: 20px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    /* Card Header Styling */
+    .card-header {
+      background-color: #007bff; /* Primary blue consistent with other pages */
+      color: white;
+      font-size: 1.2rem;
+      text-align: center;
+      padding: 10px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+    /* Form Label Styling */
+    .form-label {
+      font-weight: 600;
+    }
+    /* Responsive Table Styling */
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+    th, td {
+      white-space: nowrap;
+      text-align: center;
+      vertical-align: middle;
+    }
+    /* Transparent Footer Styling */
+    footer {
+      background: transparent;
+      text-align: center;
+      color: #666;
+      padding: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed, Transparent Navigation Bar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <!-- Back Button -->
+      <a class="btn btn-secondary me-2" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <!-- Logo linking to Home -->
+      <a class="navbar-brand me-auto" href="../index.html">
+        <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+      </a>
+      <!-- Home Link -->
+      <div class="collapse navbar-collapse justify-content-end">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="wrapper">
+    <div class="container-card">
+      <h2 class="text-center mb-4">
+        <i class="fas fa-info-circle"></i> View Inventory Movement
+      </h2>
+      
+      <!-- Fetch Movement Form -->
+      <form id="fetchForm" class="row g-3">
+        <div class="col-md-6 offset-md-3">
+          <label for="movementId" class="form-label">
+            <i class="fas fa-hashtag"></i> Movement ID
+          </label>
+          <input type="number" id="movementId" class="form-control" placeholder="Enter Movement ID" required>
+        </div>
+        <div class="col-md-12 text-center">
+          <button type="submit" class="btn btn-primary mt-3">
+            <i class="fas fa-search"></i> Get Details
+          </button>
+        </div>
+      </form>
+      
+      <!-- Response Message -->
+      <div id="responseMessage" class="alert d-none mt-3"></div>
+      
+      <!-- Movement Details Container -->
+      <div class="data-container d-none" id="movementDetails">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-table"></i> Movement Details
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped table-hover">
+                <tbody>
+                  <tr>
+                    <th>Movement ID</th>
+                    <td id="MovementIDValue"></td>
+                  </tr>
+                  <tr>
+                    <th>Product Code</th>
+                    <td id="productCodeValue"></td>
+                  </tr>
+                  <tr>
+                    <th>Product Name</th>
+                    <td id="productNameValue"></td>
+                  </tr>
+                  <tr>
+                    <th>Quantity</th>
+                    <td id="qtyValue"></td>
+                  </tr>
+                  <tr>
+                    <th>Batch Number</th>
+                    <td id="batchNumberValue"></td>
+                  </tr>
+                  <tr>
+                    <th>Best Before Date</th>
+                    <td id="bestBeforeValue"></td>
+                  </tr>
+                  <tr>
+                    <th>Movement Type</th>
+                    <td id="movementTypeValue"></td>
+                  </tr>
+                  <tr>
+                    <th>Order ID</th>
+                    <td id="orderIdValue"></td>
+                  </tr>
+                  <tr>
+                    <th>Shipment ID</th>
+                    <td id="shipmentIdValue"></td>
+                  </tr>
+                  <tr>
+                    <th>Purchase Order Number</th>
+                    <td id="purchaseOrderNumberValue"></td>
+                  </tr>
+                  <tr>
+                    <th>Remarks</th>
+                    <td id="remarksValue"></td>
+                  </tr>
+                  <tr>
+                    <th>Movement Date</th>
+                    <td id="movementDateValue"></td>
+                  </tr>
+                  <tr>
+                    <th>Movement Time</th>
+                    <td id="movementTimeValue"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <footer>
+    <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
+  </footer>
+  
+  <!-- Bootstrap JS Bundle with Popper.js -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('fetchForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+  
+      const movementId = document.getElementById('movementId').value;
+      // Construct the API URL: GET /api/InventoryMovements/ViewMovement{id}
+      const url = `https://localhost:7014/api/InventoryMovements/ViewMovement${movementId}`;
+      const responseMessage = document.getElementById('responseMessage');
+      const movementDetails = document.getElementById('movementDetails');
+  
+      try {
+        const response = await fetch(url);
+  
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to fetch movement details: ${response.status} - ${errorText}`);
+        }
+  
+        const data = await response.json();
+  
+        if (data) {
+          // Populate table with fetched data using empty strings for missing values.
+          document.getElementById('MovementIDValue').textContent = data.id || '';
+          document.getElementById('productCodeValue').textContent = data.productCode || '';
+          document.getElementById('productNameValue').textContent = data.productName || '';
+          document.getElementById('qtyValue').textContent = data.qty || '';
+          document.getElementById('batchNumberValue').textContent = data.batchNumber || '';
+          document.getElementById('bestBeforeValue').textContent = data.bestBeforeDate ? new Date(data.bestBeforeDate).toLocaleDateString() : '';
+          document.getElementById('movementTypeValue').textContent = data.movementType || '';
+          document.getElementById('orderIdValue').textContent = data.orderId || '';
+          document.getElementById('shipmentIdValue').textContent = data.shipmentId || '';
+          document.getElementById('purchaseOrderNumberValue').textContent = data.purchaseOrderNumber || '';
+          document.getElementById('remarksValue').textContent = data.remarks || '';
+          document.getElementById('movementDateValue').textContent = data.movementDate ? new Date(data.movementDate).toLocaleDateString() : '';
+          document.getElementById('movementTimeValue').textContent = data.movementTime ? new Date(data.movementTime).toLocaleTimeString() : '';
+  
+          responseMessage.classList.add('d-none');
+          movementDetails.classList.remove('d-none');
+        } else {
+          throw new Error('No data found for the provided Movement ID.');
+        }
+      } catch (error) {
+        responseMessage.className = 'alert alert-danger';
+        responseMessage.textContent = error.message;
+        responseMessage.classList.remove('d-none');
+        movementDetails.classList.add('d-none');
+      }
+    });
+  </script>
+</body>
+</html>

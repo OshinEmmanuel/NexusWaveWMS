@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventory Search & Export - Nexus Wave WMS</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts for Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Global Reset and Background */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 0;
+      background-color: #f4f7f6;
+      padding: 20px;
+    }
+    /* Full-screen blurred background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url("../assets/img/inventory2.jpg") no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(5px);
+      opacity: 0.5;
+      z-index: -1;
+    }
+    /* Fixed, Transparent Navigation Bar */
+    .navbar {
+      background: transparent;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    .back-btn {
+      margin-right: 1rem;
+    }
+    /* Main container styling */
+    .container {
+      max-width: 1200px;
+      margin: 50px auto 100px auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+    }
+    h2 {
+      color: #007bff;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    /* Card styling for the search form */
+    .card {
+      margin-bottom: 20px;
+    }
+    .card-header {
+      background-color: #007bff;
+      color: #fff;
+      font-size: 1.2rem;
+      text-align: center;
+      padding: 10px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+    .form-label {
+      font-weight: 600;
+    }
+    .input-group-text {
+      background-color: #e9ecef;
+    }
+    .btn-custom {
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 15px;
+      border-radius: 6px;
+      transition: background-color 0.3s ease-in-out;
+    }
+    .btn-search {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+    }
+    .btn-search:hover {
+      background-color: #0056b3;
+    }
+    .btn-export {
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+    }
+    .btn-export:hover {
+      background-color: #1e7e34;
+    }
+    /* Table styling */
+    .table-responsive {
+      margin-top: 20px;
+      max-height: 800px;
+    }
+    .table thead th {
+      background-color: #007bff;
+      color: #fff;
+      font-weight: 600;
+    }
+    .table th, .table td {
+      white-space: nowrap;
+      text-align: center;
+      vertical-align: middle;
+    }
+    /* Footer styling */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #6c757d;
+      background-color: #f4f7f6;
+      padding: 10px 0;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    /* Center pagination controls */
+    #paginationControls {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed Navigation Bar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <!-- Back Button -->
+      <a class="btn btn-secondary back-btn" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <!-- Logo linking to Home -->
+      <a class="navbar-brand me-auto" href="../index.html">
+        <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- Home Link -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Main Container -->
+  <div class="container">
+    <h2><i class="fas fa-boxes"></i> Inventory Search & Export</h2>
+    
+    <!-- Search Form Card -->
+    <div class="card mb-4">
+      <div class="card-header text-center">
+        <i class="fas fa-search"></i> Search Criteria
+      </div>
+      <div class="card-body">
+        <form id="searchForm">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                <input type="number" id="productCode" class="form-control" placeholder="Product Code">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-box"></i></span>
+                <input type="text" id="batchNumber" class="form-control" placeholder="Batch Number">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                <input type="date" id="bestBeforeDate" class="form-control">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                <input type="text" id="location" class="form-control" placeholder="Location">
+              </div>
+            </div>
+          </div>
+          <div class="action-buttons text-center mt-3">
+            <button type="submit" class="btn btn-custom btn-search">
+              <i class="fas fa-search"></i> Search
+            </button>
+            <button type="button" id="exportButton" class="btn btn-custom btn-export" disabled>
+              <i class="fas fa-file-export"></i> Export to Excel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Response Message -->
+    <div id="responseMessage" class="alert d-none"></div>
+    
+    <!-- Results Card -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-chart-bar"></i> Inventory Results
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="inventoryTable" class="table table-bordered table-striped table-hover d-none">
+            <thead>
+              <tr>
+                <th><i class="fas fa-barcode"></i> Product Code</th>
+                <th><i class="fas fa-info-circle"></i> Description</th>
+                <th><i class="fas fa-ruler-horizontal"></i> UoM</th>
+                <th><i class="fas fa-sort-amount-up"></i> Available Qty</th>
+                <th><i class="fas fa-shopping-cart"></i> On Order Qty</th>
+                <th><i class="fas fa-ban"></i> Blocked Qty</th>
+                <th><i class="fas fa-exclamation-triangle"></i> Damaged Qty</th>
+                <th><i class="fas fa-box-open"></i> Bonded Qty</th>
+                <th><i class="fas fa-dollar-sign"></i> Unit Cost</th>
+                <th><i class="fas fa-box"></i> Batch Number</th>
+                <th><i class="fas fa-calendar-alt"></i> Best Before Date</th>
+                <th><i class="fas fa-map-marker-alt"></i> Location</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+              <!-- Dynamic rows will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <footer class="footer">
+    <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
+  </footer>
+  
+  <!-- Bootstrap JS Bundle with Popper.js -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let currentQuery = '';
+    const exportButton = document.getElementById('exportButton');
+  
+    function buildQueryParams() {
+      const params = new URLSearchParams();
+      ['productCode', 'batchNumber', 'bestBeforeDate', 'location'].forEach(field => {
+        const value = document.getElementById(field).value;
+        if (value) params.append(field, value);
+      });
+      return params.toString();
+    }
+  
+    document.getElementById('searchForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const responseMessage = document.getElementById('responseMessage');
+      const inventoryTable = document.getElementById('inventoryTable');
+      const tableBody = document.getElementById('inventoryTableBody');
+      responseMessage.classList.add('d-none');
+      responseMessage.textContent = '';
+      tableBody.innerHTML = '';
+  
+      const queryString = buildQueryParams();
+      currentQuery = queryString;
+  
+      try {
+        const response = await fetch(`https://localhost:7014/api/Inventories/DisplayInventory?${queryString}`, {
+          method: 'GET'
+        });
+        if (!response.ok) throw new Error('Failed to fetch inventories.');
+        const data = await response.json();
+  
+        if (data.length > 0) {
+          data.forEach(item => {
+            tableBody.insertAdjacentHTML('beforeend', `
+              <tr>
+                <td>${item.productCode ?? ''}</td>
+                <td>${item.productDescription ?? ''}</td>
+                <td>${item.uoM ?? ''}</td>
+                <td>${item.availableQty ?? ''}</td>
+                <td>${item.onOrderQty ?? ''}</td>
+                <td>${item.blockedQty ?? ''}</td>
+                <td>${item.damagedQty ?? ''}</td>
+                <td>${item.bondedQty ?? ''}</td>
+                <td>${item.unitCost ?? ''}</td>
+                <td>${item.batchNumber ?? ''}</td>
+                <td>${item.bestBeforeDate ? new Date(item.bestBeforeDate).toLocaleDateString() : ''}</td>
+                <td>${item.location ?? ''}</td>
+              </tr>
+            `);
+          });
+          inventoryTable.classList.remove('d-none');
+          responseMessage.innerHTML = '<div class="alert alert-success mt-3">Search successful!</div>';
+          exportButton.disabled = false;
+        } else {
+          inventoryTable.classList.add('d-none');
+          responseMessage.className = 'alert alert-info';
+          responseMessage.textContent = 'No inventories found for the specified search criteria.';
+          responseMessage.classList.remove('d-none');
+          exportButton.disabled = true;
+        }
+      } catch (error) {
+        inventoryTable.classList.add('d-none');
+        responseMessage.className = 'alert alert-danger';
+        responseMessage.textContent = error.message;
+        responseMessage.classList.remove('d-none');
+        exportButton.disabled = true;
+      }
+    });
+  
+    exportButton.addEventListener('click', async function () {
+      const tableBody = document.getElementById('inventoryTable').querySelector('tbody');
+      if (tableBody.children.length === 0) {
+        alert("No data available to export. Please perform a search first.");
+        return;
+      }
+      try {
+        const response = await fetch(`https://localhost:7014/api/Inventories/ExportInventory?${currentQuery}`);
+        if (!response.ok) throw new Error("Export failed.");
+        const blob = await response.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'Inventories.xlsx';
+        link.click();
+        URL.revokeObjectURL(link.href);
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

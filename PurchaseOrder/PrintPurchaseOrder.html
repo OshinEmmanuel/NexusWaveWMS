@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Purchase Order Document - Nexus Wave WMS</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Google Fonts for Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- html2pdf Library for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    /* Global Reset & Background */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      background-color: #f4f7f6;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 0;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url("../assets/img/inventory2.jpg") no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(3px);
+      opacity: 0.5;
+      z-index: -1;
+    }
+    /* Fixed Transparent Navbar */
+    .navbar {
+      background: transparent;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    .navbar-brand img {
+      height: 40px;
+      margin-right: 10px;
+    }
+    /* Main Content Wrapper */
+    .wrapper {
+      flex: 1;
+      margin-top: 70px; /* Space for navbar */
+      padding: 20px;
+    }
+    /* Container Card Styling */
+    .container-card {
+      max-width: 750px;
+      margin: 20px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .container-card h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .form-label {
+      font-weight: 600;
+    }
+    /* Footer Styling */
+    footer {
+      margin-top: auto;
+      text-align: center;
+      color: #6c757d;
+      padding: 10px 0;
+    }
+    /* Purchase Order Document Styling for PDF */
+    #poDocument {
+      /* Removed border lines to avoid cutoffs */
+      padding: 10px;
+      width: 650px; /* Use available width on A4 */
+      margin: auto;
+      font-size: 11px;
+      box-sizing: border-box;
+      background: #fff;
+    }
+    #poDocument header, #poDocument footer {
+      text-align: left;
+    }
+    #poDocument .company-header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    #poDocument .company-header img {
+      height: 60px;
+      margin-bottom: 10px;
+    }
+    #poDocument .section {
+      margin-bottom: 15px;
+    }
+    #poDocument .section h4 {
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+    }
+    #poDocument table {
+      width: 100%;
+      margin-bottom: 0;
+    }
+    #poDocument table, #poDocument th, #poDocument td {
+      border: none;
+      border-collapse: collapse;
+    }
+    #poDocument th, #poDocument td {
+      padding: 5px;
+      text-align: left;
+    }
+    #poDocument .totals {
+      font-size: 10px;
+    }
+    #poDocument .po-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed Transparent Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <!-- Back Button -->
+      <a class="btn btn-secondary me-2" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <!-- Logo linking to Home -->
+      <a class="navbar-brand me-auto" href="../index.html">
+        <img src="../assets/img/logo.png" alt="Logo">
+      </a>
+      <!-- Home & Logout Links -->
+      <div class="collapse navbar-collapse justify-content-end">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Wrapper -->
+  <div class="wrapper">
+    <div class="container-card">
+      <h2 class="text-center mb-4"><i class="fas fa-print"></i> Print Purchase Order</h2>
+      <form id="printPOForm">
+        <div class="mb-3">
+          <label for="poId" class="form-label"><i class="fas fa-hashtag"></i> Purchase Order ID</label>
+          <input type="number" id="poId" class="form-control" placeholder="Enter Purchase Order ID" required>
+        </div>
+        <div class="mb-3">
+          <label for="currencySelect" class="form-label"><i class="fas fa-money-bill-wave"></i> Select Currency</label>
+          <select id="currencySelect" class="form-select" style="max-width:200px;">
+            <option value="USD">USD</option>
+            <option value="NGN">NGN</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-print"></i> Print Purchase Order Document</button>
+      </form>
+      <div id="formMessage" class="alert mt-3 d-none"></div>
+    </div>
+    
+    <!-- Purchase Order Document (Visible on UI for review and for PDF generation) -->
+    <div id="poDocument">
+      <!-- Company Header -->
+      <header class="company-header">
+        <img src="../assets/img/logo.png" alt="Nexus Wave Logo">
+        <h2>Nexus Wave Ltd</h2>
+        <p>Lagos, Nigeria</p>
+      </header>
+      <hr>
+      <!-- Purchase Order Information -->
+      <div class="section">
+        <h4>Purchase Order Details</h4>
+        <p><strong>PO Number:</strong> <span id="poNumber"></span></p>
+        <p><strong>PO Date (Approved):</strong> <span id="poDate"></span></p>
+        <p><strong>Payment Terms:</strong> 14 days</p>
+        <p><strong>Currency:</strong> <span id="poCurrency"></span></p>
+      </div>
+      <hr>
+      <!-- Supplier Details -->
+      <div class="section">
+        <h4>Supplier Details</h4>
+        <p><strong>Company:</strong> <span id="supplierCompany"></span></p>
+        <p><strong>Email:</strong> <span id="supplierEmail"></span></p>
+        <p><strong>Phone:</strong> <span id="supplierPhone"></span></p>
+        <p><strong>Address:</strong> <span id="supplierAddress"></span></p>
+      </div>
+      <hr>
+      <!-- Order Items -->
+      <div class="section">
+        <h4>Order Items</h4>
+        <div class="table-responsive">
+          <table class="table">
+            <thead class="table-dark">
+              <tr>
+                <th>Product Code</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Unit Cost</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="poItemsBody"></tbody>
+          </table>
+        </div>
+        <div class="text-end totals">
+          <p><strong>Subtotal:</strong> <span id="poSubtotal"></span></p>
+          <p><strong>VAT (7.5%):</strong> <span id="poVAT"></span></p>
+          <p><strong>Grand Total:</strong> <span id="poGrandTotal"></span></p>
+        </div>
+      </div>
+      <hr>
+      <!-- Legal & Terms -->
+      <footer class="po-footer">
+        <p>This purchase order is electronic and is legally binding as it is e-signed.</p>
+        <p>Payment Terms: 14 days from the approved date.</p>
+        <p>All standard terms and conditions apply.</p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center mt-4">
+    <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
+  </footer>
+
+  <!-- Bootstrap Bundle with Popper.js -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Logout function: clear token and userRole then redirect to login1.html.
+    function logout() {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("userRole");
+      window.location.href = "login1.html";
+    }
+
+    // Helper function to format amounts with commas and two decimal places.
+    function formatAmount(amount) {
+      return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Handle form submission for printing a purchase order document.
+    document.getElementById("printPOForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+      const poId = document.getElementById("poId").value.trim();
+      const selectedCurrency = document.getElementById("currencySelect").value;
+      const formMessage = document.getElementById("formMessage");
+      formMessage.classList.add("d-none");
+      formMessage.textContent = "";
+      
+      if (!poId) {
+        formMessage.className = "alert alert-danger";
+        formMessage.textContent = "Please enter a Purchase Order ID.";
+        formMessage.classList.remove("d-none");
+        return;
+      }
+      
+      try {
+        // Fetch purchase order details from the API.
+        const response = await fetch(`https://localhost:7014/api/PurchaseOrder/${poId}/GetPurchaseOrderDetails`, {
+          method: "GET",
+          headers: { "Accept": "application/json" }
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch Purchase Order details.");
+        }
+        const data = await response.json();
+        // Check that the PO is Approved or Open.
+        if (!data || !data.success || (data.data.poStatus !== "Approved" && data.data.poStatus !== "Open")) {
+          formMessage.className = "alert alert-danger";
+          formMessage.textContent = "Only approved or open Purchase Orders can be printed.";
+          formMessage.classList.remove("d-none");
+          return;
+        }
+        
+        // Retrieve supplier details from the supplier API.
+        const supplierId = data.data.supplierId;
+        const supplierResponse = await fetch(`https://localhost:7014/api/Suppliers/${supplierId}`, {
+          method: "GET",
+          headers: { "Accept": "application/json" }
+        });
+        let supplierDetails = {};
+        if (supplierResponse.ok) {
+          const supplierData = await supplierResponse.json();
+          supplierDetails = supplierData.data;
+        } else {
+          console.error("Failed to fetch supplier details.");
+        }
+        
+        // Populate the Purchase Order Document with fetched data.
+        const poData = data.data;
+        document.getElementById("poNumber").textContent = poData.purchaseOrderId;
+        // Use approvedAt if available, otherwise fallback to createdDate.
+        const poDate = poData.approvedAt ? new Date(poData.approvedAt) : new Date(poData.createdDate);
+        document.getElementById("poDate").textContent = poDate.toLocaleDateString();
+        document.getElementById("poCurrency").textContent = selectedCurrency;
+        // Supplier Details (using supplier API data)
+        document.getElementById("supplierCompany").textContent = supplierDetails.supplierCompanyName || "";
+        document.getElementById("supplierEmail").textContent = supplierDetails.user && supplierDetails.user.email ? supplierDetails.user.email : "";
+        document.getElementById("supplierPhone").textContent = supplierDetails.user && supplierDetails.user.phoneNumber ? supplierDetails.user.phoneNumber : "";
+        let address = "";
+        if (supplierDetails.houseAndStreetAddress) address += supplierDetails.houseAndStreetAddress + ", ";
+        if (supplierDetails.city) address += supplierDetails.city + ", ";
+        if (supplierDetails.state) address += supplierDetails.state + ", ";
+        if (supplierDetails.country) address += supplierDetails.country;
+        document.getElementById("supplierAddress").textContent = address;
+        
+        // Populate items and calculate subtotal.
+        const itemsBody = document.getElementById("poItemsBody");
+        itemsBody.innerHTML = "";
+        let subtotal = 0;
+        poData.items.forEach(item => {
+          const itemTotal = item.poQty * item.unitCost;
+          subtotal += itemTotal;
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${item.productCode}</td>
+            <td>${item.productName}</td>
+            <td>${item.poQty}</td>
+            <td>${selectedCurrency} ${formatAmount(item.unitCost)}</td>
+            <td>${selectedCurrency} ${formatAmount(itemTotal)}</td>
+          `;
+          itemsBody.appendChild(row);
+        });
+        // Calculate VAT (7.5%) and grand total.
+        const vatAmount = subtotal * 0.075;
+        const grandTotal = subtotal + vatAmount;
+        // Populate the totals using comma formatting.
+        document.getElementById("poSubtotal").textContent = `${selectedCurrency} ${formatAmount(subtotal)}`;
+        document.getElementById("poVAT").textContent = `${selectedCurrency} ${formatAmount(vatAmount)}`;
+        document.getElementById("poGrandTotal").textContent = `${selectedCurrency} ${formatAmount(grandTotal)}`;
+        
+        // Generate PDF using html2pdf with A4 settings.
+        const element = document.getElementById("poDocument");
+        const opt = {
+          margin:       0.2,
+          filename:     `Purchase_Order_${poData.purchaseOrderId}.pdf`,
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2 },
+          jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+        await html2pdf().set(opt).from(element).save();
+      } catch (error) {
+        formMessage.className = "alert alert-danger";
+        formMessage.textContent = `Error: ${error.message}`;
+        formMessage.classList.remove("d-none");
+      }
+    });
+  </script>
+</body>
+</html>
