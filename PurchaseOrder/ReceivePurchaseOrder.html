@@ -354,12 +354,16 @@
         showResponseMessage("Please add at least one item.", "danger");
         return;
       }
-      const items = Array.from(itemGroups).map(g => ({
-        productCode: g.querySelector('.productCode').value,
-        receivedQty: +g.querySelector('.receivedQty').value,
-        batchNumber: g.querySelector('.batchNumber').value,
-        bestBeforeDate: g.querySelector('.bestBeforeDate').value
-      }));
+      const items = Array.from(itemGroups).map(g => {
+        const bestBeforeDateValue = g.querySelector('.bestBeforeDate').value.trim();
+        return {
+          productCode: g.querySelector('.productCode').value,
+          receivedQty: +g.querySelector('.receivedQty').value,
+          batchNumber: g.querySelector('.batchNumber').value,
+          bestBeforeDate: bestBeforeDateValue === '' ? null : bestBeforeDateValue
+        };
+      });
+
       const requestBody = { items };
       try {
         console.log("Sending receipt details:", requestBody);
