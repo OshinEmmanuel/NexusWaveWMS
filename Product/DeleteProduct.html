@@ -163,7 +163,28 @@
     <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
   </footer>
 
+  <!-- Token Validation & Form Submission Script -->
   <script>
+    // ------------------ Token Validation ------------------
+    const authToken = localStorage.getItem("authToken");
+
+    function isTokenExpired(token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const exp = payload.exp;
+        const now = Date.now() / 1000;
+        return now > exp;
+      } catch (error) {
+        return true;
+      }
+    }
+
+    if (!authToken || isTokenExpired(authToken)) {
+      localStorage.removeItem("authToken");
+      window.location.href = "login1.html";
+    }
+    // ------------------------------------------------------
+
     // Function to fetch product details when a product code is entered.
     async function fetchProductDetails(productCode) {
       const productDetailsDiv = document.getElementById("productDetails");
@@ -171,11 +192,13 @@
       try {
         const response = await fetch(`https://localhost:7014/api/Products/${productCode}`, {
           method: 'GET',
-          headers: { 'Accept': 'application/json' }
+          headers: { 
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + authToken 
+          }
         });
         if (response.ok) {
           const data = await response.json();
-          // Use the correct property names returned from your API (notice "uoM" with a capital M)
           productDetailsDiv.innerHTML = `
             <div class="card">
               <div class="card-body">
@@ -210,17 +233,24 @@
       const responseMessage = document.getElementById("responseMessage");
       responseMessage.innerHTML = "";
       try {
-        // Call the API endpoint to mark the product inactive.
-        // Adjust the URL if needed.
-        const response = await fetch(`https://localhost:7014/api/Products/MarkInactive${productCode}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' }
+        // Updated API call using DELETE method and correct endpoint.
+        const response = await fetch(`https://localhost:7014/api/Products/Delete${productCode}`, {
+          method: 'DELETE',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          }
         });
         if (response.ok) {
-          responseMessage.innerHTML = '<div class="alert alert-success">Product marked inactive successfully!</div>';
+          const data = await response.json();
+          responseMessage.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
           document.getElementById("deleteProductForm").reset();
           document.getElementById("productDetails").innerHTML = "";
         } else {
+          if(response.status === 401) {
+            localStorage.removeItem("authToken");
+            window.location.href = "login1.html";
+          }
           const error = await response.json();
           responseMessage.innerHTML = `<div class="alert alert-danger">Error: ${error.message || 'Failed to mark product inactive.'}</div>`;
         }
@@ -229,6 +259,8 @@
       }
     });
   </script>
+
+  <!-- Bootstrap JS Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

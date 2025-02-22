@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Create Product - Nexus Wave WMS</title>
+  <title>Create Storage Location - Nexus Wave WMS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Favicon -->
   <link rel="icon" href="../assets/img/favicon.png" type="image/png" />
@@ -25,8 +25,8 @@
       font-family: 'Arial', sans-serif;
       background-color: #f8f9fa;
       /* Add padding so content doesn't scroll under fixed header and footer */
-      padding-top: 100px;   /* Adjust based on header height */
-      padding-bottom: 100px; /* Adjust based on footer height */
+      padding-top: 100px;
+      padding-bottom: 100px;
     }
     /* Full-screen blurred background */
     body::before {
@@ -60,7 +60,7 @@
     .container {
       max-width: 600px;
       width: 100%;
-      margin: 0 auto 100px auto; /* Extra bottom margin so content doesn't overlap the fixed footer */
+      margin: 0 auto 100px auto;
       background-color: #fff;
       padding: 30px;
       border-radius: 12px;
@@ -130,7 +130,6 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <!-- Adjust the path if your main dashboard is located elsewhere -->
               <a class="nav-link" href="../index.html">
                 <i class="fas fa-home"></i> Home
               </a>
@@ -142,104 +141,48 @@
     
     <!-- Main Container -->
     <div class="container">
-      <h3 class="form-heading"><i class="fas fa-box"></i> Create Product</h3>
-      <form id="createProductForm">
-        <!-- Full width row for Product Name -->
+      <h3 class="form-heading"><i class="fas fa-warehouse"></i> Create Storage Location</h3>
+      <form id="createLocationForm">
+        <!-- Storage Code -->
         <div class="mb-3">
-          <label for="productName" class="form-label">
-            <i class="fas fa-tag"></i> Product Name
+          <label for="storageCode" class="form-label">
+            <i class="fas fa-code"></i> Storage Code
           </label>
           <input
             type="text"
-            id="productName"
+            id="storageCode"
             class="form-control"
-            placeholder="Enter product name"
+            placeholder="Enter storage code (e.g., WH001)"
             required
           />
         </div>
-        <!-- Full width row for Product Description -->
+        <!-- Location Name -->
         <div class="mb-3">
-          <label for="productDescription" class="form-label">
-            <i class="fas fa-align-left"></i> Product Description
+          <label for="locationName" class="form-label">
+            <i class="fas fa-warehouse"></i> Location Name
           </label>
           <input
             type="text"
-            id="productDescription"
+            id="locationName"
             class="form-control"
-            placeholder="Enter product description"
+            placeholder="Enter location name"
             required
           />
         </div>
-        <!-- Row with two columns: Product Type and Unit Cost -->
-        <div class="row g-3 mb-3">
-          <div class="col-md-6">
-            <label for="productType" class="form-label">
-              <i class="fas fa-list"></i> Product Type
-            </label>
-            <input
-              type="text"
-              id="productType"
-              class="form-control"
-              placeholder="Enter product type"
-              required
-            />
-          </div>
-          <div class="col-md-6">
-            <label for="unitCost" class="form-label">
-              <i class="fas fa-dollar-sign"></i> Unit Cost
-            </label>
-            <input
-              type="number"
-              id="unitCost"
-              class="form-control"
-              placeholder="Enter unit cost"
-              required
-            />
-          </div>
-        </div>
-        <!-- Row with two columns: Unit of Measure and Reorder Level -->
-        <div class="row g-3 mb-3">
-          <div class="col-md-6">
-            <label for="uom" class="form-label">
-              <i class="fas fa-ruler-combined"></i> Unit of Measure (UoM)
-            </label>
-            <input
-              type="text"
-              id="uom"
-              class="form-control"
-              placeholder="Enter unit of measure"
-              required
-            />
-          </div>
-          <div class="col-md-6">
-            <label for="reorderLevel" class="form-label">
-              <i class="fas fa-exclamation-triangle"></i> Reorder Level
-            </label>
-            <input
-              type="number"
-              id="reorderLevel"
-              class="form-control"
-              placeholder="Enter reorder level"
-              required
-            />
-          </div>
-        </div>
-        <!-- Full width row for Maximum Stock Level -->
+        <!-- Description -->
         <div class="mb-3">
-          <label for="maximumStockLevel" class="form-label">
-            <i class="fas fa-layer-group"></i> Maximum Stock Level
+          <label for="locationDescription" class="form-label">
+            <i class="fas fa-align-left"></i> Description
           </label>
-          <input
-            type="number"
-            id="maximumStockLevel"
+          <textarea
+            id="locationDescription"
             class="form-control"
-            placeholder="Enter maximum stock level"
-            required
-          />
+            placeholder="Enter location description"
+          ></textarea>
         </div>
         <div class="d-flex justify-content-center">
           <button type="submit" class="btn btn-custom btn-submit w-100">
-            <i class="fas fa-paper-plane"></i> Create Product
+            <i class="fas fa-paper-plane"></i> Create Location
           </button>
         </div>
       </form>
@@ -252,39 +195,13 @@
     <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
   </footer>
 
-  <!-- Token Validation & Form Submission Script -->
   <script>
-    // ------------------ Token Validation ------------------
-    const authToken = localStorage.getItem("authToken");
-
-    function isTokenExpired(token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const exp = payload.exp;
-        const now = Date.now() / 1000;
-        return now > exp;
-      } catch (error) {
-        return true;
-      }
-    }
-
-    if (!authToken || isTokenExpired(authToken)) {
-      localStorage.removeItem("authToken");
-      window.location.href = "../login1.html";
-    }
-    // ------------------------------------------------------
-
-    document.getElementById("createProductForm").addEventListener("submit", async function (event) {
+    document.getElementById("createLocationForm").addEventListener("submit", async function (event) {
       event.preventDefault();
       const data = {
-        productName: document.getElementById("productName").value,
-        productDescription: document.getElementById("productDescription").value,
-        productType: document.getElementById("productType").value,
-        // Update property name to match the service layer expectation:
-        UoM: document.getElementById("uom").value,
-        unitCost: parseFloat(document.getElementById("unitCost").value),
-        reorderLevel: parseInt(document.getElementById("reorderLevel").value),
-        maximumStockLevel: parseInt(document.getElementById("maximumStockLevel").value)
+        storageCode: document.getElementById("storageCode").value,
+        name: document.getElementById("locationName").value,
+        description: document.getElementById("locationDescription").value
       };
 
       console.log("Sending Data:", data);
@@ -293,30 +210,22 @@
       responseMessage.innerHTML = "";
 
       try {
-        const response = await fetch("https://localhost:7014/api/Products/CreateProduct", {
+        const response = await fetch("https://localhost:7014/api/StorageLocation/CreateLocation", {
           method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + authToken
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
 
         if (response.ok) {
           const responseData = await response.json();
           responseMessage.innerHTML = `<div class="alert alert-success">
-              Product created successfully with ID: ${responseData.productCode}
+              ${responseData.message}
             </div>`;
-          document.getElementById("createProductForm").reset();
+          document.getElementById("createLocationForm").reset();
         } else {
-          // If unauthorized, clear token and redirect
-          if(response.status === 401) {
-            localStorage.removeItem("authToken");
-            window.location.href = "../login1.html";
-          }
           const errorText = await response.text();
           responseMessage.innerHTML = `<div class="alert alert-danger">
-              Error: ${errorText || "Failed to create product."}
+              Error: ${errorText || "Failed to create storage location."}
             </div>`;
         }
       } catch (error) {
@@ -326,8 +235,6 @@
       }
     });
   </script>
-
-  <!-- Bootstrap JS Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

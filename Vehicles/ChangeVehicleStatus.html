@@ -176,9 +176,15 @@
   <!-- Bootstrap Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Retrieve the auth token from localStorage.
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      window.location.href = "login.html";
+    }
+    
+    // Fetch Vehicle Details
     document.getElementById("fetchVehicleForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      // Clear any previous messages and hide update section
       document.getElementById("responseMessage").innerHTML = "";
       document.getElementById("currentVehicleDetails").innerHTML = "";
       document.getElementById("updateSection").classList.add("d-none");
@@ -188,11 +194,13 @@
       try {
         const response = await fetch(`https://localhost:7014/api/Vehicles/GetVehicle${vehicleId}`, {
           method: "GET",
-          headers: { "Content-Type": "application/json" }
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + authToken
+          }
         });
         if (response.ok) {
           const data = await response.json();
-          // Display fetched vehicle details
           document.getElementById("currentVehicleDetails").innerHTML = `
             <p><strong><i class="fas fa-id-card"></i> Vehicle ID:</strong> ${data.vehicleId}</p>
             <p><strong><i class="fas fa-truck"></i> Transporter:</strong> ${data.transporter || "N/A"}</p>
@@ -200,47 +208,81 @@
             <p><strong><i class="fas fa-id-card-alt"></i> Plate Number:</strong> ${data.vehiclePlateNumber || "N/A"}</p>
             <p><strong><i class="fas fa-info-circle"></i> Current Status:</strong> ${data.vehicleStatus || "N/A"}</p>
           `;
-          // Preselect the current status in the drop-down
           document.getElementById("vehicleStatusUpdate").value = data.vehicleStatus || "";
-          // Store vehicle id for updating
           window.currentVehicleId = vehicleId;
           document.getElementById("updateSection").classList.remove("d-none");
         } else {
-          document.getElementById("responseMessage").innerHTML = `<div class="alert alert-danger"><i class="fas fa-times"></i> Error: Failed to fetch vehicle details.</div>`;
+          document.getElementById("responseMessage").innerHTML =
+            `<div class="alert alert-danger"><i class="fas fa-times"></i> Error: Failed to fetch vehicle details.</div>`;
         }
       } catch (error) {
-        document.getElementById("responseMessage").innerHTML = `<div class="alert alert-danger"><i class="fas fa-times"></i> Error: ${error.message}</div>`;
+        document.getElementById("responseMessage").innerHTML =
+          `<div class="alert alert-danger"><i class="fas fa-times"></i> Error: ${error.message}</div>`;
       }
     });
     
+    // Update Vehicle Status
     document.getElementById("updateStatusForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       document.getElementById("responseMessage").innerHTML = "";
       const selectedStatus = document.getElementById("vehicleStatusUpdate").value;
       if (!window.currentVehicleId) {
-        document.getElementById("responseMessage").innerHTML = `<div class="alert alert-danger"><i class="fas fa-times"></i> Error: No vehicle loaded.</div>`;
+        document.getElementById("responseMessage").innerHTML =
+          `<div class="alert alert-danger"><i class="fas fa-times"></i> Error: No vehicle loaded.</div>`;
         return;
       }
       
       try {
-        const response = await fetch(`https://localhost:7014/api/Vehicles/UpdateVehicleStatus${window.currentVehicleId}/status`, {
+        const url = `https://localhost:7014/api/Vehicles/UpdateVehicleStatus${window.currentVehicleId}/status`;
+        console.log("PATCH URL:", url);
+        console.log("Sending payload:", selectedStatus);
+        
+        const response = await fetch(url, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": "Bearer " + authToken
+          },
           body: JSON.stringify(selectedStatus)
         });
+        
+        const rawText = await response.text();
+        console.log("Response status:", response.status);
+        console.log("Raw response text:", rawText);
+        
+        let result;
+        try {
+          result = JSON.parse(rawText);
+        } catch (err) {
+          result = null;
+        }
+        
         if (response.ok) {
-          const result = await response.json();
-          document.getElementById("responseMessage").innerHTML = `<div class="alert alert-success"><i class="fas fa-check"></i> ${result.message}</div>`;
+          const successMessage = result && result.message 
+            ? result.message 
+            : "Vehicle status updated successfully.";
+          document.getElementById("responseMessage").innerHTML =
+            `<div class="alert alert-success"><i class="fas fa-check"></i> ${successMessage}</div>`;
         } else {
-          const errorData = await response.json();
-          document.getElementById("responseMessage").innerHTML = `<div class="alert alert-danger"><i class="fas fa-times"></i> Error: ${errorData.message || "Failed to update vehicle status."}</div>`;
+          if (response.status === 401) {
+            document.getElementById("responseMessage").innerHTML =
+              `<div class="alert alert-danger"><i class="fas fa-times"></i> Error: Unauthorized. Your token may be invalid or expired. Please log in again.</div>`;
+          } else {
+            const errorMessage = result && result.message 
+              ? result.message 
+              : rawText || `Error ${response.status}: Failed to update vehicle status.`;
+            document.getElementById("responseMessage").innerHTML =
+              `<div class="alert alert-danger"><i class="fas fa-times"></i> Error: ${errorMessage}</div>`;
+          }
         }
       } catch (error) {
-        document.getElementById("responseMessage").innerHTML = `<div class="alert alert-danger"><i class="fas fa-times"></i> Error: ${error.message}</div>`;
+        document.getElementById("responseMessage").innerHTML =
+          `<div class="alert alert-danger"><i class="fas fa-times"></i> Error: ${error.message}</div>`;
       }
     });
     
-    // Logout function: Clear token and userRole, then redirect to login1.html
+    // Logout function
     function logout() {
       localStorage.removeItem("authToken");
       localStorage.removeItem("userRole");

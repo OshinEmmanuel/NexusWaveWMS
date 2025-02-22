@@ -191,6 +191,14 @@
             <p class="card-text">View and update products</p>
           </div>
         </div>
+        <!-- Storage Location Card -->
+        <div id="module-storagelocation" class="card dashboard-card" style="width: 25rem;" onclick="location.href='StorageLocation/StorageLocationTasks.html'">
+          <div class="card-body text-center">
+            <i class="fas fa-box card-icon"></i>
+            <h5 class="card-title mt-3">Storage Location</h5>
+            <p class="card-text">View and manage Storage Locations</p>
+          </div>
+        </div>
         <!-- Purchase Orders Card -->
         <div id="module-purchaseorders" class="card dashboard-card" style="width: 25rem;" onclick="location.href='PurchaseOrder/PurchaseOrderTasks.html'">
           <div class="card-body text-center">
@@ -273,6 +281,7 @@
         "module-inventory":        ["*"],
         "module-orders":           ["Admin", "LogisticsManager", "OutboundUser", "SuperUser"],
         "module-products":         ["Admin", "SuperUser", "LogisticsManager", "InventoryUser"],
+        "modile-storagelocation":  ["Admin", "SuperUser", "LogisticsManager", "InventoryUser"],
         "module-purchaseorders":   ["Admin", "LogisticsManager", "Supplier", "InboundUser", "SuperUser", "InventoryUser"],
         "module-vehicles":         ["Admin", "SuperUser", "LogisticsManager"],
         "module-shipments":        ["Admin", "LogisticsManager", "OutboundUser", "SuperUser"],

@@ -325,15 +325,37 @@
   <!-- Bootstrap Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Retrieve the auth token from localStorage.
+    const authToken = localStorage.getItem("authToken");
+
+    // Function to check if the JWT token is expired
+    function isTokenExpired(token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const exp = payload.exp;
+        const now = Date.now() / 1000;
+        return now > exp;
+      } catch (error) {
+        return true; // treat an invalid token as expired
+      }
+    }
+
+    if (!authToken || isTokenExpired(authToken)) {
+      localStorage.removeItem("authToken");
+      window.location.href = "login1.html";
+    }
+
+    // Updated logout function: remove token and redirect to login
+    function logout() {
+      localStorage.removeItem("authToken");
+      window.location.href = "login1.html";
+    }
+
     // Hide success container initially
     const createSupplierContainer = document.getElementById('createSupplierContainer');
     const createAnotherContainer = document.getElementById('createAnotherContainer');
     const backendMessage = document.getElementById('backendMessage');
     const responseMessage = document.getElementById('responseMessage');
-
-    function logout() {
-      window.location.href = "/login1.html";
-    }
 
     // Convert a file to base64
     function toBase64(file) {
@@ -400,21 +422,29 @@
         // Append the query parameter
         const response = await fetch(`https://localhost:7014/api/Suppliers/Add-suppliers?type=${encodeURIComponent(queryType)}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
           body: JSON.stringify(supplierData)
         });
 
-        const data = await response.json();
+        const responseData = await response.json();
+
         if (response.ok) {
-          // Hide form container
+          // Hide form container and show success container
           createSupplierContainer.style.display = 'none';
-          // Show success container
-          backendMessage.innerHTML = `<strong>${data.message}</strong>`;
+          backendMessage.innerHTML = `<strong>${responseData.message}</strong>`;
           createAnotherContainer.style.display = 'block';
         } else {
+          // If unauthorized, clear token and redirect to login
+          if (response.status === 401) {
+            localStorage.removeItem("authToken");
+            window.location.href = "login.html";
+          }
           responseMessage.innerHTML = `
             <div class="alert alert-danger">
-              <i class="fas fa-times"></i> ${data.message || 'Unable to add supplier.'}
+              <i class="fas fa-times"></i> ${responseData.message || 'Unable to add supplier.'}
             </div>`;
         }
       } catch (error) {
@@ -427,11 +457,8 @@
 
     // "Add Another Supplier" => re-show the form, clear fields
     document.getElementById('createAnotherButton').addEventListener('click', () => {
-      // Hide success container
       createAnotherContainer.style.display = 'none';
-      // Show the form container
       createSupplierContainer.style.display = 'block';
-      // Clear out all fields
       document.getElementById('queryType').value = "ProductSupplier";
       document.getElementById('supplierType').value = "ProductSupplier";
       document.getElementById('supplierCompanyName').value = "";

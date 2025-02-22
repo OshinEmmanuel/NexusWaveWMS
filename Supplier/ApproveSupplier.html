@@ -214,6 +214,26 @@
   <!-- Bootstrap JS Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // ------------------ Token Logic ------------------
+    const authToken = localStorage.getItem("authToken");
+
+    function isTokenExpired(token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const exp = payload.exp;
+        const now = Date.now() / 1000;
+        return now > exp;
+      } catch (error) {
+        return true; // If error decoding, consider token expired
+      }
+    }
+
+    if (!authToken || isTokenExpired(authToken)) {
+      localStorage.removeItem("authToken");
+      window.location.href = "login.html";
+    }
+    // --------------------------------------------------
+
     const supplierIdInput = document.getElementById('supplierId');
     const supplierInfoSection = document.getElementById('supplierInfoSection');
     const supplierNameField = document.getElementById('supplierName');
@@ -231,39 +251,28 @@
     // ----------------------------------------------------------------
     document.addEventListener('DOMContentLoaded', async () => {
       try {
-        // Hardcode userId = 2 for demo. 
-        // In real scenarios, get userId from authentication claims, token, etc.
+        // Hardcode userId = 2 for demo.
         const userId = 2;
-        
-        // This matches your endpoint pattern: /api/Users/GetUser{userId}
-        // So if userId=2 => /api/Users/GetUser2
         const response = await fetch(`https://localhost:7014/api/Users/GetUser${userId}`, {
-          method: 'GET'
+          method: 'GET',
+          headers: { 'Authorization': 'Bearer ' + authToken }
         });
 
         if (!response.ok) {
+          if(response.status === 401) {
+            localStorage.removeItem("authToken");
+            window.location.href = "login.html";
+          }
           throw new Error("Failed to retrieve user info.");
         }
         const userData = await response.json();
-        // userData should match the JSON structure you showed:
-        // {
-        //   "userId": 2,
-        //   "email": "...",
-        //   "firstName": "Logistics",
-        //   "lastName": "Manager",
-        //   ...
-        // }
-
-        // Combine firstName + lastName
         if (userData.firstName && userData.lastName) {
           approvedByField.value = `${userData.firstName} ${userData.lastName}`.trim();
         } else {
-          // fallback if missing fields
           approvedByField.value = userData.email || "";
         }
       } catch (error) {
         console.warn("Unable to auto-fill Approved By:", error.message);
-        // Fallback: leave it empty or handle error as needed
       }
     });
 
@@ -273,7 +282,6 @@
     supplierIdInput.addEventListener('blur', async () => {
       const supplierIdVal = supplierIdInput.value.trim();
       if (!supplierIdVal) {
-        // Clear everything
         supplierInfoSection.style.display = 'none';
         supplierNameField.value = "";
         supplierTypeField.value = "";
@@ -282,17 +290,21 @@
 
       try {
         const response = await fetch(`https://localhost:7014/api/Suppliers/${supplierIdVal}`, {
-          method: 'GET'
+          method: 'GET',
+          headers: { 'Authorization': 'Bearer ' + authToken }
         });
         const data = await response.json();
 
         if (!response.ok) {
+          if(response.status === 401) {
+            localStorage.removeItem("authToken");
+            window.location.href = "login.html";
+          }
           throw new Error(data.message || "Failed to fetch supplier.");
         }
         if (!data.success || !data.data) {
           throw new Error("No supplier data returned or Supplier doesn't exist.");
         }
-        // Show + populate
         supplierInfoSection.style.display = 'block';
         supplierNameField.value = data.data.supplierCompanyName || "N/A";
         supplierTypeField.value = data.data.supplierType || "N/A";
@@ -328,26 +340,32 @@
       try {
         const response = await fetch(`https://localhost:7014/api/Suppliers/${supplierIdVal}/approve`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(approvalData),
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
+          body: JSON.stringify(approvalData)
         });
         const data = await response.json();
 
-        if (response.ok) {
-          // Hide the form container
-          approveSupplierContainer.style.display = 'none';
-          // Show success container
-          backendMessage.innerHTML = `
-            <strong>
-              <i class="fas fa-check"></i> Supplier approval updated successfully: ${data.message || ''}
-            </strong>`;
-          approveAnotherContainer.style.display = 'block';
-        } else {
+        if (!response.ok) {
+          if(response.status === 401) {
+            localStorage.removeItem("authToken");
+            window.location.href = "login.html";
+          }
           responseMessage.innerHTML = `
             <div class="alert alert-danger">
               <i class="fas fa-times"></i> ${data.message || 'Unable to approve supplier.'}
             </div>`;
+          return;
         }
+        // Hide the form container and show success container
+        approveSupplierContainer.style.display = 'none';
+        backendMessage.innerHTML = `
+          <strong>
+            <i class="fas fa-check"></i> Supplier approval updated successfully: ${data.message || ''}
+          </strong>`;
+        approveAnotherContainer.style.display = 'block';
       } catch (error) {
         responseMessage.innerHTML = `
           <div class="alert alert-danger">
@@ -360,11 +378,8 @@
     // 4) Approve Another Supplier
     // ----------------------------------------------------------------
     approveAnotherButton.addEventListener('click', () => {
-      // Hide success container
       approveAnotherContainer.style.display = 'none';
-      // Show the form container again
       approveSupplierContainer.style.display = 'block';
-      // Clear out the fields
       supplierIdInput.value = "";
       supplierInfoSection.style.display = 'none';
       supplierNameField.value = "";
