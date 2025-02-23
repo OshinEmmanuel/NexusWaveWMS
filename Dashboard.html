@@ -1,59 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Nexus Wave WMS</title>
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <!-- JWT Decode Library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Include jwt-decode library -->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+  <!-- Include SignalR client library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.0/signalr.min.js"></script>
   <style>
-    /* Reset & Full Height */
+    /* Basic Reset & Full Height */
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    /* Background image with blur */
+    /* Wrapper for flex layout: pushes footer to the bottom */
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    /* Main content takes the remaining space */
+    main {
+      flex: 1;
+    }
+    /* Background & Navbar Padding */
     body {
       background-color: #f8f9fa;
+      padding-top: 60px;
       position: relative;
-      padding-top: 60px; /* space for navbar */
     }
+    /* Background Image with Blur Effect */
     body::before {
       content: "";
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      /* Using the background image from assets/img/background5.jpg */
+      top: 0; left: 0; right: 0; bottom: 0;
       background: url("assets/img/background5.jpg") no-repeat center center fixed;
       background-size: cover;
       filter: blur(5px);
       opacity: 0.4;
       z-index: -1;
     }
-    /* Top Navigation Bar */
+    /* Navbar Styling */
     .navbar {
       background-color: rgba(0, 0, 0, 0.75) !important;
     }
-    .navbar-brand, .nav-link, .dropdown-item {
+    .navbar-brand, .nav-link, .dropdown-toggle {
       color: #fff !important;
     }
-    .navbar-brand i {
-      margin-right: 8px;
-    }
-    /* Dashboard Cards */
+    /* Dashboard Container */
     .dashboard-container {
       margin-top: 20px;
     }
+    /* Dashboard Card Styling */
     .dashboard-card {
-      transition: transform 0.2s;
+      transition: transform 0.6s;
       cursor: pointer;
     }
     .dashboard-card:hover {
@@ -63,197 +70,314 @@
       font-size: 3rem;
       color: #2c3e50;
     }
-    /* Footer */
+    /* Footer Styling: Less prominent text */
     footer {
       background-color: #2c3e50;
-      color: #fff;
+      color: #aaa;
       text-align: center;
       padding: 10px 0;
-      margin-top: 20px;
+      font-weight: normal;
+    }
+    /* Notification Dropdown in Navbar */
+    .notification-dropdown {
+      position: relative;
+    }
+    .notification-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      transform: translate(50%, -50%);
+      background-color: red;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      display: none; /* Hidden initially */
     }
   </style>
 </head>
 <body>
-  <!-- Top Navigation Bar -->
-  <nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">
-        <i class="fas fa-tachometer-alt"></i> Dashboard
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="#" onclick="logout()">
-              <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-          </li>
-        </ul>
+  <div class="wrapper">
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="Dashboard.html">
+          <img src="assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+          Dashboard
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                data-bs-target="#navbarNav" aria-controls="navbarNav" 
+                aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Right Side Navbar -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
+            <!-- Notification Dropdown -->
+            <li class="nav-item dropdown notification-dropdown">
+              <a class="nav-link" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-bell"></i>
+                <span id="notificationBadge" class="notification-badge"></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
+                <li><span class="dropdown-item">No notifications.</span></li>
+              </ul>
+            </li>
+            <!-- User Dropdown -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                 data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i> <span id="navbarUsername">User</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="User/ManageUsers.html">Manage Profile</a></li>
+                <li><a class="dropdown-item" href="User/UpdateUser.html">Update Profile</a></li>
+                <li><a class="dropdown-item" href="UserManagement\ChangePassword.html">Change Password</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="index.html">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </nav>
-
-  <!-- Main Content Area -->
-  <main class="container dashboard-container">
-    <div class="text-center mb-4">
-      <h1>Welcome, <span id="username">Loading...</span></h1>
-      <p>Select a module below to continue</p>
-    </div>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-      <!-- Customers Card -->
-      <div class="col">
-        <div class="card dashboard-card h-100" onclick="location.href='Customers/CustomerTasks.html'">
+    </nav>
+  
+    <!-- Main Dashboard Content -->
+    <main class="container dashboard-container">
+      <div class="text-center mb-4">
+        <h1>Welcome, <span id="username">User</span></h1>
+        <p>Select a module below to continue</p>
+      </div>
+      
+      <!-- Flex container for module cards -->
+      <div class="d-flex flex-wrap justify-content-center gap-4">
+        <!-- Customers Card -->
+        <div id="module-customers" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Customers/CustomerTasks.html'">
           <div class="card-body text-center">
-            <i class="fas fa-users card-icon"></i>
+            <i class="fa-solid fa-users card-icon"></i>
             <h5 class="card-title mt-3">Customers</h5>
             <p class="card-text">Manage customer details</p>
           </div>
         </div>
-      </div>
-      <!-- Drivers Card -->
-      <div class="col">
-        <div class="card dashboard-card h-100" onclick="location.href='Driver/Drivers.html'">
+        <!-- Drivers Card -->
+        <div id="module-drivers" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Driver/DriverTasks.html'">
           <div class="card-body text-center">
-            <i class="fas fa-id-card card-icon"></i>
+            <i class="fa-solid fa-id-badge card-icon"></i>
             <h5 class="card-title mt-3">Drivers</h5>
             <p class="card-text">Manage driver information</p>
           </div>
         </div>
-      </div>
-      <!-- Inventory Movements Card -->
-      <div class="col">
-        <div class="card dashboard-card h-100" onclick="location.href='InventoryMovements/DisplayInventory.html'">
+        <!-- Inventory Card -->
+        <div id="module-inventory" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Inventory/InventoryTasks.html'">
           <div class="card-body text-center">
-            <i class="fas fa-warehouse card-icon"></i>
+            <i class="fa-solid fa-warehouse card-icon"></i>
             <h5 class="card-title mt-3">Inventory</h5>
             <p class="card-text">View and adjust inventory</p>
           </div>
         </div>
-      </div>
-      <!-- Orders Card -->
-      <div class="col">
-        <div class="card dashboard-card h-100" onclick="location.href='Orders/Orders.html'">
+        <!-- Orders Card -->
+        <div id="module-orders" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Orders/OrderTasks.html'">
           <div class="card-body text-center">
-            <i class="fas fa-shopping-cart card-icon"></i>
+            <i class="fa-solid fa-cart-shopping card-icon"></i>
             <h5 class="card-title mt-3">Orders</h5>
             <p class="card-text">Create and manage orders</p>
           </div>
         </div>
-      </div>
-      <!-- Products Card -->
-      <div class="col">
-        <div class="card dashboard-card h-100" onclick="location.href='Product/Products.html'">
+        <!-- Products Card -->
+        <div id="module-products" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Product/ProductTasks.html'">
           <div class="card-body text-center">
-            <i class="fas fa-box card-icon"></i>
+            <i class="fa-solid fa-boxes card-icon"></i>
             <h5 class="card-title mt-3">Products</h5>
             <p class="card-text">View and update products</p>
           </div>
         </div>
-      </div>
-      <!-- Purchase Orders Card -->
-      <div class="col">
-        <div class="card dashboard-card h-100" onclick="location.href='PurchaseOrder/PurchaseOrders.html'">
+        <!-- Storage Location Card -->
+        <div id="module-storagelocation" class="card dashboard-card" style="width: 25rem;" onclick="location.href='StorageLocation/StorageLocationTasks.html'">
           <div class="card-body text-center">
-            <i class="fas fa-file-invoice card-icon"></i>
+            <i class="fa-solid fa-archive card-icon"></i>
+            <h5 class="card-title mt-3">Storage Location</h5>
+            <p class="card-text">View and manage Storage Locations</p>
+          </div>
+        </div>
+        <!-- Purchase Orders Card -->
+        <div id="module-purchaseorders" class="card dashboard-card" style="width: 25rem;" onclick="location.href='PurchaseOrder/PurchaseOrderTasks.html'">
+          <div class="card-body text-center">
+            <i class="fa-solid fa-file-invoice-dollar card-icon"></i>
             <h5 class="card-title mt-3">Purchase Orders</h5>
             <p class="card-text">Manage purchase orders</p>
           </div>
         </div>
-      </div>
-      <!-- Vehicles Card -->
-      <div class="col">
-        <div class="card dashboard-card h-100" onclick="location.href='Vehicles/Vehicles.html'">
+        <!-- Vehicles Card -->
+        <div id="module-vehicles" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Vehicles/VehicleTasks.html'">
           <div class="card-body text-center">
-            <i class="fas fa-truck card-icon"></i>
+            <i class="fa-solid fa-truck card-icon"></i>
             <h5 class="card-title mt-3">Vehicles</h5>
             <p class="card-text">Manage vehicles</p>
           </div>
         </div>
-      </div>
-      <!-- Shipments Card -->
-      <div class="col">
-        <div class="card dashboard-card h-100" onclick="location.href='Shipment/Shipments.html'">
+        <!-- Shipments Card -->
+        <div id="module-shipments" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Shipment/ShipmentTasks.html'">
           <div class="card-body text-center">
-            <i class="fas fa-truck-loading card-icon"></i>
+            <i class="fa-solid fa-shipping-fast card-icon"></i>
             <h5 class="card-title mt-3">Shipments</h5>
             <p class="card-text">Manage shipments</p>
           </div>
         </div>
-      </div>
-      <!-- Suppliers Card -->
-      <div class="col">
-        <div class="card dashboard-card h-100" onclick="location.href='Supplier/Suppliers.html'">
+        <!-- Suppliers Card -->
+        <div id="module-suppliers" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Supplier/SupplierTasks.html'">
           <div class="card-body text-center">
-            <i class="fas fa-truck-moving card-icon"></i>
+            <i class="fa-solid fa-truck-moving card-icon"></i>
             <h5 class="card-title mt-3">Suppliers</h5>
             <p class="card-text">Manage supplier details</p>
           </div>
         </div>
-      </div>
-      <!-- Users Card -->
-      <div class="col">
-        <div class="card dashboard-card h-100" onclick="location.href='User/ManageUsers.html'">
+        <!-- User Management Card -->
+        <div id="module-usermanagement" class="card dashboard-card" style="width: 25rem;" onclick="location.href='UserManagement/UserManagementTasks.html'">
           <div class="card-body text-center">
-            <i class="fas fa-user-circle card-icon"></i>
-            <h5 class="card-title mt-3">Users</h5>
-            <p class="card-text">Manage user accounts</p>
+            <i class="fa-solid fa-user-gear card-icon"></i>
+            <h5 class="card-title mt-3">User Management</h5>
+            <p class="card-text">Administer and manage users</p>
           </div>
         </div>
       </div>
-    </div>
-  </main>
-  <footer>
-    <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
-  </footer>
+    </main>
   
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
+    </footer>
+  </div>
+  
+  <!-- Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+  
+  <!-- Script to Load Username and Display Name Dynamically -->
   <script>
-    async function fetchUserDetails() {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          document.getElementById('username').textContent = 'Guest';
-          return;
+    document.addEventListener("DOMContentLoaded", function() {
+      // Retrieve displayName from localStorage (set during login)
+      var displayName = localStorage.getItem("displayName") || "User";
+      document.getElementById("username").textContent = displayName;
+      document.getElementById("navbarUsername").textContent = displayName;
+    });
+  </script>
+  
+  <!-- Role-Based Module Access Script with Wildcard (*) Support -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var token = localStorage.getItem("authToken");
+      var userRole = "";
+      if (token) {
+        try {
+          var decoded = jwt_decode(token);
+          userRole = decoded.userRole || decoded.role || "";
+        } catch (error) {
+          console.error("Error decoding token:", error);
         }
-        const decoded = jwt_decode(token);
-        // Use the "email" claim from the token as the display name if "firstName" is not available.
-        let displayName = decoded.firstName ? decoded.firstName : (decoded.email || "User");
-        document.getElementById('username').textContent = displayName;
-      } catch (e) {
-        console.error("Error decoding token:", e);
-        document.getElementById('username').textContent = 'User';
+      }
+      
+      var moduleAccess = {
+        "module-customers":        ["Admin", "SuperUser", "LogisticsManager", "Customer"],
+        "module-drivers":          ["Admin", "SuperUser", "LogisticsManager", "Driver"],
+        "module-inventory":        ["*"],
+        "module-orders":           ["Admin", "LogisticsManager", "OutboundUser", "SuperUser"],
+        "module-products":         ["Admin", "SuperUser", "LogisticsManager", "InventoryUser"],
+        "modile-storagelocation":  ["Admin", "SuperUser", "LogisticsManager", "InventoryUser"],
+        "module-purchaseorders":   ["Admin", "LogisticsManager", "Supplier", "InboundUser", "SuperUser", "InventoryUser"],
+        "module-vehicles":         ["Admin", "SuperUser", "LogisticsManager"],
+        "module-shipments":        ["Admin", "LogisticsManager", "OutboundUser", "SuperUser"],
+        "module-suppliers":        ["Admin", "LogisticsManager", "Supplier", "SuperUser", "InboundUser", "InventoryUser"],
+        "module-usermanagement":   ["Admin", "SuperUser", "LogisticsManager"]
+      };
+      
+      if (userRole !== "Admin") {
+        for (var moduleId in moduleAccess) {
+          if (moduleAccess.hasOwnProperty(moduleId)) {
+            var allowedRoles = moduleAccess[moduleId];
+            if (allowedRoles.includes("*")) {
+              continue;
+            }
+            if (!allowedRoles.includes(userRole)) {
+              var elem = document.getElementById(moduleId);
+              if (elem) {
+                elem.style.display = "none";
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+  
+  <!-- SignalR Notification Logic -->
+  <script>
+    let notifications = []; // Global array to store notifications
+
+    async function connectToNotificationHub() {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+      let decoded;
+      try {
+        decoded = jwt_decode(token);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        return;
+      }
+      const userId = decoded.userId;
+      if (!userId) return;
+      
+      const connection = new signalR.HubConnectionBuilder()
+        .withUrl("https://localhost:7014/notificationHub?userId=" + userId)
+        .withAutomaticReconnect()
+        .build();
+      
+      connection.on("ReceiveNotification", function(notification) {
+        // Add the new notification at the beginning of the array.
+        notifications.unshift(notification);
+        updateNotificationDropdown();
+      });
+      
+      try {
+        await connection.start();
+        console.log("Connected to Notification Hub.");
+      } catch (err) {
+        console.error("Error connecting to Notification Hub:", err);
       }
     }
 
-    function loadPage(page) {
-      document.getElementById('content').innerHTML = '<p class="loading">Loading...</p>';
-      fetch(page)
-        .then(response => {
-          if (!response.ok) throw new Error('Page not found');
-          return response.text();
-        })
-        .then(data => {
-          document.getElementById('content').innerHTML = data;
-        })
-        .catch(error => {
-          document.getElementById('content').innerHTML = `<p class="loading">Error: ${error.message}</p>`;
+    function updateNotificationDropdown() {
+      const badge = document.getElementById("notificationBadge");
+      const notificationList = document.getElementById("notificationList");
+      
+      // If notifications exist, show the badge with the count; otherwise, hide the badge.
+      if (notifications.length > 0) {
+        badge.textContent = notifications.length;
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+      
+      // Build the dropdown list.
+      if (notifications.length === 0) {
+        notificationList.innerHTML = `<li><span class="dropdown-item">No notifications.</span></li>`;
+      } else {
+        notificationList.innerHTML = "";
+        notifications.forEach(notification => {
+          const li = document.createElement("li");
+          li.innerHTML = `<a class="dropdown-item" href="#">
+              <strong>${notification.title}</strong><br>
+              ${notification.message}<br>
+              <small class="text-muted">${new Date(notification.createdAt).toLocaleString()}</small>
+            </a>`;
+          notificationList.appendChild(li);
         });
+      }
     }
 
-    function logout() {
-      localStorage.removeItem('token');
-      window.location.href = 'login.html';
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      fetchUserDetails();
-      // Load default home page content if desired
-      loadPage('home.html');
+    document.addEventListener("DOMContentLoaded", function() {
+      connectToNotificationHub();
     });
   </script>
+  
+  <!-- Role-Based Module Access Script End -->
 </body>
 </html>
