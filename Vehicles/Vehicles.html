@@ -225,7 +225,7 @@
       // Function to fetch vehicles from the API based on query string
       async function fetchVehicles(query = "") {
         try {
-          const response = await fetch("https://localhost:7014/api/Vehicles" + query, {
+          const response = await fetch("https://api.nexuswaveng.com/api/Vehicles" + query, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
           });
@@ -274,7 +274,7 @@
           button.addEventListener("click", async (e) => {
             const vehicleId = e.target.getAttribute("data-id");
             try {
-              const response = await fetch(`https://localhost:7014/api/Vehicles/GetVehicle${vehicleId}`, {
+              const response = await fetch(`https://api.nexuswaveng.com/api/Vehicles/GetVehicle${vehicleId}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" }
               });

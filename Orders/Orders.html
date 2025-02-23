@@ -116,7 +116,7 @@
       <a class="btn btn-secondary back-btn" href="javascript:history.back()">
         <i class="fas fa-arrow-left"></i> Back
       </a>
-      <a class="navbar-brand me-auto" href="../index.html">
+      <a class="navbar-brand me-auto" href="../Dashboard.html">
         <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
@@ -126,7 +126,7 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="../index.html">
+            <a class="nav-link" href="../Dashboard.html">
               <i class="fas fa-home"></i> Home
             </a>
           </li>
@@ -288,7 +288,7 @@
       if (status) queryParams.push(`status=${status}`);
 
       const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
-      const apiUrl = `https://localhost:7014/api/Orders/GetAllOrders${queryString}`;
+      const apiUrl = `https://api.nexuswaveng.com/api/Orders/GetAllOrders${queryString}`;
 
       ordersTableBody.innerHTML = '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
       responseMessage.innerHTML = '';
@@ -394,7 +394,7 @@
     }
 
     async function viewOrderDetails(orderId) {
-      const apiUrl = `https://localhost:7014/api/Orders/GetOrderBy${orderId}`;
+      const apiUrl = `https://api.nexuswaveng.com/api/Orders/GetOrderBy${orderId}`;
       orderDetailsContent.innerHTML = '<p>Loading...</p>';
 
       try {

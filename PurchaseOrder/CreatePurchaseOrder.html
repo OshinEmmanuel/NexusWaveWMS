@@ -87,14 +87,14 @@
         <i class="fas fa-arrow-left"></i> Back
       </a>
       <!-- Logo linking to Home -->
-      <a class="navbar-brand me-auto" href="../index.html">
+      <a class="navbar-brand me-auto" href="../Dashboard.html">
         <img src="../assets/img/logo.png" alt="Logo">
       </a>
       <!-- Home Link -->
       <div class="collapse navbar-collapse justify-content-end">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="../index.html">
+            <a class="nav-link" href="../Dashboard.html">
               <i class="fas fa-home"></i> Home
             </a>
           </li>
@@ -208,7 +208,7 @@
         return;
       }
       try {
-        const response = await fetch('https://localhost:7014/api/StorageLocation/GetAllStorageLocations', {
+        const response = await fetch('https://api.nexuswaveng.com/api/StorageLocation/GetAllStorageLocations', {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
@@ -242,7 +242,7 @@
         return;
       }
       try {
-        const response = await fetch(`https://localhost:7014/api/Suppliers/${supplierId}`, {
+        const response = await fetch(`https://api.nexuswaveng.com/api/Suppliers/${supplierId}`, {
           method: 'GET',
           headers: { 
             'Accept': 'application/json',
@@ -275,7 +275,7 @@
         return null;
       }
       try {
-        const response = await fetch(`https://localhost:7014/api/Products/${productCode}`, {
+        const response = await fetch(`https://api.nexuswaveng.com/api/Products/${productCode}`, {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
@@ -429,7 +429,7 @@
       }
 
       try {
-        const response = await fetch('https://localhost:7014/api/PurchaseOrder/CreatePurchaseOrder', {
+        const response = await fetch('https://api.nexuswaveng.com/api/PurchaseOrder/CreatePurchaseOrder', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

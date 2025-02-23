@@ -225,7 +225,7 @@
       };
 
       try {
-        const response = await fetch("https://localhost:7014/api/Users/addUser", {
+        const response = await fetch("https://api.nexuswaveng.com/api/Users/addUser", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(userData)

@@ -77,14 +77,14 @@
         <i class="fas fa-arrow-left"></i> Back
       </a>
       <!-- Logo -->
-      <a class="navbar-brand me-auto" href="../index.html">
+      <a class="navbar-brand me-auto" href="../Dashboard.html">
         <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
       </a>
       <!-- Home Link -->
       <div class="collapse navbar-collapse justify-content-end">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="../index.html">
+            <a class="nav-link" href="../Dashboard.html">
               <i class="fas fa-home"></i> Home
             </a>
           </li>
@@ -221,7 +221,7 @@
       if (!purchaseOrderId) return;
       
       try {
-        const response = await fetch(`https://localhost:7014/api/PurchaseOrder/${purchaseOrderId}/GetPurchaseOrderDetails`, {
+        const response = await fetch(`https://api.nexuswaveng.com/api/PurchaseOrder/${purchaseOrderId}/GetPurchaseOrderDetails`, {
           method: 'GET',
           headers: { 'Accept': 'application/json' }
         });
@@ -261,7 +261,7 @@
       const responseMessage = document.getElementById('responseMessage');
       
       try {
-        const response = await fetch(`https://localhost:7014/api/PurchaseOrder/Approve/${purchaseOrderId}`, {
+        const response = await fetch(`https://api.nexuswaveng.com/api/PurchaseOrder/Approve/${purchaseOrderId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -328,7 +328,7 @@
     
     // Event listener for "Return to Home" button.
     document.getElementById('cancelAnother').addEventListener('click', function() {
-      window.location.href = "../index.html";  // Adjust the path as needed.
+      window.location.href = "../Dashboard.html";  // Adjust the path as needed.
     });
     
     // Handle "Show Purchase Order Details" button click.
@@ -340,7 +340,7 @@
       }
       
       try {
-        const response = await fetch(`https://localhost:7014/api/PurchaseOrder/${purchaseOrderId}/GetPurchaseOrderDetails`, {
+        const response = await fetch(`https://api.nexuswaveng.com/api/PurchaseOrder/${purchaseOrderId}/GetPurchaseOrderDetails`, {
           method: 'GET',
           headers: { 'Accept': 'application/json' }
         });

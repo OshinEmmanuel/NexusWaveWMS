@@ -236,7 +236,7 @@
       }
       try {
         // Adjust this URL as needed; assumes GET /api/Users/GetUser{userId} returns user data.
-        const response = await fetch(`https://localhost:7014/api/Users/GetUser${userId}`);
+        const response = await fetch(`https://api.nexuswaveng.com/api/Users/GetUser${userId}`);
         if (!response.ok) {
           throw new Error("User not found.");
         }
@@ -278,7 +278,7 @@
         userRole: document.getElementById('userRole').value
       };
       try {
-        const url = `https://localhost:7014/api/Users/update/${userId}`;
+        const url = `https://api.nexuswaveng.com/api/Users/update/${userId}`;
         const response = await fetch(url, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

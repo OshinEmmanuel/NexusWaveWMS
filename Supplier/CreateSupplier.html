@@ -420,7 +420,7 @@
 
       try {
         // Append the query parameter
-        const response = await fetch(`https://localhost:7014/api/Suppliers/Add-suppliers?type=${encodeURIComponent(queryType)}`, {
+        const response = await fetch(`https://api.nexuswaveng.com/api/Suppliers/Add-suppliers?type=${encodeURIComponent(queryType)}`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',

@@ -253,7 +253,7 @@
       try {
         // Hardcode userId = 2 for demo.
         const userId = 2;
-        const response = await fetch(`https://localhost:7014/api/Users/GetUser${userId}`, {
+        const response = await fetch(`https://api.nexuswaveng.com/api/Users/GetUser${userId}`, {
           method: 'GET',
           headers: { 'Authorization': 'Bearer ' + authToken }
         });
@@ -289,7 +289,7 @@
       }
 
       try {
-        const response = await fetch(`https://localhost:7014/api/Suppliers/${supplierIdVal}`, {
+        const response = await fetch(`https://api.nexuswaveng.com/api/Suppliers/${supplierIdVal}`, {
           method: 'GET',
           headers: { 'Authorization': 'Bearer ' + authToken }
         });
@@ -338,7 +338,7 @@
       };
 
       try {
-        const response = await fetch(`https://localhost:7014/api/Suppliers/${supplierIdVal}/approve`, {
+        const response = await fetch(`https://api.nexuswaveng.com/api/Suppliers/${supplierIdVal}/approve`, {
           method: 'PATCH',
           headers: { 
             'Content-Type': 'application/json',

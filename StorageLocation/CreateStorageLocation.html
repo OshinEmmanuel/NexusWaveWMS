@@ -210,7 +210,7 @@
       responseMessage.innerHTML = "";
 
       try {
-        const response = await fetch("https://localhost:7014/api/StorageLocation/CreateLocation", {
+        const response = await fetch("https://api.nexuswaveng.com/api/StorageLocation/CreateLocation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
