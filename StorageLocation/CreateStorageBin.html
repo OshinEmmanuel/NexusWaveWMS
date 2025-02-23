@@ -212,7 +212,7 @@
     // Function to fetch storage locations and populate the drop-down.
     async function populateStorageLocations() {
       try {
-        const response = await fetch("https://api.nexuswaveng.com/api/StorageLocation/GetAllStorageLocations", {
+        const response = await fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/StorageLocation/GetAllStorageLocations", {
           method: "GET",
           headers: { "Accept": "application/json" }
         });
@@ -264,7 +264,7 @@
         responseMessage.innerHTML = "";
 
         try {
-          const response = await fetch("https://api.nexuswaveng.com/api/StorageBin/CreateBin", {
+          const response = await fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/StorageBin/CreateBin", {
             method: "POST",
             headers: { 
               "Content-Type": "application/json",

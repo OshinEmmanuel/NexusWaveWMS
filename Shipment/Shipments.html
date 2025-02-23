@@ -259,7 +259,7 @@
           const connector = query === '?' ? '&' : '&';
           const finalQuery = `${query}${connector}page=${page}&pageSize=${pageSize}`;
 
-          const response = await fetch(`https://api.nexuswaveng.com/api/Shipments/GetAllShipment${finalQuery}`, {
+          const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Shipments/GetAllShipment${finalQuery}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
           });
@@ -334,7 +334,7 @@
       // View shipment details in a modal
       async function viewShipmentDetails(shipmentId) {
         try {
-          const response = await fetch(`https://api.nexuswaveng.com/api/Shipments/GetShipment/${shipmentId}`, {
+          const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Shipments/GetShipment/${shipmentId}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
           });
@@ -413,7 +413,7 @@
       // Download Waybill
       async function downloadWaybill(shipmentId) {
         try {
-          const response = await fetch(`https://api.nexuswaveng.com/api/Shipments/${shipmentId}/printWaybill`, {
+          const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Shipments/${shipmentId}/printWaybill`, {
             method: 'GET'
           });
           if (!response.ok) {

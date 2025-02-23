@@ -315,7 +315,7 @@
   
       try {
         // NOTE: Adjust the endpoint to match your new API route if needed
-        const response = await fetch(`https://api.nexuswaveng.com/api/Inventories/DisplayInventory?${queryString}`, {
+        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories/DisplayInventory?${queryString}`, {
           method: 'GET'
         });
         if (!response.ok) throw new Error('Failed to fetch inventories.');
@@ -384,7 +384,7 @@
         return;
       }
       try {
-        const response = await fetch(`https://api.nexuswaveng.com/api/Inventories/ExportInventory?${currentQuery}`);
+        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories/ExportInventory?${currentQuery}`);
         if (!response.ok) throw new Error("Export failed.");
         const blob = await response.blob();
         const link = document.createElement('a');

@@ -347,7 +347,7 @@
           return;
         }
         try {
-          const response = await fetch(`https://api.nexuswaveng.com/api/Shipments/GetShipment/${shipmentId}`, { 
+          const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Shipments/GetShipment/${shipmentId}`, { 
             method: 'GET', 
             headers: { Accept: 'application/json' } 
           });
@@ -376,7 +376,7 @@
         try {
           const orders = await Promise.all(
             shipmentData.orders.map(order =>
-              fetch(`https://api.nexuswaveng.com/api/Orders/GetOrderBy${order.orderId}`, {
+              fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Orders/GetOrderBy${order.orderId}`, {
                 method: 'GET',
                 headers: { Accept: 'application/json' }
               }).then(res => res.json())
@@ -433,7 +433,7 @@
         const viewBtn = event.target.closest('.view-order-btn');
         if (viewBtn) {
           const orderId = viewBtn.getAttribute('data-order-id');
-          fetch(`https://api.nexuswaveng.com/api/Orders/GetOrderBy${orderId}`, {
+          fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Orders/GetOrderBy${orderId}`, {
             method: 'GET',
             headers: { Accept: 'application/json' }
           })
@@ -518,7 +518,7 @@
             return;
           }
           try {
-            const response = await fetch(`https://api.nexuswaveng.com/api/Orders/GetOrderBy${newOrderId}`, { 
+            const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Orders/GetOrderBy${newOrderId}`, { 
               method: 'GET', 
               headers: { Accept: 'application/json' } 
             });
@@ -631,7 +631,7 @@
         const shipmentId = shipmentData.shipmentId;
 
         try {
-          const response = await fetch(`https://api.nexuswaveng.com/api/Picking/UnpickOrders/${shipmentId}`, {
+          const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Picking/UnpickOrders/${shipmentId}`, {
             method: 'PUT',
             headers: { 
             "Content-Type": "application/json",
@@ -666,7 +666,7 @@
       viewVehicleDetailsBtn.addEventListener('click', async () => {
         const vehicleId = vehicleIdInput.value;
         try {
-          const response = await fetch(`https://api.nexuswaveng.com/api/Vehicles/GetVehicle${vehicleId}`);
+          const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Vehicles/GetVehicle${vehicleId}`);
           if (response.ok) {
             const data = await response.json();
             document.getElementById('vehicleDetailsBody').innerHTML = `
@@ -690,7 +690,7 @@
       viewDriverDetailsBtn.addEventListener('click', async () => {
         const driverId = driverIdInput.value;
         try {
-          const response = await fetch(`https://api.nexuswaveng.com/api/Drivers/${driverId}`);
+          const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Drivers/${driverId}`);
           if (response.ok) {
             const data = await response.json();
             document.getElementById('driverDetailsBody').innerHTML = `
@@ -742,7 +742,7 @@
         };
 
         try {
-          const response = await fetch(`https://api.nexuswaveng.com/api/Shipments/EditShipment/${shipmentId}`, {
+          const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Shipments/EditShipment/${shipmentId}`, {
             method: 'PUT',
             headers: { 
             "Content-Type": "application/json",

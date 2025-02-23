@@ -226,7 +226,7 @@
         responseMessage.innerHTML = "";
         const vehicleId = document.getElementById("vehicleIdFetch").value;
         try {
-          const response = await fetch(`https://api.nexuswaveng.com/api/Vehicles/GetVehicle${vehicleId}`, {
+          const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Vehicles/GetVehicle${vehicleId}`, {
             method: "GET",
             headers: { 
               "Content-Type": "application/json",
@@ -268,7 +268,7 @@
         };
 
         try {
-          const response = await fetch(`https://api.nexuswaveng.com/api/Vehicles/UpdateVehicle${currentVehicleId}`, {
+          const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Vehicles/UpdateVehicle${currentVehicleId}`, {
             method: "PUT",
             headers: { 
               "Content-Type": "application/json",

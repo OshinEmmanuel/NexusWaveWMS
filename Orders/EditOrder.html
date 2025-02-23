@@ -258,9 +258,9 @@
         event.preventDefault();
         const orderId = document.getElementById('orderId').value;
         const shipmentId = document.getElementById('shipmentId').value;
-        let apiUrl = 'https://api.nexuswaveng.com/api/Orders/GetAllOrders';
+        let apiUrl = 'https://oshinemmanuel-001-site1.qtempurl.com/api/Orders/GetAllOrders';
         if (orderId) {
-          apiUrl = `https://api.nexuswaveng.com/api/Orders/GetOrderBy${orderId}`;
+          apiUrl = `https://oshinemmanuel-001-site1.qtempurl.com/api/Orders/GetOrderBy${orderId}`;
         } else if (shipmentId) {
           apiUrl += `?shipmentId=${shipmentId}`;
         }
@@ -337,7 +337,7 @@
       const deleteOrder = async (orderId) => {
         if (!confirm("Are you sure you want to delete this order?")) return;
         try {
-          const response = await fetch(`https://api.nexuswaveng.com/api/Orders/Delete${orderId}`, {
+          const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Orders/Delete${orderId}`, {
             method: 'DELETE'
           });
           if (response.ok) {
@@ -356,7 +356,7 @@
 
       // Fetch and load order details for editing
       const loadEditOrder = async (orderId) => {
-        const apiUrl = `https://api.nexuswaveng.com/api/Orders/GetOrderBy${orderId}`;
+        const apiUrl = `https://oshinemmanuel-001-site1.qtempurl.com/api/Orders/GetOrderBy${orderId}`;
         editOrderContent.innerHTML = '<p>Loading...</p>';
         try {
           const response = await fetch(apiUrl, { method: 'GET', headers: { Accept: 'application/json' } });
@@ -535,7 +535,7 @@
           items,
         };
 
-        const apiUrl = `https://api.nexuswaveng.com/api/Orders/Update${orderId}`;
+        const apiUrl = `https://oshinemmanuel-001-site1.qtempurl.com/api/Orders/Update${orderId}`;
         try {
           const response = await fetch(apiUrl, {
             method: 'PUT',
@@ -557,7 +557,7 @@
       };
 
       const loadViewOrder = async (orderId) => {
-        const apiUrl = `https://api.nexuswaveng.com/api/Orders/GetOrderBy${orderId}`;
+        const apiUrl = `https://oshinemmanuel-001-site1.qtempurl.com/api/Orders/GetOrderBy${orderId}`;
         const viewOrderContent = document.getElementById('viewOrderContent');
         viewOrderContent.innerHTML = '<p>Loading...</p>';
         try {

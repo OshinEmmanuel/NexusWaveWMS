@@ -391,7 +391,7 @@
       try {
         // Adjust the endpoint as needed:
         // e.g. https://localhost:7014/api/InventoryMovements/GetAllMovements
-        const response = await fetch(`https://api.nexuswaveng.com/api/InventoryMovements/GetAllMovements?${queryString}`);
+        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/InventoryMovements/GetAllMovements?${queryString}`);
         if (!response.ok) throw new Error('Failed to fetch inventory movements.');
         const data = await response.json();
   
@@ -430,7 +430,7 @@
       try {
         // Adjust your export endpoint if needed
         // e.g. /api/InventoryMovements/export-history
-        const response = await fetch(`https://api.nexuswaveng.com/api/InventoryMovements/export-history?${currentQuery}`);
+        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/InventoryMovements/export-history?${currentQuery}`);
         if (!response.ok) {
           const errorText = await response.text();
           throw new Error(`Export failed: ${response.status} - ${errorText}`);

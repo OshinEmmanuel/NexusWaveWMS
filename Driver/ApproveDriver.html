@@ -206,7 +206,7 @@
     // Function to fetch and populate the Approved By field.
     async function populateApprovedBy() {
       try {
-        const userResponse = await fetch(`https://api.nexuswaveng.com/api/Users/GetUser${currentUserId}`, {
+        const userResponse = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Users/GetUser${currentUserId}`, {
           headers: {
             'Authorization': 'Bearer ' + authToken
           }
@@ -245,7 +245,7 @@
       }
 
       try {
-        const driverResponse = await fetch(`https://api.nexuswaveng.com/api/Drivers/${driverIdVal}`, {
+        const driverResponse = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Drivers/${driverIdVal}`, {
           method: 'GET',
           headers: {
             'Authorization': 'Bearer ' + authToken
@@ -278,7 +278,7 @@
       const driverId = document.getElementById('driverId').value;
       const responseMessage = document.getElementById('responseMessage');
       try {
-        const response = await fetch(`https://api.nexuswaveng.com/api/Drivers/approve?driverId=${driverId}`, {
+        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Drivers/approve?driverId=${driverId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

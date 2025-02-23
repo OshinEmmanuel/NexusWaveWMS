@@ -243,7 +243,7 @@
       messageDiv.textContent = "";
       
       // GET request to fetch supplier details
-      fetch(`https://api.nexuswaveng.com/api/Suppliers/${supplierId}`)
+      fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Suppliers/${supplierId}`)
         .then(response => {
           if (!response.ok) {
             throw new Error("Supplier not found.");
@@ -302,7 +302,7 @@
       messageDiv.textContent = "";
       
       // PUT request to update supplier details
-      fetch(`https://api.nexuswaveng.com/api/Suppliers/Update/${supplierId}`, {
+      fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Suppliers/Update/${supplierId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

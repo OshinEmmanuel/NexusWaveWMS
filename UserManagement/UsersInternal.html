@@ -213,7 +213,7 @@
     async function fetchUsers(role = "", isActive = "", isDeleted = "") {
       try {
         // Use the internal users endpoint.
-        let url = "https://api.nexuswaveng.com/api/Users/internal?page=1&pageSize=10";
+        let url = "https://oshinemmanuel-001-site1.qtempurl.com/api/Users/internal?page=1&pageSize=10";
         if (role) {
           url += `&role=${encodeURIComponent(role)}`;
         }
@@ -309,7 +309,7 @@
 
     async function viewUserDetails(userId) {
       try {
-        const url = `https://api.nexuswaveng.com/api/Users/GetUser${userId}`;
+        const url = `https://oshinemmanuel-001-site1.qtempurl.com/api/Users/GetUser${userId}`;
         const response = await fetch(url);
         const user = await response.json();
         const detailsHtml = generateUserDetailsTable(user);

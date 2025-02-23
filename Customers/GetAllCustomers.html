@@ -288,7 +288,7 @@
       }).toString();
 
       try {
-        const response = await fetch(`https://api.nexuswaveng.com/api/Customers/GetAllCustomers?${queryParams}`);
+        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Customers/GetAllCustomers?${queryParams}`);
         if (response.ok) {
           const data = await response.json();
           fullCustomersData = Array.isArray(data) ? data : [];
@@ -347,7 +347,7 @@
     // Function to view full customer details in a modal.
     async function viewDetails(customerId) {
       try {
-        const response = await fetch(`https://api.nexuswaveng.com/api/Customers/${customerId}`, {
+        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Customers/${customerId}`, {
           method: 'GET',
           headers: { 'Accept': 'application/json' }
         });
