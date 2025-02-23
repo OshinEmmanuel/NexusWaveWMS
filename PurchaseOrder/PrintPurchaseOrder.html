@@ -199,6 +199,8 @@
         <p><strong>PO Date (Approved):</strong> <span id="poDate"></span></p>
         <p><strong>Payment Terms:</strong> 14 days</p>
         <p><strong>Currency:</strong> <span id="poCurrency"></span></p>
+        <!-- New: Storage Location -->
+        <p><strong>Storage Location:</strong> <span id="poStorageLocation"></span></p>
       </div>
       <hr>
       <!-- Supplier Details -->
@@ -318,6 +320,9 @@
         const poDate = poData.approvedAt ? new Date(poData.approvedAt) : new Date(poData.createdDate);
         document.getElementById("poDate").textContent = poDate.toLocaleDateString();
         document.getElementById("poCurrency").textContent = selectedCurrency;
+        // Populate Storage Location (new addition)
+        document.getElementById("poStorageLocation").textContent = poData.storageLocationCode || "N/A";
+        
         // Supplier Details (using supplier API data)
         document.getElementById("supplierCompany").textContent = supplierDetails.supplierCompanyName || "";
         document.getElementById("supplierEmail").textContent = supplierDetails.user && supplierDetails.user.email ? supplierDetails.user.email : "";

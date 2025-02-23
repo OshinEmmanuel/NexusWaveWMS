@@ -177,10 +177,10 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <!-- BinCode is the unique identifier and is readonly -->
+            <!-- BinCode is now editable -->
             <div class="mb-3">
               <label for="binCode" class="form-label"><i class="fas fa-code"></i> Bin Code</label>
-              <input type="text" class="form-control" id="binCode" name="binCode" readonly>
+              <input type="text" class="form-control" id="binCode" name="binCode">
             </div>
             <div class="mb-3">
               <label for="name" class="form-label"><i class="fas fa-heading"></i> Name</label>
@@ -195,9 +195,10 @@
                 <option value="OutOfService">OutOfService</option>
               </select>
             </div>
+            <!-- Editable modal storage location code -->
             <div class="mb-3">
-              <label for="storageLocationCode" class="form-label"><i class="fas fa-map-marker-alt"></i> Storage Location Code</label>
-              <input type="text" class="form-control" id="storageLocationCode" name="storageLocationCode" required>
+              <label for="modalStorageLocationCode" class="form-label"><i class="fas fa-map-marker-alt"></i> Storage Location Code</label>
+              <input type="text" class="form-control" id="modalStorageLocationCode" name="modalStorageLocationCode" required>
             </div>
             <div class="mb-3">
               <label for="binCapacity" class="form-label"><i class="fas fa-boxes"></i> Bin Capacity</label>
@@ -246,7 +247,6 @@
     // Fetch bins from the API (optionally filtered by BinCode)
     function fetchBins(filterBinCode = "") {
       let url = getAllBinsUrl;
-      // If a bin code is provided in the search field, append it as a query string.
       if(filterBinCode) {
         url += `?binCode=${encodeURIComponent(filterBinCode)}`;
       }
@@ -291,7 +291,6 @@
         binsTableBody.appendChild(row);
       });
 
-      // Attach click events for edit buttons using the bin code
       document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const binCode = btn.getAttribute('data-bin-code');
@@ -304,11 +303,10 @@
     function openEditModal(binCode) {
       const bin = binsData.find(b => b.binCode === binCode);
       if (!bin) return;
-      // Prefill the form inputs.
       document.getElementById('binCode').value = bin.binCode;
       document.getElementById('name').value = bin.name;
       document.getElementById('status').value = bin.status;
-      document.getElementById('storageLocationCode').value = bin.storageLocationCode;
+      document.getElementById('modalStorageLocationCode').value = bin.storageLocationCode;
       document.getElementById('binCapacity').value = bin.binCapacity;
       document.getElementById('storageLocationId').value = bin.storageLocationId;
       
@@ -318,12 +316,11 @@
     // Handle form submission to update the bin
     editBinForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      // Build the update DTO using binCode as the identifier.
       const formData = {
         binCode: document.getElementById('binCode').value.trim(),
         name: document.getElementById('name').value.trim(),
         status: document.getElementById('status').value,
-        storageLocationCode: document.getElementById('storageLocationCode').value.trim(),
+        storageLocationCode: document.getElementById('modalStorageLocationCode').value.trim(),
         binCapacity: parseInt(document.getElementById('binCapacity').value),
         storageLocationId: parseInt(document.getElementById('storageLocationId').value)
       };

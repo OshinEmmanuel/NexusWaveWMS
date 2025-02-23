@@ -2,33 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
   <title>Inventory Search & Export - Nexus Wave WMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0" />
+  <link rel="icon" href="../assets/img/favicon.png" type="image/png" />
+  
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
   <!-- Google Fonts for Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  
   <!-- SheetJS Library for Excel Export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
   <style>
-    /* Global Reset and Background */
+    /* Global Reset & Background */
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
       font-family: 'Poppins', sans-serif;
+      background-color: #f4f7f6;
     }
     body {
       display: flex;
       flex-direction: column;
       position: relative;
       z-index: 0;
-      background-color: #f4f7f6;
-      padding: 20px;
     }
-    /* Full-screen blurred background */
+    /* Optional blurred background */
     body::before {
       content: "";
       position: fixed;
@@ -53,37 +58,75 @@
     /* Main container styling */
     .container {
       max-width: 1200px;
-      margin: 70px auto 100px auto;
+      margin-top: 80px; /* Space for navbar */
+      margin-bottom: 80px; /* Some bottom spacing for footer */
       background-color: #fff;
-      padding: 30px;
+      padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      overflow-x: auto;
     }
     h2 {
       color: #007bff;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
-    /* Search section */
-    .row.g-2.mb-3 {
-      margin-bottom: 20px;
+    /* Card styling for the search form */
+    .card {
+      margin-bottom: 10px;
+      border: none;
+    }
+    .card-header {
+      background-color: #007bff;
+      color: #fff;
+      font-size: 1.2rem;
+      text-align: center;
+      padding: 10px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+    .btn-custom {
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 15px;
+      border-radius: 6px;
+      transition: background-color 0.3s ease-in-out;
+    }
+    .btn-search {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+    }
+    .btn-search:hover {
+      background-color: #0056b3;
+    }
+    .btn-export {
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+    }
+    .btn-export:hover {
+      background-color: #1e7e34;
     }
     /* Table styling */
     .table-responsive {
-      margin-top: 20px;
-      max-height: 800px;
+      margin-top: 10px;
+      max-height: 700px;
     }
     .table thead th {
       background-color: #007bff;
       color: #fff;
       font-weight: 600;
+      text-align: center;
+      white-space: nowrap;
     }
     .table th, .table td {
-      white-space: nowrap;
       text-align: center;
       vertical-align: middle;
       border: 1px solid white !important;
+    }
+    /* No-wrap for product description only */
+    .no-wrap {
+      white-space: nowrap !important;
     }
     /* Footer styling */
     footer {
@@ -98,12 +141,13 @@
       padding: 10px 0;
       box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
       z-index: 1000;
+      margin-top: auto;
     }
   </style>
 </head>
 <body>
   <!-- Fixed Navigation Bar -->
-  <nav class="navbar navbar-expand-lg fixed-top">
+  <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
       <!-- Back Button -->
       <a class="btn btn-secondary back-btn" href="javascript:history.back()">
@@ -134,44 +178,72 @@
   <div class="container">
     <h2>Inventory Search & Export</h2>
     
-    <!-- Search Section -->
-    <div class="row g-2 mb-3">
-      <div class="col-md-4">
-        <input type="number" id="searchProductCode" class="form-control" placeholder="Enter Product Code">
+    <!-- Search Form Card -->
+    <div class="card mb-4">
+      <div class="card-header text-center">
+        <i class="fas fa-search"></i> Search Criteria
       </div>
-      <div class="col-md-2">
-        <button id="searchBtn" class="btn btn-primary w-100">
-          <i class="fas fa-search"></i> Search
-        </button>
-      </div>
-      <div class="col-md-2">
-        <button id="downloadBtn" class="btn btn-success w-100">
-          <i class="fas fa-file-excel"></i> Download Excel
-        </button>
+      <div class="card-body">
+        <form id="searchForm">
+          <div class="row g-3">
+            <!-- Product Code Filter -->
+            <div class="col-md-4">
+              <label for="searchProductCode" class="form-label">Product Code</label>
+              <input type="number" id="searchProductCode" class="form-control" placeholder="e.g. 10001">
+            </div>
+            <!-- Storage Location Code Filter -->
+            <div class="col-md-4">
+              <label for="searchStorageLocationCode" class="form-label">Storage Location</label>
+              <input type="text" id="searchStorageLocationCode" class="form-control" placeholder="e.g. WH001">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+              <div>
+                <button type="submit" class="btn btn-custom btn-search me-2">
+                  <i class="fas fa-search"></i> Search
+                </button>
+                <button type="button" id="exportButton" class="btn btn-custom btn-export" disabled>
+                  <i class="fas fa-file-export"></i> Export to Excel
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <!-- Response Message -->
+        <div id="responseMessage" class="alert d-none mt-3"></div>
       </div>
     </div>
     
-    <!-- Table to display results -->
-    <div class="table-responsive">
-      <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-          <tr>
-            <th><i class="fas fa-barcode"></i> Product Code</th>
-            <th><i class="fas fa-info-circle"></i> Product Description</th>
-            <th><i class="fas fa-boxes"></i> Total Available Qty</th>
-            <th><i class="fas fa-truck-loading"></i> Total On Order Qty</th>
-            <th><i class="fas fa-layer-group"></i> Total Inventory Qty</th>
-            <th><i class="fas fa-exclamation-triangle"></i> Reorder Level</th>
-            <th><i class="fas fa-layer-group"></i> Maximum Stock Level</th>
-            <th><i class="fas fa-dollar-sign"></i> Avg. Unit Cost</th>
-            <th><i class="fas fa-calculator"></i> Total Inventory Value</th>
-          </tr>
-        </thead>
-        <tbody id="inventorySummaryBody">
-          <!-- Data will be inserted here -->
-        </tbody>
-      </table>
+    <!-- Results Card -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-chart-bar"></i> Inventory Summary
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="inventoryTable" class="table table-bordered table-striped table-hover d-none">
+            <thead class="table-dark">
+              <tr>
+                <th><i class="fas fa-barcode"></i> Product Code</th>
+                <!-- No-wrap on header -->
+                <th class="no-wrap"><i class="fas fa-info-circle"></i> Product Description</th>
+                <th><i class="fas fa-boxes"></i> Total Available Qty</th>
+                <th><i class="fas fa-truck-loading"></i> Total On Order Qty</th>
+                <th><i class="fas fa-layer-group"></i> Total Inventory Qty</th>
+                <th><i class="fas fa-map-marker-alt"></i> Storage Location</th>
+                <th><i class="fas fa-exclamation-triangle"></i> Reorder Level</th>
+                <th><i class="fas fa-layer-group"></i> Maximum Stock Level</th>
+                <th><i class="fas fa-dollar-sign"></i> Avg. Unit Cost</th>
+                <th><i class="fas fa-calculator"></i> Total Inventory Value</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+              <!-- Data will be dynamically inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
+    
   </div>
   
   <!-- Footer -->
@@ -183,181 +255,143 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   
   <script>
-    // Endpoints (note: the API controller uses "Inventories" in the route)
+    // Endpoints:
     const baseUrl = 'https://localhost:7014/api/Inventories';
-    const getAllUrl = `${baseUrl}/GetAllSummaries`;
-    const productsUrl = 'https://localhost:7014/api/Products'; // Endpoint to fetch products
+    const getAllSummariesUrl = `${baseUrl}/GetAllSummaries`;
     
-    // Global variable to store last fetched data
-    let lastFetchedData = [];
-    // Global variable to store product data (mapping by productCode)
-    let productMap = {};
+    let currentQuery = '';
+    const exportButton = document.getElementById('exportButton');
+    const searchForm = document.getElementById('searchForm');
+    const searchProductCodeInput = document.getElementById('searchProductCode');
+    const searchStorageLocationCodeInput = document.getElementById('searchStorageLocationCode');
+    const responseMessage = document.getElementById('responseMessage');
+    const inventoryTable = document.getElementById('inventoryTable');
+    const tableBody = document.getElementById('inventoryTableBody');
     
-    // DOM Elements
-    const searchBtn = document.getElementById('searchBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const searchInput = document.getElementById('searchProductCode');
-    const tbody = document.getElementById('inventorySummaryBody');
-    
-    // Function to fetch all products and build a productMap (key: productCode)
-    function fetchAllProducts() {
-      return fetch(productsUrl, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' }
-      })
-      .then(response => response.json())
-      .then(products => {
-        productMap = {};
-        products.forEach(p => {
-          productMap[p.productCode] = p;
-        });
-        return productMap;
-      })
-      .catch(error => {
-        console.error("Error fetching products:", error);
-        return {};
-      });
+    // Build query string based on search fields
+    function buildQueryParams() {
+      const params = new URLSearchParams();
+      const productCode = searchProductCodeInput.value.trim();
+      const storageLocationCode = searchStorageLocationCodeInput.value.trim();
+      
+      if (productCode) params.append('productCode', productCode);
+      if (storageLocationCode) params.append('storageLocationCode', storageLocationCode);
+      
+      return params.toString();
     }
     
-    // Function to update summary with product data (for reorderLevel & maxStockLevel)
-    function updateSummaryWithProductData(summary) {
-      const prod = productMap[summary.productCode];
-      if (prod) {
-        summary.reorderLevel = prod.reorderLevel;
-        summary.maximumStockLevel = prod.maximumStockLevel;
-        // Optionally, update unitCost and product description if needed.
-        summary.unitCost = prod.unitCost;
-        if (!summary.productDescription) {
-          summary.productDescription = prod.productDescription;
-        }
-      }
-      return summary;
-    }
-    
-    // Function to render table rows from an array of summaries with nice formatting
+    // Render an array of summary objects
     function renderSummaries(data) {
-      lastFetchedData = data; // Store the fetched data globally
-      tbody.innerHTML = ""; // Clear existing data
+      tableBody.innerHTML = "";
       if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">No data available.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-danger">No data available.</td></tr>`;
+        inventoryTable.classList.remove('d-none');
         return;
       }
-      // Update each summary with product data from productMap
-      data = data.map(updateSummaryWithProductData);
+      
       data.forEach(summary => {
-        const totalInventoryQty = summary.totalAvailableQty 
-          + summary.totalOnOrderQty 
-          + summary.totalBlockedQty 
-          + summary.totalDamagedQty 
-          + summary.totalBondedQty;
-        const totalAvailable = Number(summary.totalAvailableQty).toLocaleString();
-        const totalOnOrder = Number(summary.totalOnOrderQty).toLocaleString();
+        // Calculate total inventory qty if not provided
+        let totalInventoryQty = summary.totalInventoryQty;
+        if (totalInventoryQty == null) {
+          totalInventoryQty = (summary.totalAvailableQty ?? 0)
+            + (summary.totalOnOrderQty ?? 0)
+            + (summary.totalBlockedQty ?? 0)
+            + (summary.totalDamagedQty ?? 0)
+            + (summary.totalBondedQty ?? 0);
+        }
+        
+        const totalAvailable = Number(summary.totalAvailableQty ?? 0).toLocaleString();
+        const totalOnOrder = Number(summary.totalOnOrderQty ?? 0).toLocaleString();
         const totalInventoryFormatted = Number(totalInventoryQty).toLocaleString();
-        const avgUnitCost = Number(summary.unitCost).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        const totalInventoryValue = (totalInventoryQty * summary.unitCost).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const avgUnitCost = Number(summary.unitCost ?? 0).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+        const totalInventoryValue = Number(
+          summary.totalInventoryValue ??
+          (totalInventoryQty * (summary.unitCost ?? 0))
+        ).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+        
+        // For product description, apply .no-wrap
+        const productDescCell = `<td class="no-wrap">${summary.productDescription ?? ''}</td>`;
   
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${summary.productCode}</td>
-          <td>${summary.productDescription || ''}</td>
+          <td>${summary.productCode ?? ''}</td>
+          ${productDescCell}
           <td>${totalAvailable}</td>
           <td>${totalOnOrder}</td>
           <td>${totalInventoryFormatted}</td>
-          <td>${Number(summary.reorderLevel).toLocaleString()}</td>
-          <td>${Number(summary.maximumStockLevel).toLocaleString()}</td>
+          <td>${summary.storageLocationCode ?? ''}</td>
+          <td>${Number(summary.reorderLevel ?? 0).toLocaleString()}</td>
+          <td>${Number(summary.maximumStockLevel ?? 0).toLocaleString()}</td>
           <td>${avgUnitCost}</td>
           <td>${totalInventoryValue}</td>
         `;
-        tbody.appendChild(row);
+        tableBody.appendChild(row);
       });
+      inventoryTable.classList.remove('d-none');
     }
     
-    // Function to fetch all summaries and update with product data
-    function fetchAllSummaries() {
-      // First fetch products, then summaries.
-      fetchAllProducts().then(() => {
-        fetch(getAllUrl, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' }
-        })
-        .then(response => {
-          console.log("Response status:", response.status);
-          return response.json();
-        })
-        .then(data => {
-          console.log("Received summaries:", data);
-          renderSummaries(data);
-        })
-        .catch(error => console.error('Error fetching summaries:', error));
-      });
-    }
-    
-    // Function to fetch summary for a given product code and update with product data
-    function fetchSummaryByProductCode(productCode) {
-      // First, fetch product data for this product code.
-      fetch(`${productsUrl}/${productCode}`, {
+    // Fetch summaries from the API using the query parameters
+    function fetchSummaries() {
+      const queryString = buildQueryParams();
+      currentQuery = queryString;
+      let url = getAllSummariesUrl;
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+      
+      fetch(url, {
         method: 'GET',
         headers: { 'Accept': 'application/json' }
       })
-      .then(response => response.json())
-      .then(prod => {
-        productMap[prod.productCode] = prod; // Update global map
-        // Now fetch summary for this product code.
-        return fetch(`${baseUrl}/GetSummary/${productCode}`, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' }
-        });
-      })
       .then(response => {
-        console.log("Response status for product code", productCode, ":", response.status);
-        if (!response.ok) {
-          throw new Error(`No data found for product code ${productCode}`);
-        }
+        if (!response.ok) throw new Error("Failed to fetch summaries.");
         return response.json();
       })
       .then(data => {
-        console.log("Received single summary:", data);
-        renderSummaries([data]);
+        console.log("Received summaries:", data);
+        renderSummaries(data);
+        responseMessage.innerHTML = '<div class="alert alert-success mt-3">Search successful!</div>';
+        responseMessage.classList.remove('d-none');
+        exportButton.disabled = false;
       })
       .catch(error => {
-        console.error('Error fetching summary:', error);
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">${error.message}</td></tr>`;
+        console.error("Error fetching summaries:", error);
+        tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-danger">${error.message}</td></tr>`;
+        inventoryTable.classList.remove('d-none');
+        responseMessage.innerHTML = `<div class="alert alert-danger mt-3">${error.message}</div>`;
+        responseMessage.classList.remove('d-none');
+        exportButton.disabled = true;
       });
     }
     
-    // Function to export table data to Excel using SheetJS
+    // Export table data to Excel using SheetJS
     function exportTableToExcel() {
-      // Check if data exists
-      if (!lastFetchedData || lastFetchedData.length === 0) {
-        alert("No data available to download.");
+      if (inventoryTable.classList.contains('d-none')) {
+        alert("No data available to export. Please perform a search first.");
         return;
       }
-      // Get the table element
       const table = document.querySelector('.table-responsive table');
-      // Convert table to workbook using SheetJS
       const workbook = XLSX.utils.table_to_book(table, { sheet: "Inventory Summary" });
-      // Trigger the file download
       XLSX.writeFile(workbook, "InventorySummary.xlsx");
     }
     
-    // Event listener for Search button
-    searchBtn.addEventListener('click', () => {
-      const productCode = searchInput.value.trim();
-      if (productCode) {
-        fetchSummaryByProductCode(productCode);
-      } else {
-        // If search field is empty, automatically fetch all summaries.
-        fetchAllSummaries();
-      }
+    // Event listener for search form submission
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      responseMessage.classList.add('d-none');
+      fetchSummaries();
     });
     
-    // Event listener for Download Excel button
-    downloadBtn.addEventListener('click', () => {
+    // Event listener for export button
+    exportButton.addEventListener('click', function() {
       exportTableToExcel();
     });
-    
-    // Optionally, load all summaries on page load
-    // fetchAllSummaries();
   </script>
 </body>
 </html>

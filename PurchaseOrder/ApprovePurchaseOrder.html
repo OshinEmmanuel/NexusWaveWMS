@@ -345,7 +345,7 @@
           headers: { 'Accept': 'application/json' }
         });
         if (!response.ok) {
-          throw new Error("Failed to fetch purchase order details, Or Purchase Order deoesn't exist");
+          throw new Error("Failed to fetch purchase order details, or Purchase Order doesn't exist");
         }
         const data = await response.json();
         if (!data.success) {
@@ -356,6 +356,8 @@
         let html = `<p><strong><i class="fas fa-hashtag"></i> Purchase Order ID:</strong> ${details.purchaseOrderId}</p>`;
         html += `<p><strong><i class="fas fa-building"></i> Supplier:</strong> ${details.supplierCompanyName} (ID: ${details.supplierId})</p>`;
         html += `<p><strong><i class="fas fa-dollar-sign"></i> Total Cost:</strong> ${details.totalCost}</p>`;
+        // New line to display Storage Location Code.
+        html += `<p><strong><i class="fas fa-warehouse"></i> Storage Location:</strong> ${details.storageLocationCode}</p>`;
         html += `<p><strong><i class="fas fa-info-circle"></i> Status:</strong> ${details.poStatus}</p>`;
         html += `<p><strong><i class="fas fa-calendar-alt"></i> Created Date:</strong> ${new Date(details.createdDate).toLocaleString()}</p>`;
         

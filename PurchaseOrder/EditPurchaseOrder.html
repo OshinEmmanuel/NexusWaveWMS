@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Edit Purchase Order - Nexus Wave WMS</title>
   <!-- Bootstrap CSS -->
@@ -69,7 +69,7 @@
     }
     .form-label {
       font-weight: 600;
-      white-space: nowrap; /* Prevent label text from wrapping */
+      white-space: nowrap;
     }
     /* Item Group Styling */
     .item-group {
@@ -124,12 +124,21 @@
           </label>
           <input type="number" id="supplierId" class="form-control" placeholder="Supplier ID" readonly>
         </div>
-        <!-- Second Row: Supplier Name -->
+        <!-- Second Row: Supplier Name and Storage Location -->
         <div class="col-md-6">
           <label for="supplierName" class="form-label">
             <i class="fas fa-building"></i> Supplier Name
           </label>
           <input type="text" id="supplierName" class="form-control" placeholder="Supplier Name" readonly>
+        </div>
+        <div class="col-md-6">
+          <label for="storageLocationCode" class="form-label">
+            <i class="fas fa-warehouse"></i> Storage Location
+          </label>
+          <!-- Changed input to a dropdown select -->
+          <select id="storageLocationCode" class="form-select" required>
+            <option value="">-- Select Storage Location --</option>
+          </select>
         </div>
         <!-- Items Container (full width) -->
         <div id="itemsContainer" class="col-12"></div>
@@ -156,8 +165,7 @@
     const token = localStorage.getItem('authToken');
     if (!token) {
       alert("Authorization token is missing. Please log in.");
-      // Optionally, redirect to login page:
-      // window.location.href = "/login";
+      // Optionally, redirect to login page.
     }
 
     const itemsContainer = document.getElementById('itemsContainer');
@@ -166,9 +174,34 @@
     const purchaseOrderIdInput = document.getElementById('purchaseOrderId');
     const supplierIdInput = document.getElementById('supplierId');
     const supplierNameInput = document.getElementById('supplierName');
+    const storageLocationSelect = document.getElementById('storageLocationCode');
+
+    // Fetch storage locations from the API and populate the dropdown.
+    async function populateStorageLocations() {
+      try {
+        const res = await fetch("https://localhost:7014/api/StorageLocation/GetAllStorageLocations", {
+          method: "GET",
+          headers: { "Accept": "application/json" }
+        });
+        if (!res.ok) throw new Error("Failed to fetch storage locations.");
+        const locations = await res.json();
+        // Clear existing options (except the placeholder).
+        storageLocationSelect.innerHTML = `<option value="">-- Select Storage Location --</option>`;
+        locations.forEach(loc => {
+          const option = document.createElement('option');
+          option.value = loc.storageLocationCode;
+          option.textContent = `${loc.storageLocationCode} - ${loc.name}`;
+          storageLocationSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Error fetching storage locations:", error);
+      }
+    }
+
+    // Call populateStorageLocations on page load.
+    document.addEventListener('DOMContentLoaded', populateStorageLocations);
 
     // Function to add a new item row.
-    // Includes a non-editable Product Name field and uses row g-4 for extra spacing.
     function addItemRow(item = {}) {
       const receivedQty = item.receivedQty !== undefined ? item.receivedQty : 0;
       const productName = item.productName || '';
@@ -210,14 +243,13 @@
       `;
       itemsContainer.appendChild(itemGroup);
 
-      // Add blur event on product code input to auto-fetch product name if empty.
+      // Auto-fetch product name on blur if empty.
       const productCodeInput = itemGroup.querySelector('.productCode');
       const productNameInput = itemGroup.querySelector('.productName');
       productCodeInput.addEventListener('blur', async function() {
         const code = productCodeInput.value;
         if (!code || productNameInput.value) return;
         try {
-          // Assuming there's an API endpoint to get product details by product code.
           const res = await fetch(`https://localhost:7014/api/Product/GetProductDetails/${code}`);
           if (!res.ok) throw new Error('Failed to fetch product details');
           const productData = await res.json();
@@ -233,12 +265,12 @@
       });
     }
 
-    // Event listener to add a new item row.
+    // Add new item row when "Add Item" button is clicked.
     document.getElementById('addItemButton').addEventListener('click', () => {
       addItemRow();
     });
 
-    // Event delegation: Remove an item row when the "Remove Item" button is clicked.
+    // Remove an item row when the "Remove Item" button is clicked.
     itemsContainer.addEventListener('click', (e) => {
       if (e.target.closest('.remove-item')) {
         e.target.closest('.item-group').remove();
@@ -255,24 +287,22 @@
           throw new Error('Failed to fetch purchase order');
         }
         const data = await response.text();
-        
         let poData = {};
         if (data) {
           poData = JSON.parse(data);
         }
-
         if (!poData?.data) throw new Error("Invalid purchase order data");
         const po = poData.data;
         
         // Populate supplier fields.
         supplierIdInput.value = po.supplierId || '';
         supplierNameInput.value = po.supplierCompanyName || po.supplierName || '';
+        // Set the storage location dropdown to the current value.
+        storageLocationSelect.value = po.storageLocationCode || '';
         
         // Clear items container and load items.
         itemsContainer.innerHTML = '';
         (po.items || []).forEach(item => addItemRow(item));
-        
-        // If there are no items, add one empty row.
         if (!po.items || po.items.length === 0) addItemRow();
         
         showResponseMessage(`Loaded purchase order #${purchaseOrderId}`, 'success');
@@ -291,6 +321,7 @@
         // Build request body.
         const requestBody = {
           supplierId: parseInt(supplierIdInput.value),
+          storageLocationCode: storageLocationSelect.value, // Selected value from dropdown
           items: Array.from(itemsContainer.querySelectorAll('.item-group')).map(group => ({
             productCode: parseInt(group.querySelector('.productCode').value),
             poQty: parseInt(group.querySelector('.poQty').value),
@@ -307,13 +338,12 @@
             body: JSON.stringify(requestBody)
         });
         
-        // Safely parse the response in case it's empty or non-JSON.
+        // Safely parse the response.
         const responseText = await response.text();
         let json = {};
         if (responseText) {
           json = JSON.parse(responseText);
         }
-
         if (!response.ok) {
           alert(`Error: ${json.message || 'Failed to update purchase order'}`);
           throw new Error(json.message || 'Failed to update purchase order');

@@ -8,7 +8,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <!-- Google Fonts -->
+  <!-- Google Fonts for Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     /* Global reset and background */
@@ -20,7 +20,6 @@
     body {
       font-family: 'Poppins', sans-serif;
       position: relative;
-      z-index: 0;
       background-color: #f4f7f6;
     }
     /* Full-screen blurred background image */
@@ -42,7 +41,7 @@
       width: 100%;
       z-index: 1000;
     }
-    /* Main wrapper to add spacing below navbar */
+    /* Main wrapper */
     .wrapper {
       margin-top: 70px;
       padding: 20px;
@@ -55,9 +54,9 @@
       background: #ffffff;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
     }
-    /* Card Header Styling */
+    /* Card Header styling */
     .card-header {
       background-color: #007bff;
       color: #ffffff;
@@ -67,7 +66,7 @@
       border-top-left-radius: 10px;
       border-top-right-radius: 10px;
     }
-    /* Action Buttons Styling */
+    /* Action Buttons styling */
     .action-buttons {
       display: flex;
       justify-content: center;
@@ -106,6 +105,7 @@
       white-space: nowrap;
       text-align: center;
       vertical-align: middle;
+      border: 1px solid white !important;
     }
     /* Footer Styling */
     footer {
@@ -128,7 +128,6 @@
       <a class="navbar-brand me-auto" href="../index.html">
         <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
       </a>
-      <!-- Home Link -->
       <div class="collapse navbar-collapse justify-content-end">
         <ul class="navbar-nav">
           <li class="nav-item">
@@ -153,27 +152,27 @@
         <div class="card-body">
           <form id="searchForm" class="row g-3">
             <div class="col-md-3">
-              <label for="Id" class="form-label">📌 Movement ID</label>
+              <label for="Id" class="form-label">Movement ID</label>
               <input type="number" id="Id" class="form-control" placeholder="Enter Movement ID">
             </div>
             <div class="col-md-3">
-              <label for="productCode" class="form-label">📌 Product Code</label>
+              <label for="productCode" class="form-label">Product Code</label>
               <input type="number" id="productCode" class="form-control" placeholder="Enter Product Code">
             </div>
             <div class="col-md-3">
-              <label for="productName" class="form-label">📌 Product Name</label>
+              <label for="productName" class="form-label">Product Name</label>
               <input type="text" id="productName" class="form-control" placeholder="Enter Product Name">
             </div>
             <div class="col-md-3">
-              <label for="batchNumber" class="form-label">📌 Batch Number</label>
+              <label for="batchNumber" class="form-label">Batch Number</label>
               <input type="text" id="batchNumber" class="form-control" placeholder="Enter Batch Number">
             </div>
             <div class="col-md-3">
-              <label for="bestBefore" class="form-label">📅 Best Before</label>
+              <label for="bestBefore" class="form-label">Best Before</label>
               <input type="date" id="bestBefore" class="form-control">
             </div>
             <div class="col-md-3">
-              <label for="inventoryMovementType" class="form-label">📊 Movement Type</label>
+              <label for="inventoryMovementType" class="form-label">Movement Type</label>
               <select id="inventoryMovementType" class="form-select">
                 <option value="">All</option>
                 <option value="In">In</option>
@@ -189,32 +188,33 @@
               </select>
             </div>
             <div class="col-md-3">
-              <label for="storageLocationCode" class="form-label">📌 Storage Location Code</label>
-              <input type="text" id="storageLocationCode" class="form-control" placeholder="Enter Storage Location Code">
-            </div>
-            <div class="col-md-3">
-              <label for="binCode" class="form-label">📌 Bin Code</label>
-              <input type="text" id="binCode" class="form-control" placeholder="Enter Bin Code">
-            </div>
-            <div class="col-md-3">
-              <label for="orderId" class="form-label">📜 Order ID</label>
+              <label for="orderId" class="form-label">Order ID</label>
               <input type="number" id="orderId" class="form-control" placeholder="Enter Order ID">
             </div>
             <div class="col-md-3">
-              <label for="shipmentId" class="form-label">🚚 Shipment ID</label>
+              <label for="shipmentId" class="form-label">Shipment ID</label>
               <input type="number" id="shipmentId" class="form-control" placeholder="Enter Shipment ID">
             </div>
             <div class="col-md-3">
-              <label for="purchaseOrderId" class="form-label">🛒 Purchase Order ID</label>
+              <label for="purchaseOrderId" class="form-label">Purchase Order ID</label>
               <input type="number" id="purchaseOrderId" class="form-control" placeholder="Enter Purchase Order ID">
             </div>
             <div class="col-md-3">
-              <label for="movementDateStart" class="form-label">📅 Start Date</label>
+              <label for="movementDateStart" class="form-label">Start Date</label>
               <input type="date" id="movementDateStart" class="form-control">
             </div>
             <div class="col-md-3">
-              <label for="movementDateEnd" class="form-label">📅 End Date</label>
+              <label for="movementDateEnd" class="form-label">End Date</label>
               <input type="date" id="movementDateEnd" class="form-control">
+            </div>
+            <!-- New Filters -->
+            <div class="col-md-3">
+              <label for="storageLocationCode" class="form-label">Storage Location Code</label>
+              <input type="text" id="storageLocationCode" class="form-control" placeholder="e.g., WH001">
+            </div>
+            <div class="col-md-3">
+              <label for="binCode" class="form-label">Bin Code</label>
+              <input type="text" id="binCode" class="form-control" placeholder="e.g., A01">
             </div>
             <!-- Action Buttons -->
             <div class="col-md-12 mt-3 action-buttons">
@@ -230,7 +230,7 @@
       </div>
       
       <!-- Response Message -->
-      <div id="responseMessage" class="alert d-none mt-3"></div>
+      <div id="responseMessage" class="alert mt-3 d-none"></div>
       
       <!-- Results Card -->
       <div class="card">
@@ -258,7 +258,9 @@
                   <th>Movement Date</th>
                 </tr>
               </thead>
-              <tbody></tbody>
+              <tbody id="inventoryTableBody">
+                <!-- Data will be dynamically inserted here -->
+              </tbody>
             </table>
           </div>
           <!-- Pagination Controls -->
@@ -282,31 +284,32 @@
     const pageSize = 10;
     const exportButton = document.getElementById('exportButton');
     const inventoryTable = document.getElementById('inventoryTable');
-    const tableBody = inventoryTable.querySelector('tbody');
+    const tableBody = document.getElementById('inventoryTableBody');
     const paginationContainer = document.getElementById('paginationContainer');
-  
-    // Build query string from the search form inputs
+    
+    // Build query string from search form inputs
     function buildQueryParams() {
       const params = new URLSearchParams();
       const fields = [
         'Id', 'productCode', 'productName', 'batchNumber', 'bestBefore',
-        'inventoryMovementType', 'storageLocationCode', 'binCode',
-        'orderId', 'shipmentId', 'purchaseOrderId',
-        'movementDateStart', 'movementDateEnd'
+        'inventoryMovementType', 'orderId', 'shipmentId', 'purchaseOrderId',
+        'movementDateStart', 'movementDateEnd', 'storageLocationCode', 'binCode'
       ];
       fields.forEach(field => {
-        const value = document.getElementById(field).value;
-        if (value) params.append(field, value);
+        const value = document.getElementById(field)?.value;
+        if (value) {
+          params.append(field, value);
+        }
       });
       return params.toString();
     }
-  
-    // Render the table for the current page
+    
+    // Render table for current page
     function renderTablePage() {
       tableBody.innerHTML = '';
       const startIndex = (currentPage - 1) * pageSize;
       const pageItems = allMovements.slice(startIndex, startIndex + pageSize);
-  
+      
       pageItems.forEach(movement => {
         tableBody.insertAdjacentHTML('beforeend', `
           <tr>
@@ -318,7 +321,7 @@
             <td>${movement.bestBeforeDate ? new Date(movement.bestBeforeDate).toLocaleDateString() : ''}</td>
             <td>${movement.movementType || ''}</td>
             <td>${movement.storageLocationCode || ''}</td>
-            <td>${movement.storageBinCode || ''}</td>
+            <td>${movement.binCode || ''}</td>
             <td>${movement.orderId || ''}</td>
             <td>${movement.shipmentId || ''}</td>
             <td>${movement.purchaseOrderNumber || ''}</td>
@@ -328,41 +331,40 @@
         `);
       });
     }
-  
+    
     // Render pagination controls
     function renderPaginationControls() {
       paginationContainer.innerHTML = '';
       const totalPages = Math.ceil(allMovements.length / pageSize);
-  
-      if (totalPages <= 1) return; // No need for pagination if only one page
-  
+      if (totalPages <= 1) return;
+      
       let paginationHTML = `<ul class="pagination justify-content-center">`;
-  
+      
       // Previous button
       paginationHTML += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
                            <a class="page-link" href="#" aria-label="Previous" data-page="${currentPage - 1}">
                              <span aria-hidden="true">&laquo;</span>
                            </a>
                          </li>`;
-  
+      
       // Page numbers
       for (let i = 1; i <= totalPages; i++) {
         paginationHTML += `<li class="page-item ${currentPage === i ? 'active' : ''}">
                              <a class="page-link" href="#" data-page="${i}">${i}</a>
                            </li>`;
       }
-  
+      
       // Next button
       paginationHTML += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
                            <a class="page-link" href="#" aria-label="Next" data-page="${currentPage + 1}">
                              <span aria-hidden="true">&raquo;</span>
                            </a>
                          </li>`;
-  
+      
       paginationHTML += `</ul>`;
       paginationContainer.innerHTML = paginationHTML;
-  
-      // Add click listeners to pagination links
+      
+      // Attach click events
       const pageLinks = paginationContainer.querySelectorAll('a.page-link');
       pageLinks.forEach(link => {
         link.addEventListener('click', function(e) {
@@ -376,75 +378,70 @@
         });
       });
     }
-  
-    document.getElementById('searchForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const responseMessage = document.getElementById('responseMessage');
-      responseMessage.classList.add('d-none');
-      responseMessage.textContent = '';
-      tableBody.innerHTML = '';
-      paginationContainer.innerHTML = '';
-  
+    
+    // Fetch summaries from API with query parameters
+    function fetchSummaries() {
       const queryString = buildQueryParams();
       currentQuery = queryString;
-  
-      try {
-        // Adjust the endpoint as needed:
-        // e.g. https://localhost:7014/api/InventoryMovements/GetAllMovements
-        const response = await fetch(`https://localhost:7014/api/InventoryMovements/GetAllMovements?${queryString}`);
-        if (!response.ok) throw new Error('Failed to fetch inventory movements.');
-        const data = await response.json();
-  
-        allMovements = data;
-  
-        if (allMovements.length > 0) {
-          currentPage = 1;
-          renderTablePage();
-          renderPaginationControls();
-          inventoryTable.classList.remove('d-none');
-          responseMessage.innerHTML = `<div class="alert alert-success">Search successful!</div>`;
-          exportButton.disabled = false;
-        } else {
+      let url = "https://localhost:7014/api/InventoryMovements/GetAllMovements";
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+      
+      fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } })
+        .then(response => {
+          if (!response.ok) throw new Error("Failed to fetch inventory movements.");
+          return response.json();
+        })
+        .then(data => {
+          allMovements = data;
+          if (allMovements.length > 0) {
+            currentPage = 1;
+            renderTablePage();
+            renderPaginationControls();
+            inventoryTable.classList.remove('d-none');
+            responseMessage.innerHTML = `<div class="alert alert-success">Search successful!</div>`;
+            exportButton.disabled = false;
+          } else {
+            inventoryTable.classList.add('d-none');
+            paginationContainer.innerHTML = '';
+            responseMessage.className = 'alert alert-warning';
+            responseMessage.textContent = 'No inventory movements found for the specified search criteria.';
+            responseMessage.classList.remove('d-none');
+            exportButton.disabled = true;
+          }
+        })
+        .catch(error => {
           inventoryTable.classList.add('d-none');
           paginationContainer.innerHTML = '';
-          responseMessage.className = 'alert alert-warning';
-          responseMessage.textContent = 'No inventory movements found for the specified search criteria.';
+          responseMessage.className = 'alert alert-danger';
+          responseMessage.textContent = error.message;
           responseMessage.classList.remove('d-none');
           exportButton.disabled = true;
-        }
-      } catch (error) {
-        inventoryTable.classList.add('d-none');
-        paginationContainer.innerHTML = '';
-        responseMessage.className = 'alert alert-danger';
-        responseMessage.textContent = error.message;
-        responseMessage.classList.remove('d-none');
-        exportButton.disabled = true;
-      }
-    });
-  
-    exportButton.addEventListener('click', async function () {
-      if (allMovements.length === 0) {
+        });
+    }
+    
+    // Export table data to Excel using SheetJS
+    function exportTableToExcel() {
+      if (inventoryTable.classList.contains('d-none')) {
         alert("No data available to export. Please perform a search first.");
         return;
       }
-      try {
-        // Adjust your export endpoint if needed
-        // e.g. /api/InventoryMovements/export-history
-        const response = await fetch(`https://localhost:7014/api/InventoryMovements/export-history?${currentQuery}`);
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Export failed: ${response.status} - ${errorText}`);
-        }
-        const blob = await response.blob();
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'InventoryMovements.xlsx';
-        link.click();
-        URL.revokeObjectURL(link.href);
-      } catch (error) {
-        alert(error.message);
-        console.error("Export error:", error);
-      }
+      const table = document.querySelector('.table-responsive table');
+      const workbook = XLSX.utils.table_to_book(table, { sheet: "Inventory Movements" });
+      XLSX.writeFile(workbook, "InventoryMovements.xlsx");
+    }
+    
+    // Event listener for search form submission
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      responseMessage.classList.add('d-none');
+      fetchSummaries();
+    });
+    
+    // Event listener for export button
+    exportButton.addEventListener('click', function() {
+      exportTableToExcel();
     });
   </script>
 </body>
