@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexus Wave WMS - Login</title>
-  <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.jpg">
+  <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo.png">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="assets/css/bootstrap.min.css">
   <!-- Font Awesome CSS -->
@@ -63,9 +63,20 @@
       padding: 10px;
       border-radius: 5px;
       transition: 0.3s;
+      border: none;
     }
     .btn-login:hover {
       background: #2980b9;
+    }
+    /* Forgot Password Button (Styled as a link) */
+    .btn-forgot {
+      background: none;
+      border: none;
+      color: lightblue;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 0;
+      font-size: 1rem;
     }
     /* Footer */
     .footer {
@@ -85,10 +96,8 @@
         <img src="assets/img/logo.png" alt="Nexus Wave WMS Logo">
       </div>
       <div class="app-name">Nexus Wave WMS</div>
-
       <h3>Sign In</h3>
       <p>Please login to your account</p>
-
       <form id="loginForm">
         <div class="mb-3">
           <input type="email" class="form-control" id="email" placeholder="Enter your email address" required>
@@ -97,17 +106,15 @@
           <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
         </div>
         <div class="mb-3">
-          <a href="forgotpassword.html" style="color: lightblue;">Forgot Password?</a>
+          <!-- Added Forgot Password button -->
+          <button type="button" class="btn-forgot" id="forgotPasswordBtn">Forgot Password?</button>
         </div>
         <button type="submit" class="btn btn-login w-100">Sign In</button>
       </form>
-
-      <p class="mt-3">Don’t have an account?  Pls See Admin to Get Access <a href="#" style="color: lightblue;">Thank You!</a></p>
-      
+      <p class="mt-3">Don’t have an account? Pls See Admin to Get Access</p>
       <div id="responseMessage" class="mt-3"></div>
     </div>
   </div>
-
   <div class="footer">
     &copy; 2025 Nexus Wave WMS. All rights reserved.
   </div>
@@ -116,36 +123,32 @@
   <script src="assets/js/jquery-3.6.0.min.js"></script>
   <script src="assets/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
-  
-  <!-- ADDED: SweetAlert2 for pop-up logic -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- ADDED -->
-
+  <!-- SweetAlert2 for pop-up logic -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
+    // Redirect to forgot password page when the button is clicked
+    document.getElementById('forgotPasswordBtn').addEventListener('click', function() {
+      window.location.href = 'forgotpassword.html';
+    });
+
+    // Login Form Submission
     document.getElementById('loginForm').addEventListener('submit', async function(event) {
       event.preventDefault();
       let email = document.getElementById('email').value;
       let password = document.getElementById('password').value;
       let responseMessage = document.getElementById('responseMessage');
-
-      // Show loading message.
       responseMessage.innerHTML = `<div class="alert alert-info">Logging in...</div>`;
-
       try {
         const response = await fetch('https://oshinemmanuel-001-site1.qtempurl.com/api/Auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         });
-
         const data = await response.json();
-
         if (response.ok) {
-          // Save token, role, and displayName in localStorage.
           localStorage.setItem("authToken", data.token);
           localStorage.setItem("userRole", data.role);
           localStorage.setItem("displayName", data.displayName);
-          
-          // MODIFIED: Use SweetAlert for a success pop-up instead of a plain div.
           Swal.fire({
             icon: 'success',
             title: 'Login Successful',
@@ -153,26 +156,24 @@
             timer: 2000,
             showConfirmButton: false
           });
-
           setTimeout(() => {
             window.location.href = "Dashboard.html";
           }, 2000);
-
         } else {
-          // MODIFIED: Use SweetAlert for error message.
           Swal.fire({
             icon: 'error',
             title: 'Login Failed',
             text: data.message || "Invalid credentials"
           });
+          responseMessage.innerHTML = `<div class="alert alert-danger">${data.message || "Invalid credentials"}</div>`;
         }
       } catch (error) {
-        // MODIFIED: Use SweetAlert for exception message.
         Swal.fire({
           icon: 'error',
           title: 'An error occurred',
           text: error.message
         });
+        responseMessage.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
       }
     });
   </script>

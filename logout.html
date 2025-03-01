@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Wave WMS - Logout</title>
+  <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.jpg">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo.png">
+  <!-- Font Awesome CSS -->
+  <link rel="stylesheet" href="assets/plugins/fontawesome/css/fontawesome.min.css">
+  <link rel="stylesheet" href="assets/plugins/fontawesome/css/all.min.css">
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* Full Page Background (Same as login) */
+    body {
+      background: url('assets/img/factory-capitalism-pilot-warehouse.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Arial', sans-serif;
+    }
+    /* Logout Box Styling (Similar to the login container, but renamed) */
+    .logout-container {
+      width: 400px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    /* Centering the logout container */
+    .logout-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    /* App Logo */
+    .logout-logo img {
+      width: 120px;
+    }
+    /* App Name */
+    .app-name {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 10px;
+      text-transform: uppercase;
+    }
+    /* Logout Button (Styled similarly to Sign In button) */
+    .btn-logout {
+      background: #3498db;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      transition: 0.3s;
+    }
+    .btn-logout:hover {
+      background: #2980b9;
+    }
+    /* Footer */
+    .footer {
+      text-align: center;
+      color: white;
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="logout-wrapper">
+    <div class="logout-container">
+      <!-- Logo and Branding -->
+      <div class="logout-logo">
+        <img src="assets/img/logo.png" alt="Nexus Wave WMS Logo">
+      </div>
+      <div class="app-name">Nexus Wave WMS</div>
+      
+      <!-- Page Heading -->
+      <h3>Logout</h3>
+      <p>Are you sure you want to log out?</p>
+      <p>Click the button below to confirm and log out completely.</p>
+
+      <!-- Logout Form -->
+      <form id="logoutForm">
+        <button type="submit" class="btn btn-logout w-100">Log Out</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="footer">
+    &copy; 2025 Nexus Wave WMS. All rights reserved.
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/jquery-3.6.0.min.js"></script>
+  <script src="assets/js/bootstrap.bundle.min.js"></script>
+  <!-- ADDED: SweetAlert2 for logout pop-up -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.getElementById('logoutForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      // Clear authentication details from localStorage
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("displayName");
+      
+      // ADDED: Use SweetAlert2 to display a logout success pop-up
+      Swal.fire({
+        icon: 'success',
+        title: 'Logged Out',
+        text: 'You have been successfully logged out.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      
+      // Redirect to the login page after a brief delay
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 2000);
+    });
+  </script>
+</body>
+</html>
