@@ -116,6 +116,10 @@
   <script src="assets/js/jquery-3.6.0.min.js"></script>
   <script src="assets/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+  
+  <!-- ADDED: SweetAlert2 for pop-up logic -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- ADDED -->
+
   <script>
     document.getElementById('loginForm').addEventListener('submit', async function(event) {
       event.preventDefault();
@@ -134,21 +138,41 @@
         });
 
         const data = await response.json();
-        
+
         if (response.ok) {
           // Save token, role, and displayName in localStorage.
           localStorage.setItem("authToken", data.token);
           localStorage.setItem("userRole", data.role);
           localStorage.setItem("displayName", data.displayName);
-          responseMessage.innerHTML = `<div class="alert alert-success">Login successful! Redirecting...</div>`;
+          
+          // MODIFIED: Use SweetAlert for a success pop-up instead of a plain div.
+          Swal.fire({
+            icon: 'success',
+            title: 'Login Successful',
+            text: 'Redirecting...',
+            timer: 2000,
+            showConfirmButton: false
+          });
+
           setTimeout(() => {
             window.location.href = "Dashboard.html";
           }, 2000);
+
         } else {
-          responseMessage.innerHTML = `<div class="alert alert-danger">${data.message || "Invalid credentials"}</div>`;
+          // MODIFIED: Use SweetAlert for error message.
+          Swal.fire({
+            icon: 'error',
+            title: 'Login Failed',
+            text: data.message || "Invalid credentials"
+          });
         }
       } catch (error) {
-        responseMessage.innerHTML = `<div class="alert alert-danger">An error occurred: ${error.message}</div>`;
+        // MODIFIED: Use SweetAlert for exception message.
+        Swal.fire({
+          icon: 'error',
+          title: 'An error occurred',
+          text: error.message
+        });
       }
     });
   </script>
