@@ -99,6 +99,7 @@
   </style>
 </head>
 <body>
+  
   <!-- Merged Top Navigation Bar -->
   <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container-fluid">
@@ -183,8 +184,10 @@
   </footer>
 
   <!-- Bootstrap JS Bundle with Popper.js -->
+  <script src="assets/js/auth.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    
     // Retrieve the auth token and displayName from localStorage
     const authToken = localStorage.getItem("authToken");
     const displayName = localStorage.getItem("displayName");
