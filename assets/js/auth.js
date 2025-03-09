@@ -17,7 +17,7 @@
               text: 'Your session has expired. Please login again.'
             }).then(() => {
               localStorage.removeItem("authToken");
-              localStorage.removeItem("expiryTime");
+              localStorage.removeItem("expireTime");
               window.location.href = 'login.html';
             });
           }, timeDiff);
