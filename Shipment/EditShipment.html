@@ -93,29 +93,78 @@
   </style>
 </head>
 <body>
-  <!-- Fixed Transparent Navbar -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <!-- Back Button -->
-      <a class="btn btn-secondary me-2" href="javascript:history.back()">
-        <i class="fas fa-arrow-left"></i> Back
-      </a>
-      <!-- Logo linking to Home -->
-      <a class="navbar-brand me-auto" href="../Dashboard.html">
-        <img src="../assets/img/logo.png" alt="Logo">
-      </a>
-      <!-- Home Link -->
-      <div class="collapse navbar-collapse justify-content-end">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="../Dashboard.html">
-              <i class="fas fa-home"></i> Home
-            </a>
-          </li>
-        </ul>
-      </div>
+<!-- Merged Top Navigation Bar -->
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container-fluid">
+    <!-- Back button -->
+    <a class="btn btn-secondary me-2" href="javascript:history.back()">
+      <i class="fas fa-arrow-left"></i> Back
+    </a>
+    <!-- Logo linking to the homepage -->
+    <a class="navbar-brand me-auto" href="../Dashboard.html">
+      <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+            data-bs-target="#navbarNav" aria-controls="navbarNav" 
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <!-- Right Side Navbar -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <!-- Home link -->
+        <li class="nav-item">
+          <a class="nav-link" href="../Dashboard.html">
+            <i class="fas fa-home"></i> Home
+          </a>
+        </li>
+        <!-- Notification Dropdown -->
+        <li class="nav-item dropdown notification-dropdown">
+          <a class="nav-link" href="#" id="notificationDropdown" role="button" 
+             data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-bell"></i>
+            <span id="notificationBadge" class="notification-badge"></span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
+            <li><span class="dropdown-item">No notifications.</span></li>
+          </ul>
+        </li>
+        <!-- User Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+             data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user"></i> <span id="navbarUsername">User</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" href="User/ManageUsers.html">Manage Profile</a></li>
+            <li><a class="dropdown-item" href="User/UpdateUser.html">Update Profile</a></li>
+            <li><a class="dropdown-item" href="UserManagement/ChangePassword.html">Change Password</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="logout.html">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
+
+<!-- Script to load dynamic username from localStorage -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var displayName = localStorage.getItem("displayName") || "User";
+    document.getElementById("navbarUsername").textContent = displayName;
+  });
+</script>
+
+
+<!-- Script to load dynamic username from localStorage -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var displayName = localStorage.getItem("displayName") || "User";
+    document.getElementById("navbarUsername").textContent = displayName;
+  });
+</script>
+
 
   <!-- Main Content Wrapper -->
   <div class="wrapper">
