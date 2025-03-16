@@ -313,9 +313,45 @@
     });
   </script>
   
-  <!-- SignalR Notification Logic -->
+  <!-- SignalR and Notification Logic -->
   <script>
     let notifications = []; // Global array to store notifications
+
+    // NEW: Function to load existing notifications from the API.
+    async function loadExistingNotifications() {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+      let decoded;
+      try {
+        decoded = jwt_decode(token);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        return;
+      }
+      const userId = decoded.userId;
+      if (!userId) return;
+      
+      try {
+        // Adjust the URL to match your API endpoint.
+        const response = await fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/Notifications/user/" + userId, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        });
+        if (response.ok) {
+          const result = await response.json();
+          // Assuming your API returns { Data: [...] }
+          notifications = result.Data || [];
+          updateNotificationDropdown();
+        } else {
+          console.error("Failed to load notifications:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    }
 
     async function connectToNotificationHub() {
       const token = localStorage.getItem("authToken");
@@ -336,7 +372,7 @@
         .build();
       
       connection.on("ReceiveNotification", function(notification) {
-        // Prepend new notification to the array and update the dropdown
+        // Prepend new notification to the array and update the dropdown.
         notifications.unshift(notification);
         updateNotificationDropdown();
       });
@@ -353,7 +389,7 @@
       const badge = document.getElementById("notificationBadge");
       const notificationList = document.getElementById("notificationList");
       
-      // Count unread notifications (if using isRead flag)
+      // Count unread notifications.
       const unreadCount = notifications.filter(n => !n.isRead).length;
       if (unreadCount > 0) {
         badge.textContent = unreadCount;
@@ -362,7 +398,7 @@
         badge.style.display = "none";
       }
       
-      // Clear the list and repopulate with current notifications
+      // Clear the list and repopulate.
       notificationList.innerHTML = "";
       if (notifications.length === 0) {
         notificationList.innerHTML = `<li><span class="dropdown-item">No notifications.</span></li>`;
@@ -381,14 +417,14 @@
 
     // Optional: Function to mark a notification as read.
     async function markNotificationAsRead(notificationId) {
-      // Example: API call to mark the notification as read:
+      // Example: API call to mark the notification as read.
       // await fetch(`/api/notifications/markAsRead/${notificationId}`, { method: "POST" });
-      // For now, update the local state:
       notifications = notifications.map(n => n.notificationId === notificationId ? { ...n, isRead: true } : n);
       updateNotificationDropdown();
     }
 
     document.addEventListener("DOMContentLoaded", function() {
+      loadExistingNotifications();
       connectToNotificationHub();
     });
   </script>
