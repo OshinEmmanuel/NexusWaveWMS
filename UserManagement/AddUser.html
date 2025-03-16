@@ -92,68 +92,68 @@
   </style>
 </head>
 <body>
-<!-- Merged Top Navigation Bar -->
-<nav class="navbar navbar-expand-lg fixed-top">
-  <div class="container-fluid">
-    <!-- Back button -->
-    <a class="btn btn-secondary me-2" href="javascript:history.back()">
-      <i class="fas fa-arrow-left"></i> Back
-    </a>
-    <!-- Logo linking to the homepage -->
-    <a class="navbar-brand me-auto" href="../Dashboard.html">
-      <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-            data-bs-target="#navbarNav" aria-controls="navbarNav" 
-            aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <!-- Right Side Navbar -->
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav">
-        <!-- Home link -->
-        <li class="nav-item">
-          <a class="nav-link" href="../Dashboard.html">
-            <i class="fas fa-home"></i> Home
-          </a>
-        </li>
-        <!-- Notification Dropdown -->
-        <li class="nav-item dropdown notification-dropdown">
-          <a class="nav-link" href="#" id="notificationDropdown" role="button" 
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-bell"></i>
-            <span id="notificationBadge" class="notification-badge"></span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
-            <li><span class="dropdown-item">No notifications.</span></li>
-          </ul>
-        </li>
-        <!-- User Dropdown -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-user"></i> <span id="navbarUsername">User</span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="User/ManageUsers.html">Manage Profile</a></li>
-            <li><a class="dropdown-item" href="User/UpdateUser.html">Update Profile</a></li>
-            <li><a class="dropdown-item" href="UserManagement/ChangePassword.html">Change Password</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="../logout.html">Logout</a></li>
-          </ul>
-        </li>
-      </ul>
+  <!-- Merged Top Navigation Bar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <!-- Back button -->
+      <a class="btn btn-secondary me-2" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <!-- Logo linking to the homepage -->
+      <a class="navbar-brand me-auto" href="../Dashboard.html">
+        <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+              data-bs-target="#navbarNav" aria-controls="navbarNav" 
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- Right Side Navbar -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <!-- Home link -->
+          <li class="nav-item">
+            <a class="nav-link" href="../Dashboard.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+          <!-- Notification Dropdown -->
+          <li class="nav-item dropdown notification-dropdown">
+            <a class="nav-link" href="#" id="notificationDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-bell"></i>
+              <span id="notificationBadge" class="notification-badge"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
+              <li><span class="dropdown-item">No notifications.</span></li>
+            </ul>
+          </li>
+          <!-- User Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user"></i> <span id="navbarUsername">User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="User/ManageUsers.html">Manage Profile</a></li>
+              <li><a class="dropdown-item" href="User/UpdateUser.html">Update Profile</a></li>
+              <li><a class="dropdown-item" href="UserManagement/ChangePassword.html">Change Password</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="../logout.html">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<!-- Script to load dynamic username from localStorage -->
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    var displayName = localStorage.getItem("displayName") || "User";
-    document.getElementById("navbarUsername").textContent = displayName;
-  });
-</script>
+  <!-- Script to load dynamic username from localStorage -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var displayName = localStorage.getItem("displayName") || "User";
+      document.getElementById("navbarUsername").textContent = displayName;
+    });
+  </script>
 
   <!-- Main Content Wrapper -->
   <div class="wrapper">
@@ -231,6 +231,18 @@
             </select>
           </div>
         </div>
+        <!-- Storage Location Code (dynamically loaded) -->
+        <div class="mb-3" id="storageLocationCodeGroup" style="display: none;">
+          <label for="storageLocationCode" class="form-label">
+            <i class="fas fa-map-marker-alt"></i> Storage Location Code
+          </label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+            <select id="storageLocationCode" class="form-select">
+              <option value="">Loading Storage Locations...</option>
+            </select>
+          </div>
+        </div>
         <button type="submit" class="btn btn-primary w-100">
           <i class="fas fa-save"></i> Add User
         </button>
@@ -251,20 +263,70 @@
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
       // Redirect to login page if no token is found.
-      window.location.href = "index.html";
+      window.location.href = "../index.html";
     }
+
+    // Function to load storage locations from the API endpoint
+    async function loadStorageLocations() {
+      try {
+        const response = await fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/StorageLocation/GetAllStorageLocations");
+        if (!response.ok) {
+          throw new Error("Failed to load storage locations");
+        }
+        const locations = await response.json();
+        const storageSelect = document.getElementById("storageLocationCode");
+        storageSelect.innerHTML = `<option value="">Select Storage Location</option>`;
+        // Assuming the API returns an array of storage location objects with properties: StorageLocationCode and Name.
+        locations.forEach(location => {
+          const option = document.createElement("option");
+          option.value = location.StorageLocationCode || location.storageLocationCode;
+          option.textContent = `${location.Name || location.name} (${option.value})`;
+          storageSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Error loading storage locations:", error);
+        const storageSelect = document.getElementById("storageLocationCode");
+        storageSelect.innerHTML = `<option value="">Unable to load locations</option>`;
+      }
+    }
+
+    // Run on page load.
+    document.addEventListener("DOMContentLoaded", function() {
+      // Load storage locations from API.
+      loadStorageLocations();
+      // Set dynamic username in navbar.
+      const displayName = localStorage.getItem("displayName") || "User";
+      document.getElementById("navbarUsername").textContent = displayName;
+      
+      // Show/hide storage location dropdown based on role selection.
+      const roleSelect = document.getElementById("role");
+      const storageLocationCodeGroup = document.getElementById("storageLocationCodeGroup");
+      roleSelect.addEventListener("change", function() {
+        const selectedRole = this.value;
+        if (selectedRole === "Admin") {
+          storageLocationCodeGroup.style.display = "none";
+          document.getElementById("storageLocationCode").value = "";
+        } else {
+          storageLocationCodeGroup.style.display = "block";
+        }
+      });
+    });
 
     // Add User Form Submission Logic
     document.getElementById("addUserForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       
+      const selectedRole = document.getElementById("role").value;
       const userData = {
         firstName: document.getElementById("firstName").value,
         lastName: document.getElementById("lastName").value,
         email: document.getElementById("email").value,
         phoneNumber: document.getElementById("phoneNumber").value,
         password: document.getElementById("password").value,
-        role: document.getElementById("role").value
+        role: selectedRole,
+        storageLocationCode: selectedRole === "Admin" 
+          ? "" 
+          : document.getElementById("storageLocationCode").value
       };
 
       try {
@@ -294,10 +356,12 @@
           
           // Attach click event to the Add Another User button.
           document.getElementById("addAnotherButton").addEventListener("click", function() {
-            // Reset and show the form again. The API message will be cleared when the form reopens.
+            // Reset and show the form again. Clear response message.
             document.getElementById("addUserForm").reset();
             document.getElementById("addUserForm").style.display = "block";
             responseMessage.innerHTML = "";
+            // Hide storage location code group until a role is selected.
+            document.getElementById("storageLocationCodeGroup").style.display = "none";
           });
         } else {
           responseMessage.innerHTML = `
@@ -317,7 +381,7 @@
     function logout() {
       localStorage.removeItem("authToken");
       localStorage.removeItem("userRole");
-      window.location.href = "/index.html";
+      window.location.href = "../index.html";
     }
   </script>
 </body>

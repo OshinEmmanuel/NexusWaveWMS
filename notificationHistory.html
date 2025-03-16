@@ -28,12 +28,23 @@
       position: relative;
       background-color: #f8f9fa;
       padding-top: 60px;
+      z-index: 1;
     }
-    /* Background image with blur effect */
-    .wrapper::before {
+    /* Body styling with stacking context */
+    body {
+      background-color: #f8f9fa;
+      padding-top: 60px;
+      position: relative;
+      z-index: 0;
+    }
+    /* Background Image with Blur Effect */
+    body::before {
       content: "";
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0; 
+      left: 0; 
+      right: 0; 
+      bottom: 0;
       background: url("assets/img/background5.jpg") no-repeat center center fixed;
       background-size: cover;
       filter: blur(5px);
@@ -131,7 +142,7 @@
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
                 <li><span class="dropdown-item">No unread notifications.</span></li>
-                <li class="dropdown-divider"></li>
+                <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item text-center" href="Dashboard.html">Go to Dashboard</a></li>
               </ul>
             </li>
