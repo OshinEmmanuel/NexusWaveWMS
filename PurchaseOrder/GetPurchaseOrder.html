@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Get Purchase Order Details - Nexus Wave WMS</title>
+  <title>Re Print GRN - Nexus Wave WMS</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Google Fonts for Poppins -->
@@ -52,7 +52,7 @@
       margin-top: 70px; /* Space for navbar */
       padding: 20px;
     }
-    /* Container Card Styling - increased max-width for more screen space */
+    /* Container Card Styling */
     .container-card {
       max-width: 800px;
       margin: 20px auto;
@@ -70,247 +70,154 @@
     .form-label {
       font-weight: 600;
     }
-    /* Details Form - use two columns per row */
-    .details-row > div {
-      padding: 5px;
-    }
-    /* Items Table Styling */
-    .table {
-      margin-top: 15px;
-      width: 100%;
-    }
     /* Alert Styling */
     .alert {
       font-size: 0.9rem;
     }
+    /* Footer Styling */
+    footer {
+      text-align: center;
+      padding: 10px 0;
+      background-color: #f4f7f6;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    }
   </style>
 </head>
 <body>
-<!-- Merged Top Navigation Bar -->
-<nav class="navbar navbar-expand-lg fixed-top">
-  <div class="container-fluid">
-    <!-- Back button -->
-    <a class="btn btn-secondary me-2" href="javascript:history.back()">
-      <i class="fas fa-arrow-left"></i> Back
-    </a>
-    <!-- Logo linking to the homepage -->
-    <a class="navbar-brand me-auto" href="../Dashboard.html">
-      <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-            data-bs-target="#navbarNav" aria-controls="navbarNav" 
-            aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <!-- Right Side Navbar -->
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav">
-        <!-- Home link -->
-        <li class="nav-item">
-          <a class="nav-link" href="../Dashboard.html">
-            <i class="fas fa-home"></i> Home
-          </a>
-        </li>
-        <!-- Notification Dropdown -->
-        <li class="nav-item dropdown notification-dropdown">
-          <a class="nav-link" href="#" id="notificationDropdown" role="button" 
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-bell"></i>
-            <span id="notificationBadge" class="notification-badge"></span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
-            <li><span class="dropdown-item">No notifications.</span></li>
-          </ul>
-        </li>
-        <!-- User Dropdown -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-user"></i> <span id="navbarUsername">User</span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="User/ManageUsers.html">Manage Profile</a></li>
-            <li><a class="dropdown-item" href="User/UpdateUser.html">Update Profile</a></li>
-            <li><a class="dropdown-item" href="UserManagement/ChangePassword.html">Change Password</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="../logout.html">Logout</a></li>
-          </ul>
-        </li>
-      </ul>
+  <!-- Merged Top Navigation Bar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <!-- Back button -->
+      <a class="btn btn-secondary me-2" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <!-- Logo linking to the homepage -->
+      <a class="navbar-brand me-auto" href="../Dashboard.html">
+        <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+              data-bs-target="#navbarNav" aria-controls="navbarNav" 
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- Right Side Navbar -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="../Dashboard.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user"></i> <span id="navbarUsername">User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="User/ManageUsers.html">Manage Profile</a></li>
+              <li><a class="dropdown-item" href="User/UpdateUser.html">Update Profile</a></li>
+              <li><a class="dropdown-item" href="UserManagement/ChangePassword.html">Change Password</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="../logout.html">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<!-- Script to load dynamic username from localStorage -->
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    var displayName = localStorage.getItem("displayName") || "User";
-    document.getElementById("navbarUsername").textContent = displayName;
-  });
-</script>
+  <!-- Script to load dynamic username from localStorage -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var displayName = localStorage.getItem("displayName") || "User";
+      document.getElementById("navbarUsername").textContent = displayName;
+    });
+  </script>
 
   <!-- Main Content Wrapper -->
   <div class="wrapper">
-    <div class="container-card">
-      <h2 class="text-center mb-4"><i class="fas fa-search"></i> Get Purchase Order Details</h2>
-      <!-- Fetch Form -->
-      <form id="fetchForm" class="row g-3">
-        <div class="col-12">
-          <label for="purchaseOrderId" class="form-label">
-            <i class="fas fa-hashtag"></i> Purchase Order ID
-          </label>
-          <input type="number" id="purchaseOrderId" class="form-control" placeholder="Enter Purchase Order ID" required>
+    <div class="container-card" id="formContainer">
+      <h2 class="text-center mb-4"><i class="fas fa-print"></i> Reprint GRN</h2>
+      <!-- Form Section -->
+      <form id="reprintForm" class="row g-3">
+        <div class="col-md-12">
+          <label for="grnId" class="form-label"><i class="fas fa-hashtag"></i> GRN ID</label>
+          <input type="text" id="grnId" class="form-control" placeholder="Enter GRN ID (e.g., 50002-01)" required>
         </div>
-        <div class="col-12 text-center">
-          <button type="button" id="fetchDetailsButton" class="btn btn-primary w-100">
-            <i class="fas fa-search"></i> Fetch Details
+        <div class="col-md-12 text-center mt-3">
+          <button type="submit" class="btn btn-primary" style="width: 200px;">
+            <i class="fas fa-print"></i> Reprint GRN
           </button>
         </div>
       </form>
-      <!-- Details Form (hidden until data is fetched) -->
-      <form id="detailsForm" class="row g-3 d-none">
-        <!-- PO Details arranged side by side -->
-        <div class="col-md-6 details-row">
-          <label for="supplierName" class="form-label">
-            <i class="fas fa-building"></i> Supplier Name
-          </label>
-          <input type="text" id="supplierName" class="form-control" readonly>
-        </div>
-        <div class="col-md-6 details-row">
-          <label for="totalCost" class="form-label">
-            <i class="fas fa-dollar-sign"></i> Total Cost
-          </label>
-          <input type="text" id="totalCost" class="form-control" readonly>
-        </div>
-        <div class="col-md-6 details-row">
-          <label for="poStatus" class="form-label">
-            <i class="fas fa-info-circle"></i> PO Status
-          </label>
-          <input type="text" id="poStatus" class="form-control" readonly>
-        </div>
-        <div class="col-md-6 details-row">
-          <label for="createdDate" class="form-label">
-            <i class="fas fa-calendar-alt"></i> Created Date
-          </label>
-          <input type="text" id="createdDate" class="form-control" readonly>
-        </div>
-        <!-- New: Storage Location Code -->
-        <div class="col-md-6 details-row">
-          <label for="storageLocationCode" class="form-label">
-            <i class="fas fa-warehouse"></i> Storage Location
-          </label>
-          <input type="text" id="storageLocationCode" class="form-control" readonly>
-        </div>
-        <!-- Items Section -->
-        <div class="col-12 mt-3">
-          <h4><i class="fas fa-list"></i> Items</h4>
-          <div id="itemsContainer"></div>
-        </div>
-      </form>
+      <!-- Response Message -->
       <div id="responseMessage" class="alert d-none mt-3"></div>
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
+  </footer>
+
   <!-- Bootstrap JS Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const itemsContainer = document.getElementById('itemsContainer');
-    const responseMessage = document.getElementById('responseMessage');
-    const detailsForm = document.getElementById('detailsForm');
-    const fetchDetailsButton = document.getElementById('fetchDetailsButton');
 
-    // Fetch Purchase Order Details
-    fetchDetailsButton.addEventListener('click', async () => {
-      const purchaseOrderId = document.getElementById('purchaseOrderId').value;
-      if (!purchaseOrderId) {
-        alert('Please enter a Purchase Order ID.');
+  <script>
+    // Retrieve the authorization token from localStorage.
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      alert("Authorization token is missing. Please log in first.");
+      window.location.href = "/login";
+      throw new Error("Authorization token missing");
+    }
+
+    const reprintForm = document.getElementById('reprintForm');
+    const grnIdInput = document.getElementById('grnId');
+    const responseMessage = document.getElementById('responseMessage');
+
+    function showResponseMessage(message, type) {
+      responseMessage.className = `alert alert-${type}`;
+      responseMessage.textContent = message;
+      responseMessage.classList.remove('d-none');
+      setTimeout(() => responseMessage.classList.add('d-none'), 5000);
+    }
+
+    reprintForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const grnId = grnIdInput.value.trim();
+      if (!grnId) {
+        showResponseMessage("Please enter a valid GRN ID.", "danger");
         return;
       }
-
       try {
-        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/PurchaseOrder/${purchaseOrderId}/GetPurchaseOrderDetails`);
+        const url = `https://oshinemmanuel-001-site1.qtempurl.com/api/PurchaseOrder/ReprintGRN/${grnId}`;
+        console.log("Requesting reprint for GRN:", grnId, "URL:", url);
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        console.log("Response status:", response.status);
         if (!response.ok) {
-          throw new Error(
-            response.status === 404
-              ? 'Purchase order not found.'
-              : `Error fetching details: ${response.statusText || 'No response'}`
-          );
+          let errorMsg = 'Failed to reprint GRN.';
+          try {
+            const errorData = await response.json();
+            if (errorData.message) errorMsg = errorData.message;
+          } catch (err) {
+            console.error("Error parsing error response:", err);
+          }
+          throw new Error(errorMsg);
         }
-
-        const result = await response.json();
-        if (!result.success) {
-          throw new Error(result.message || 'Error retrieving purchase order.');
-        }
-        console.log(result.data);
-        populateDetailsForm(result.data);
-        responseMessage.classList.add('d-none');
+        const blob = await response.blob();
+        const pdfUrl = URL.createObjectURL(blob);
+        window.open(pdfUrl, '_blank');
+        showResponseMessage("GRN reprinted successfully.", "success");
       } catch (error) {
-        responseMessage.className = 'alert alert-danger';
-        responseMessage.textContent = `Error: ${error.message}`;
-        responseMessage.classList.remove('d-none');
+        console.error("Error reprinting GRN:", error);
+        showResponseMessage(`Error: ${error.message}`, "danger");
       }
     });
-
-    // Populate the details form with fetched data
-    function populateDetailsForm(data) {
-      detailsForm.classList.remove('d-none');
-      document.getElementById('supplierName').value = data.supplierCompanyName || 'N/A';
-      document.getElementById('totalCost').value = data.totalCost || 'N/A';
-      document.getElementById('poStatus').value = data.poStatus || 'N/A';
-      document.getElementById('createdDate').value = data.createdDate ? new Date(data.createdDate).toLocaleDateString() : 'N/A';
-      // Populate Storage Location Code
-      document.getElementById('storageLocationCode').value = data.storageLocationCode || 'N/A';
-      populateItems(data.items);
-    }
-
-    // Populate Items in a responsive table
-    function populateItems(items) {
-      itemsContainer.innerHTML = ''; // Clear existing items
-
-      if (items && items.length > 0) {
-        // Create a responsive wrapper for the table
-        const responsiveDiv = document.createElement('div');
-        responsiveDiv.className = 'table-responsive';
-
-        const table = document.createElement('table');
-        table.className = 'table table-bordered table-striped';
-        table.style.width = '100%';
-
-        const thead = document.createElement('thead');
-        thead.className = 'table-dark';
-        thead.innerHTML = `
-          <tr>
-            <th><i class="fas fa-barcode"></i> Product Code</th>
-            <th><i class="fas fa-box"></i> Product Name</th>
-            <th><i class="fas fa-sort-numeric-down"></i> PO Qty</th>
-            <th><i class="fas fa-dollar-sign"></i> Unit Cost</th>
-            <th><i class="fas fa-check-square"></i> Received Qty</th>
-          </tr>
-        `;
-        table.appendChild(thead);
-
-        const tbody = document.createElement('tbody');
-        items.forEach(item => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${item.productCode}</td>
-            <td>${item.productName}</td>
-            <td>${item.poQty}</td>
-            <td>${item.unitCost}</td>
-            <td>${item.receivedQty || 'N/A'}</td>
-          `;
-          tbody.appendChild(row);
-        });
-        table.appendChild(tbody);
-        responsiveDiv.appendChild(table);
-        itemsContainer.appendChild(responsiveDiv);
-      } else {
-        const noItemsMessage = document.createElement('p');
-        noItemsMessage.className = 'text-muted';
-        noItemsMessage.textContent = 'No items found for this purchase order.';
-        itemsContainer.appendChild(noItemsMessage);
-      }
-    }
   </script>
 </body>
 </html>
