@@ -343,7 +343,7 @@
         if (response.ok) {
           const result = await response.json();
           // Use the correct property name (lowercase "data") returned by the API.
-          notifications = result.data || [];
+          notifications = result.Data || [];
           updateNotificationDropdown();
         } else {
           console.error("Failed to load notifications:", response.statusText);
