@@ -80,6 +80,7 @@
   </style>
 </head>
 <body>
+
 <!-- Merged Top Navigation Bar -->
 <nav class="navbar navbar-expand-lg fixed-top">
   <div class="container-fluid">
@@ -99,13 +100,11 @@
     <!-- Right Side Navbar -->
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
       <ul class="navbar-nav">
-        <!-- Home link -->
         <li class="nav-item">
           <a class="nav-link" href="../Dashboard.html">
             <i class="fas fa-home"></i> Home
           </a>
         </li>
-        <!-- Notification Dropdown -->
         <li class="nav-item dropdown notification-dropdown">
           <a class="nav-link" href="#" id="notificationDropdown" role="button" 
              data-bs-toggle="dropdown" aria-expanded="false">
@@ -116,7 +115,6 @@
             <li><span class="dropdown-item">No notifications.</span></li>
           </ul>
         </li>
-        <!-- User Dropdown -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
              data-bs-toggle="dropdown" aria-expanded="false">
@@ -150,6 +148,16 @@
       <button id="searchUser" class="btn btn-primary mt-2 w-100">
         <i class="fas fa-search"></i> Search User
       </button>
+
+      <!-- Dropdown for search results -->
+      <div class="dropdown mt-2" id="userResultsDropdown" style="display: none;">
+        <button class="btn btn-secondary w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Select a User
+        </button>
+        <ul class="dropdown-menu" id="searchResultsList">
+          <!-- Search results will be populated here -->
+        </ul>
+      </div>
     </div>
 
     <!-- Update Form (hidden until user data is fetched) -->
@@ -238,6 +246,12 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  // Load dynamic username from localStorage
+  document.addEventListener("DOMContentLoaded", function() {
+    var displayName = localStorage.getItem("displayName") || "User";
+    document.getElementById("navbarUsername").textContent = displayName;
+  });
+
   // Search and Fetch User by Name or ID
   document.getElementById('searchUser').addEventListener('click', async () => {
     const searchCriteria = document.getElementById('searchCriteria').value.trim();
@@ -246,38 +260,52 @@
       return;
     }
     try {
-      const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Users/Search?searchCriteria=${searchCriteria}`);
+      const response = await fetch(`https://yourapi.com/api/users/search?searchCriteria=${searchCriteria}`);
       if (!response.ok) {
-        throw new Error("User not found.");
+        throw new Error("No users found.");
       }
       const data = await response.json();
-      const user = data.data || data; // Handle array of users if multiple results.
-
-      // Check if no results
-      if (!user || user.length === 0) {
-        alert("No users found matching your search criteria.");
+      const results = data || [];
+      if (results.length === 0) {
+        alert("No users found matching the search criteria.");
+        document.getElementById('userResultsDropdown').style.display = "none";
         return;
       }
 
-      // Populate the form fields with the fetched user data.
-      document.getElementById('firstName').value = user.firstName || "";
-      document.getElementById('lastName').value = user.lastName || "";
-      document.getElementById('email').value = user.email || "";
-      document.getElementById('phoneNumber').value = user.phoneNumber || "";
-      document.getElementById('isActive').checked = user.isActive;
-      document.getElementById('isDeleted').checked = user.isDeleted;
-      document.getElementById('userRole').value = user.userRole;
+      // Populate the dropdown with search results
+      const searchResultsList = document.getElementById('searchResultsList');
+      searchResultsList.innerHTML = ''; // Clear previous results
+      results.forEach(user => {
+        const listItem = document.createElement('li');
+        listItem.classList.add('dropdown-item');
+        listItem.textContent = `${user.firstName} ${user.lastName}`;
+        listItem.addEventListener('click', () => populateForm(user));
+        searchResultsList.appendChild(listItem);
+      });
 
-      // Show the update form
-      document.getElementById('updateUserCard').classList.remove('d-none');
+      // Show the dropdown
+      document.getElementById('userResultsDropdown').style.display = "block";
     } catch (error) {
       alert(error.message);
     }
   });
 
+  // Populate the update form when a user is selected from the dropdown
+  function populateForm(user) {
+    document.getElementById('firstName').value = user.firstName;
+    document.getElementById('lastName').value = user.lastName;
+    document.getElementById('email').value = user.email;
+    document.getElementById('phoneNumber').value = user.phoneNumber;
+    document.getElementById('userRole').value = user.userRole;
+    document.getElementById('isActive').checked = user.isActive;
+    document.getElementById('isDeleted').checked = user.isDeleted;
+    document.getElementById('updateUserCard').classList.remove('d-none');
+  }
+
   // Handle the update form submission
   document.getElementById('updateUserForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const userId = document.getElementById('searchCriteria').value.trim();
     const updatedUser = {
       firstName: document.getElementById('firstName').value,
       lastName: document.getElementById('lastName').value,
@@ -289,8 +317,7 @@
     };
 
     try {
-      const userId = document.getElementById('searchCriteria').value.trim();
-      const url = `https://oshinemmanuel-001-site1.qtempurl.com/api/Users/update/${userId}`;
+      const url = `https://yourapi.com/api/users/update/${userId}`;
       const response = await fetch(url, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
