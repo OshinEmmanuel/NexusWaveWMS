@@ -77,10 +77,15 @@
       color: #6c757d;
       padding: 10px 0;
     }
+
+    /* Add custom styles for search results selection */
+    .selected-user {
+      background-color: #007bff;
+      color: white;
+    }
   </style>
 </head>
 <body>
-
 <!-- Merged Top Navigation Bar -->
 <nav class="navbar navbar-expand-lg fixed-top">
   <div class="container-fluid">
@@ -100,21 +105,13 @@
     <!-- Right Side Navbar -->
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
       <ul class="navbar-nav">
+        <!-- Home link -->
         <li class="nav-item">
           <a class="nav-link" href="../Dashboard.html">
             <i class="fas fa-home"></i> Home
           </a>
         </li>
-        <li class="nav-item dropdown notification-dropdown">
-          <a class="nav-link" href="#" id="notificationDropdown" role="button" 
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-bell"></i>
-            <span id="notificationBadge" class="notification-badge"></span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
-            <li><span class="dropdown-item">No notifications.</span></li>
-          </ul>
-        </li>
+        <!-- User Dropdown -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
              data-bs-toggle="dropdown" aria-expanded="false">
@@ -133,6 +130,14 @@
   </div>
 </nav>
 
+<!-- Script to load dynamic username from localStorage -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var displayName = localStorage.getItem("displayName") || "User";
+    document.getElementById("navbarUsername").textContent = displayName;
+  });
+</script>
+
 <!-- Main Content Wrapper -->
 <div class="wrapper">
   <div class="container-card">
@@ -148,16 +153,8 @@
       <button id="searchUser" class="btn btn-primary mt-2 w-100">
         <i class="fas fa-search"></i> Search User
       </button>
-
-      <!-- Dropdown for search results -->
-      <div class="dropdown mt-2" id="userResultsDropdown" style="display: none;">
-        <button class="btn btn-secondary w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Select a User
-        </button>
-        <ul class="dropdown-menu" id="searchResultsList">
-          <!-- Search results will be populated here -->
-        </ul>
-      </div>
+      <!-- Dropdown to show search results -->
+      <div id="userListDropdown" class="mt-2"></div>
     </div>
 
     <!-- Update Form (hidden until user data is fetched) -->
@@ -215,6 +212,9 @@
                 <option value="Admin">Admin</option>
                 <option value="SuperUser">SuperUser</option>
                 <option value="LogisticsManager">LogisticsManager</option>
+                <option value="InboundUser">InboundUser</option>
+                <option value="OutboundUser">OutboundUser</option>
+                <option value="InventoryUser">InventoryUser</option>
               </select>
             </div>
           </div>
@@ -229,6 +229,17 @@
               <input type="checkbox" id="isDeleted" class="form-check-input" />
               <label for="isDeleted" class="form-check-label">Deleted</label>
             </div>
+          </div>
+        </div>
+        <!-- Storage Location Dropdown (visible only for non-Admin roles) -->
+        <div class="row mb-3" id="storageLocationContainer">
+          <div class="col-md-12">
+            <label for="storageLocation" class="form-label">
+              <i class="fas fa-box"></i> Storage Location
+            </label>
+            <select id="storageLocation" class="form-select">
+              <option value="">Select a Storage Location</option>
+            </select>
           </div>
         </div>
         <button type="submit" class="btn btn-success w-100">
@@ -246,11 +257,64 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Load dynamic username from localStorage
-  document.addEventListener("DOMContentLoaded", function() {
-    var displayName = localStorage.getItem("displayName") || "User";
-    document.getElementById("navbarUsername").textContent = displayName;
+  let allStorageLocations = [];
+
+  // Fetch all storage locations
+  async function fetchStorageLocations() {
+    try {
+      const response = await fetch('https://oshinemmanuel-001-site1.qtempurl.com/api/StorageLocation/GetAllStorageLocations');
+      const data = await response.json();
+      allStorageLocations = data || [];
+    } catch (error) {
+      alert("Error fetching storage locations.");
+    }
+  }
+
+  // Function to handle role change dynamically
+  document.getElementById('userRole').addEventListener('change', function() {
+    const role = this.value;
+    const storageLocationContainer = document.getElementById('storageLocationContainer');
+    const storageLocationSelect = document.getElementById('storageLocation');
+
+    if (role === 'Admin') {
+      // Hide the storage location field for Admin role and clear the selection
+      storageLocationContainer.style.display = 'none';
+      storageLocationSelect.value = ''; // Clear selection
+    } else {
+      // Show the storage location field for non-Admin roles
+      storageLocationContainer.style.display = 'block';
+      populateStorageLocations(); // Populate storage locations when role is not Admin
+    }
   });
+
+  // Function to populate storage locations
+  async function populateStorageLocations() {
+    const storageLocationSelect = document.getElementById('storageLocation');
+    storageLocationSelect.innerHTML = '<option value="">Select a Storage Location</option>';
+
+    allStorageLocations.forEach(location => {
+      const option = document.createElement('option');
+      option.value = location.storageLocationCode;
+      option.textContent = location.name;
+      storageLocationSelect.appendChild(option);
+    });
+  }
+
+  // Check if a valid token exists
+  function getAuthToken() {
+    return localStorage.getItem('authToken'); // Assuming token is stored in localStorage
+  }
+
+  // Validate if the token exists
+  function isTokenValid() {
+    const token = getAuthToken();
+    if (!token) {
+      alert("You must be logged in to update the user.");
+      window.location.href = '/login.html'; // Redirect to login page if no token
+      return false;
+    }
+    return true;
+  }
 
   // Search and Fetch User by Name or ID
   document.getElementById('searchUser').addEventListener('click', async () => {
@@ -260,52 +324,88 @@
       return;
     }
     try {
-      const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/users/search?searchCriteria=${searchCriteria}`);
+      const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Users/Search?searchCriteria=${searchCriteria}`);
       if (!response.ok) {
-        throw new Error("No users found.");
+        throw new Error("User not found.");
       }
       const data = await response.json();
-      const results = data || [];
-      if (results.length === 0) {
-        alert("No users found matching the search criteria.");
-        document.getElementById('userResultsDropdown').style.display = "none";
+      const users = data.data || data; // Handle multiple users.
+
+      if (!users || users.length === 0) {
+        alert("No users found matching your search criteria.");
         return;
       }
 
-      // Populate the dropdown with search results
-      const searchResultsList = document.getElementById('searchResultsList');
-      searchResultsList.innerHTML = ''; // Clear previous results
-      results.forEach(user => {
-        const listItem = document.createElement('li');
-        listItem.classList.add('dropdown-item');
-        listItem.textContent = `${user.firstName} ${user.lastName}`;
-        listItem.addEventListener('click', () => populateForm(user));
-        searchResultsList.appendChild(listItem);
+      // Populate the user list dropdown with search results
+      const userListDropdown = document.getElementById('userListDropdown');
+      userListDropdown.innerHTML = ''; // Clear previous results
+
+      users.forEach(user => {
+        const option = document.createElement('div');
+        option.classList.add('dropdown-item');
+        option.classList.add('cursor-pointer');
+        option.textContent = `${user.firstName} ${user.lastName}`;
+        option.setAttribute('data-user-id', user.userId);
+        option.addEventListener('click', () => {
+          highlightSelectedUser(option);
+          populateUserForm(user);
+        }); // Handle user click
+        userListDropdown.appendChild(option);
       });
 
-      // Show the dropdown
-      document.getElementById('userResultsDropdown').style.display = "block";
     } catch (error) {
       alert(error.message);
     }
   });
 
-  // Populate the update form when a user is selected from the dropdown
-  function populateForm(user) {
-    document.getElementById('firstName').value = user.firstName;
-    document.getElementById('lastName').value = user.lastName;
-    document.getElementById('email').value = user.email;
-    document.getElementById('phoneNumber').value = user.phoneNumber;
-    document.getElementById('userRole').value = user.userRole;
+  // Highlight selected user
+  function highlightSelectedUser(element) {
+    const items = document.querySelectorAll('.dropdown-item');
+    items.forEach(item => item.classList.remove('selected-user'));
+    element.classList.add('selected-user');
+  }
+
+  // Populate the user form with selected user's data
+  async function populateUserForm(user) {
+    document.getElementById('firstName').value = user.firstName || "";
+    document.getElementById('lastName').value = user.lastName || "";
+    document.getElementById('email').value = user.email || "";
+    document.getElementById('phoneNumber').value = user.phoneNumber || "";
     document.getElementById('isActive').checked = user.isActive;
     document.getElementById('isDeleted').checked = user.isDeleted;
+    document.getElementById('userRole').value = user.userRole;
+
+    // Check if the user is an Admin
+    const isAdmin = user.userRole === "Admin";
+
+    // Hide/show storage location dropdown based on user role
+    if (isAdmin) {
+      document.getElementById('storageLocationContainer').style.display = 'none';
+      document.getElementById('storageLocation').value = ""; // Clear storage location
+    } else {
+      document.getElementById('storageLocationContainer').style.display = 'block';
+      const storageLocationSelect = document.getElementById('storageLocation');
+      storageLocationSelect.innerHTML = '<option value="">Select a Storage Location</option>';
+      
+      // Populate storage locations for non-admin users
+      allStorageLocations.forEach(location => {
+        const option = document.createElement('option');
+        option.value = location.storageLocationCode;
+        option.textContent = location.name;
+        storageLocationSelect.appendChild(option);
+      });
+    }
+
     document.getElementById('updateUserCard').classList.remove('d-none');
   }
 
   // Handle the update form submission
   document.getElementById('updateUserForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const userId = document.getElementById('searchCriteria').value.trim();
+
+    // Validate token before sending request
+    if (!isTokenValid()) return;
+
     const updatedUser = {
       firstName: document.getElementById('firstName').value,
       lastName: document.getElementById('lastName').value,
@@ -313,25 +413,44 @@
       phoneNumber: document.getElementById('phoneNumber').value,
       isActive: document.getElementById('isActive').checked,
       isDeleted: document.getElementById('isDeleted').checked,
-      userRole: document.getElementById('userRole').value
+      userRole: document.getElementById('userRole').value,
+      storageLocationCodes: document.getElementById('storageLocation').value ? [document.getElementById('storageLocation').value] : []
     };
 
+    const userId = document.getElementById('searchCriteria').value.trim();
+
+    const token = getAuthToken(); // Get token from localStorage or cookies
     try {
-      const url = `https://oshinemmanuel-001-site1.qtempurl.com/api/users/update/${userId}`;
+      const url = `https://oshinemmanuel-001-site1.qtempurl.com/api/Users/update/${userId}`;
       const response = await fetch(url, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` // Pass the token in the Authorization header
+        },
         body: JSON.stringify(updatedUser)
       });
       const result = await response.json();
       if (!response.ok) {
         throw new Error(result.message || "Failed to update user.");
       }
-      document.getElementById('updateMessage').innerHTML = `<div class="alert alert-success">${result.Message || "User updated successfully!"}</div>`;
+      // Show success message
+      const successMessage = document.getElementById('updateMessage');
+      successMessage.innerHTML = `<div class="alert alert-success">${result.Message || "User updated successfully!"}</div>`;
+      
+      // Clear form and return to the search screen after 10 seconds
+      setTimeout(() => {
+        successMessage.innerHTML = '';
+        document.getElementById('updateUserCard').classList.add('d-none');
+        document.getElementById('searchCriteria').value = ''; // Clear search field
+      }, 10000); // 10 seconds
     } catch (error) {
       document.getElementById('updateMessage').innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
     }
   });
+
+  // Fetch storage locations when the page loads
+  fetchStorageLocations();
 </script>
 </body>
 </html>
