@@ -158,7 +158,7 @@
         <div class="col-auto">
           <div id="task-CreateStorageLocation" class="card dashboard-card" style="width: 25rem;" onclick="location.href='CreateStorageLocation.html'">
             <div class="card-body text-center">
-              <i class="fas fa-map-marker-alt card-icon"></i>
+              <i class="fas fa-warehouse card-icon"></i>
               <h5 class="card-title mt-3">Create Storage Location</h5>
             </div>
           </div>
@@ -167,7 +167,7 @@
         <div class="col-auto">
           <div id="task-createStorageBin" class="card dashboard-card" style="width: 25rem;" onclick="location.href='CreateStorageBin.html'">
             <div class="card-body text-center">
-              <i class="fas fa-box-open card-icon"></i>
+              <i class="fas fa-cogs card-icon"></i>
               <h5 class="card-title mt-3">Create Storage Bin</h5>
             </div>
           </div>
@@ -176,7 +176,7 @@
         <div class="col-auto">
           <div id="task-createBulkStorageBin" class="card dashboard-card" style="width: 25rem;" onclick="location.href='CreateBulkStorageBin.html'">
             <div class="card-body text-center">
-              <i class="fas fa-upload card-icon"></i>
+              <i class="fas fa-cloud-upload-alt card-icon"></i>
               <h5 class="card-title mt-3">Create or Update Storage Bin Bulk Upload</h5>
             </div>
           </div>
@@ -185,17 +185,26 @@
         <div class="col-auto">
           <div id="task-viewAllStorageBins" class="card dashboard-card" style="width: 25rem;" onclick="location.href='ViewAllStorageBins.html'">
             <div class="card-body text-center">
-              <i class="fas fa-list card-icon"></i>
+              <i class="fas fa-boxes card-icon"></i>
               <h5 class="card-title mt-3">View Storage Bins</h5>
             </div>
           </div>
         </div>
-        <!-- Update Product -->
+        <!-- Update Storage Bin -->
         <div class="col-auto">
           <div id="task-updateStorageBin" class="card dashboard-card" style="width: 25rem;" onclick="location.href='UpdateStorageBin.html'">
             <div class="card-body text-center">
               <i class="fas fa-edit card-icon"></i>
               <h5 class="card-title mt-3">Update Storage Bins</h5>
+            </div>
+          </div>
+        </div>
+        <!-- View & Update All Storage Locations -->
+        <div class="col-auto">
+          <div id="task-viewandupdatestoragelocation" class="card dashboard-card" style="width: 25rem;" onclick="location.href='ViewAllStorageLocations.html'">
+            <div class="card-body text-center">
+              <i class="fas fa-edit card-icon"></i>
+              <h5 class="card-title mt-3">View & Update All Storage Locations</h5>
             </div>
           </div>
         </div>
@@ -235,7 +244,8 @@
         "task-createStorageBin": ["Admin", "SuperUser"],
         "task-createBulkStorageBin": ["Admin", "SuperUser"],
         "task-productsList": ["*"],
-        "task-updateProduct": ["Admin", "SuperUser"]
+        "task-updateProduct": ["Admin", "SuperUser"],
+        "task-viewandupdatestoragelocation": ["Admin", "SuperUser"]
       };
       
       // Loop through each task in the mapping and hide tasks not allowed for the user.
