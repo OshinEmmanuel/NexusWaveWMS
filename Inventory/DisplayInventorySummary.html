@@ -57,7 +57,7 @@
     }
     /* Main container styling */
     .container {
-      max-width: 1200px;
+      max-width: 2000px;
       margin-top: 80px; /* Space for navbar */
       margin-bottom: 80px; /* Some bottom spacing for footer */
       background-color: #fff;
@@ -83,6 +83,22 @@
       padding: 10px;
       border-top-left-radius: 10px;
       border-top-right-radius: 10px;
+      position: relative; /* for the toggle button */
+    }
+    /* Toggle button styling in the header */
+    .collapse-toggle {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      position: absolute;
+      right: 15px;
+      top: 8px;
+      cursor: pointer;
+    }
+    .collapse-toggle:focus {
+      outline: none;
+      box-shadow: none;
     }
     .btn-custom {
       font-size: 14px;
@@ -213,38 +229,45 @@
 <div class="container">
   <h2>Inventory Search & Export</h2>
   
-  <!-- Search Form Card -->
+  <!-- Search Form Card (Collapsible) -->
   <div class="card mb-4">
     <div class="card-header text-center">
       <i class="fas fa-search"></i> Search Criteria
+      <!-- Collapse toggle button -->
+      <button class="collapse-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#searchCriteriaBody" aria-expanded="true" aria-controls="searchCriteriaBody">
+        <i class="fas fa-angle-up"></i>
+      </button>
     </div>
-    <div class="card-body">
-      <form id="searchForm">
-        <div class="row g-3">
-          <!-- Product Code Filter -->
-          <div class="col-md-4">
-            <label for="searchProductCode" class="form-label">Product Code</label>
-            <input type="number" id="searchProductCode" class="form-control" placeholder="e.g. 10001">
-          </div>
-          <!-- Storage Location Code Filter -->
-          <div class="col-md-4">
-            <label for="searchStorageLocationCode" class="form-label">Storage Location</label>
-            <input type="text" id="searchStorageLocationCode" class="form-control" placeholder="e.g. WH001">
-          </div>
-          <div class="col-md-4 d-flex align-items-end">
-            <div>
-              <button type="submit" class="btn btn-custom btn-search me-2">
-                <i class="fas fa-search"></i> Search
-              </button>
-              <button type="button" id="exportButton" class="btn btn-custom btn-export" disabled>
-                <i class="fas fa-file-export"></i> Export to Excel
-              </button>
+    <!-- Collapsible Body -->
+    <div id="searchCriteriaBody" class="collapse show">
+      <div class="card-body">
+        <form id="searchForm">
+          <div class="row g-3">
+            <!-- Product Code Filter -->
+            <div class="col-md-4">
+              <label for="searchProductCode" class="form-label">Product Code</label>
+              <input type="number" id="searchProductCode" class="form-control" placeholder="e.g. 10001">
+            </div>
+            <!-- Storage Location Code Filter -->
+            <div class="col-md-4">
+              <label for="searchStorageLocationCode" class="form-label">Storage Location</label>
+              <input type="text" id="searchStorageLocationCode" class="form-control" placeholder="e.g. WH001">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+              <div>
+                <button type="submit" class="btn btn-custom btn-search me-2">
+                  <i class="fas fa-search"></i> Search
+                </button>
+                <button type="button" id="exportButton" class="btn btn-custom btn-export" disabled>
+                  <i class="fas fa-file-export"></i> Export to Excel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </form>
-      <!-- Response Message -->
-      <div id="responseMessage" class="alert d-none mt-3"></div>
+        </form>
+        <!-- Response Message -->
+        <div id="responseMessage" class="alert d-none mt-3"></div>
+      </div>
     </div>
   </div>
   
@@ -278,7 +301,6 @@
       </div>
     </div>
   </div>
-  
 </div>
   
 <!-- Footer -->
