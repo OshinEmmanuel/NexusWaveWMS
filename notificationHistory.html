@@ -164,7 +164,14 @@
         </div>
       </div>
     </nav>
-    
+    <!-- Script to load dynamic username from localStorage -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var displayName = localStorage.getItem("displayName") || "User";
+    document.getElementById("navbarUsername").textContent = displayName;
+  });
+</script>
+
     <!-- Main Notification History Content -->
     <div class="container-main">
       <div class="notification-history">
