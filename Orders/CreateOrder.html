@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/confirmDate/confirmDate.css" />
-
   <style>
     /* Global Styles */
     html, body {
@@ -118,6 +117,12 @@
       background-color: #218838;
       transform: scale(1.05);
     }
+    /* Loading state for dropdown */
+    select[disabled] {
+      background-color: #e9ecef;
+      opacity: 1;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -210,6 +215,14 @@
         <div class="mb-3" id="customerNameContainer" style="display: none;">
           <label for="customerName" class="form-label"><i class="fas fa-user-circle"></i> Customer Name</label>
           <input type="text" id="customerName" class="form-control" placeholder="Customer Name" readonly>
+        </div>
+
+        <!-- Storage Location Dropdown -->
+        <div class="mb-3">
+          <label for="storageLocation" class="form-label"><i class="fas fa-warehouse"></i> Storage Location</label>
+          <select class="form-select" id="storageLocation" required>
+            <option value="" selected disabled>Loading storage locations...</option>
+          </select>
         </div>
         
         <!-- Create Order Form -->
@@ -323,6 +336,39 @@
         responseMessageEl.innerHTML = storedMessage;
         localStorage.removeItem('apiMessage');
       }
+
+      // Function to load storage locations
+      async function loadStorageLocations() {
+        const storageLocationSelect = document.getElementById('storageLocation');
+        try {
+          const response = await fetch('https://oshinemmanuel-001-site1.qtempurl.com/api/Users/managed-storage-locations', {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });
+
+          if (!response.ok) throw new Error('Failed to load storage locations');
+          
+          const locations = await response.json();
+          
+          if (locations.length === 0) {
+            storageLocationSelect.innerHTML = '<option value="" disabled>No storage locations available</option>';
+            responseMessageEl.innerHTML = `<div class="alert alert-danger">You don't have access to any storage locations. Contact your administrator.</div>`;
+            return;
+          }
+
+          storageLocationSelect.innerHTML = locations.map(loc => 
+            `<option value="${loc.storageLocationCode}">${loc.name} (${loc.storageLocationCode})</option>`
+          ).join('');
+          
+        } catch (error) {
+          storageLocationSelect.innerHTML = '<option value="" disabled>Error loading locations</option>';
+          responseMessageEl.innerHTML = `<div class="alert alert-danger">Error loading storage locations: ${error.message}</div>`;
+        }
+      }
+
+      // Load storage locations on page load
+      loadStorageLocations();
 
       // Initialize Flatpickr for Delivery Date.
       const fp = flatpickr("#deliveryDate", {
@@ -451,7 +497,7 @@
                   const phoneNumber = data.phoneNumber || 'N/A';
                   const isActive = data.isActive === true || data.isActive === "true" ? "Active" : "Inactive";
                   
-                  customerModalBody.innerHTML = `
+                  customerModalBody.innerHTML = ` 
                       <div class="alert alert-info">
                         <strong><i class="fas fa-user"></i> Customer Details:</strong><br>
                         <strong>Name:</strong> ${customerName || 'N/A'}<br>
@@ -480,6 +526,13 @@
           return;
         }
 
+        // Validate Storage Location
+        const storageLocation = document.getElementById('storageLocation').value;
+        if (!storageLocation) {
+          responseMessageEl.innerHTML = `<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Please select a storage location.</div>`;
+          return;
+        }
+
         // Validate and get Delivery Date.
         if (fp.selectedDates.length === 0) {
           responseMessageEl.innerHTML = `<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Please select a valid Delivery Date.</div>`;
@@ -503,6 +556,7 @@
         const orderData = {
           customerID: parseInt(customerID),
           deliveryDate: deliveryDateISO,
+          storageLocationCode: storageLocation,
           items: items
         };
 
