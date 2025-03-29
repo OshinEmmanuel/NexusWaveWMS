@@ -572,7 +572,7 @@
         if (uploadTypeValue === "location") {
           uploadEndpoint = `${apiBase}/bulkupload/location`;
         } else if (uploadTypeValue === "bin") {
-          uploadEndpoint = `${apiBase}/bulkupload/bin`;
+          uploadEndpoint = `${apiBase}/bulkupload/storagebin`;
         } else {
           showError("Invalid upload type selected.");
           return;
@@ -602,7 +602,7 @@
         window.location.href = `${apiBase}/template/location`;
       });
       downloadBinTemplate.addEventListener("click", () => {
-        window.location.href = `${apiBase}/template/bin`;
+        window.location.href = `${apiBase}/template/storagebin`;
       });
 
       // 9) Download Template Button (Upload Tab) - uses the selected upload type
@@ -611,7 +611,7 @@
         if (uploadTypeValue === "location") {
           window.location.href = `${apiBase}/template/location`;
         } else if (uploadTypeValue === "bin") {
-          window.location.href = `${apiBase}/template/bin`;
+          window.location.href = `${apiBase}/template/storagebin`;
         }
       });
 
