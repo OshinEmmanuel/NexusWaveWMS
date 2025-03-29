@@ -166,10 +166,19 @@
         </div>
         <!-- Move Inventory Inventory -->
         <div class="col-auto">
-          <div id="task-adjustInventory" class="card dashboard-card" style="width: 25rem;" onclick="location.href='MoveInventory.html'">
+          <div id="task-moveIventory" class="card dashboard-card" style="width: 25rem;" onclick="location.href='MoveInventory.html'">
             <div class="card-body text-center">
               <i class="fas fa-truck-loading card-icon"></i>
               <h5 class="card-title mt-3">Move Inventory</h5>
+            </div>
+          </div>
+        </div>
+        <!-- Bulk Inventory Move -->
+        <div class="col-auto">
+          <div id="task-bulkInventoryMove" class="card dashboard-card" style="width: 25rem;" onclick="location.href='BulkInventoryMove.html'">
+            <div class="card-body text-center">
+              <i class="fas fa-truck-loading card-icon"></i>
+              <h5 class="card-title mt-3">Bulk Move Inventory</h5>
             </div>
           </div>
         </div>
@@ -240,6 +249,8 @@
       // Use "*" to allow all users.
       var taskAccess = {
         "task-adjustInventory":           ["Admin", "SuperUser"],
+        "task-moveInventory":             ["Admin", "SuperUser"],
+        "task-bulkInventoryMove":         ["Admin", "SuperUser"],
         "task-displayInventory":          ["*"],  // Accessible to all users.
         "task-getMovementById":           ["*"],
         "task-searchInventoryMovements":  ["*"],

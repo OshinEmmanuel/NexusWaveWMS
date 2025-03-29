@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bulk Inventory Moves - Nexus Wave WMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts for Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Global Reset and Background */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 0;
+      background-color: #f4f7f6;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url("../assets/img/inventory2.jpg") no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(3px);
+      opacity: 0.5;
+      z-index: -1;
+    }
+    /* Fixed Transparent Navigation Bar */
+    .navbar {
+      background: transparent;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    /* Main Content Wrapper */
+    .wrapper {
+      flex: 1;
+      margin-top: 70px; /* Account for navbar */
+      padding: 20px;
+    }
+    /* Container Card Styling */
+    .container-card {
+      max-width: 1200px;
+      margin: 20px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    /* Form Label Styling */
+    .form-label {
+      font-weight: 600;
+    }
+    .form-label i {
+      margin-right: 5px;
+    }
+    .form-control {
+      border-radius: 6px;
+    }
+    /* Custom Button Styling */
+    .btn-custom {
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 15px;
+      border-radius: 6px;
+      transition: background-color 0.3s ease-in-out;
+    }
+    .btn-submit {
+      background-color: #007bff;
+      color: white;
+      border: none;
+    }
+    .btn-submit:hover {
+      background-color: #0056b3;
+    }
+    .btn-reset {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+    }
+    .btn-reset:hover {
+      background-color: #bd2130;
+      color: white;
+    }
+    /* Loading Spinner Styling */
+    .loading-spinner {
+      display: none;
+      width: 1.5rem;
+      height: 1.5rem;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    /* Footer Styling */
+    footer {
+      background: transparent;
+      text-align: center;
+      color: #666;
+      padding: 10px 0;
+    }
+    /* Nav tabs styling */
+    .nav-tabs .nav-link.active {
+      background-color: #007bff;
+      color: white;
+      border: none;
+    }
+    .nav-tabs .nav-link {
+      color: #007bff;
+      border: 1px solid #007bff;
+    }
+    /* Table styling */
+    table td, table th {
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <!-- Merged Top Navigation Bar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <!-- Back button -->
+      <a class="btn btn-secondary me-2" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <!-- Logo linking to the homepage -->
+      <a class="navbar-brand me-auto" href="../Dashboard.html">
+        <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+              data-bs-target="#navbarNav" aria-controls="navbarNav" 
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- Right Side Navbar -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="../Dashboard.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+          <li class="nav-item dropdown notification-dropdown">
+            <a class="nav-link" href="#" id="notificationDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-bell"></i>
+              <span id="notificationBadge" class="notification-badge"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
+              <li><span class="dropdown-item">No notifications.</span></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user"></i> <span id="navbarUsername">User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="User/ManageUsers.html">Manage Profile</a></li>
+              <li><a class="dropdown-item" href="User/UpdateUser.html">Update Profile</a></li>
+              <li><a class="dropdown-item" href="UserManagement/ChangePassword.html">Change Password</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="../logout.html">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Script to load dynamic username from localStorage -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var displayName = localStorage.getItem("displayName") || "User";
+      document.getElementById("navbarUsername").textContent = displayName;
+    });
+  </script>
+
+  <div class="wrapper">
+    <div class="container-card">
+      <h2 class="text-center mb-4">Bulk Inventory Moves</h2>
+
+      <!-- Nav tabs for Manual Entry vs. Template Upload -->
+      <ul class="nav nav-tabs mb-3" id="bulkMoveTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual" type="button" role="tab" aria-controls="manual" aria-selected="true">
+            Manual Entry
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab" aria-controls="upload" aria-selected="false">
+            Template Upload
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="bulkMoveTabsContent">
+        <!-- Manual Entry Tab -->
+        <div class="tab-pane fade show active" id="manual" role="tabpanel" aria-labelledby="manual-tab">
+          <!-- Movement Type Selection -->
+          <div class="mb-3">
+            <label for="movementType" class="form-label fw-bold">
+              Select Movement Type
+            </label>
+            <select id="movementType" class="form-select">
+              <option value="">-- Choose --</option>
+              <option value="location">Between Locations (Bulk)</option>
+              <option value="bin">Between Bins (Bulk)</option>
+            </select>
+          </div>
+
+          <!-- Download Template Buttons -->
+          <div class="mb-3">
+            <button id="downloadLocationTemplate" class="btn btn-sm btn-outline-primary me-2 d-none">
+              <i class="fas fa-file-download"></i> Download Location Template
+            </button>
+            <button id="downloadBinTemplate" class="btn btn-sm btn-outline-primary d-none">
+              <i class="fas fa-file-download"></i> Download Bin Template
+            </button>
+          </div>
+
+          <!-- LOCATION Bulk Moves Manual Entry -->
+          <div id="locationSection" class="card d-none mb-3">
+            <div class="card-body">
+              <h4 class="card-title">Bulk Move: Each Row Has Its Own Source/Dest Location</h4>
+              <table class="table table-bordered" id="locationTable">
+                <thead class="table-light">
+                  <tr>
+                    <th>ProductCode</th>
+                    <th>BatchNumber</th>
+                    <th>SourceLocationCode</th>
+                    <th>DestinationLocationCode</th>
+                    <th>Quantity</th>
+                    <th>Remarks (Optional)</th>
+                    <th style="width: 50px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Rows added dynamically -->
+                </tbody>
+              </table>
+              <button id="addLocationRow" class="btn btn-success btn-sm">
+                <i class="fas fa-plus"></i> Add Row
+              </button>
+              <button id="submitLocationBtn" class="btn btn-primary float-end">
+                <i class="fas fa-check"></i> Submit Location Moves
+              </button>
+            </div>
+          </div>
+
+          <!-- BIN Bulk Moves Manual Entry -->
+          <div id="binSection" class="card d-none mb-3">
+            <div class="card-body">
+              <h4 class="card-title">Bulk Move: Each Row Has Its Own StorageLocation, SourceBin, DestBin</h4>
+              <table class="table table-bordered" id="binTable">
+                <thead class="table-light">
+                  <tr>
+                    <th>ProductCode</th>
+                    <th>BatchNumber</th>
+                    <th>StorageLocationCode</th>
+                    <th>SourceBinCode</th>
+                    <th>DestinationBinCode</th>
+                    <th>Quantity</th>
+                    <th>Remarks (Optional)</th>
+                    <th style="width: 50px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Rows added dynamically -->
+                </tbody>
+              </table>
+              <button id="addBinRow" class="btn btn-success btn-sm">
+                <i class="fas fa-plus"></i> Add Row
+              </button>
+              <button id="submitBinBtn" class="btn btn-primary float-end">
+                <i class="fas fa-check"></i> Submit Bin Moves
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Template Upload Tab -->
+        <div class="tab-pane fade" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+          <div class="mb-3">
+            <label for="uploadType" class="form-label fw-bold">
+              Select Upload Type
+            </label>
+            <select id="uploadType" class="form-select">
+              <option value="">-- Choose --</option>
+              <option value="location">Location Bulk Upload</option>
+              <option value="bin">Bin Bulk Upload</option>
+            </select>
+          </div>
+          <div id="uploadSection" class="card d-none mb-3">
+            <div class="card-body">
+              <h4 class="card-title">Upload Filled Template</h4>
+              <form id="uploadForm">
+                <div class="mb-3">
+                  <label for="templateFile" class="form-label">
+                    <i class="fas fa-file-upload"></i> Choose Excel File
+                  </label>
+                  <input type="file" id="templateFile" class="form-control" accept=".xlsx">
+                </div>
+                <button type="submit" class="btn btn-primary btn-submit">
+                  <i class="fas fa-upload"></i> Upload Template
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Response Alert -->
+      <div id="responseAlert" class="alert d-none mt-4" role="alert"></div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>&copy; 2025 Nexus Wave WMS</p>
+  </footer>
+  
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Base API URL
+    const apiBase = "https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories";
+    
+    // Elements for manual entry
+    const movementType = document.getElementById("movementType");
+    const downloadLocationTemplate = document.getElementById("downloadLocationTemplate");
+    const downloadBinTemplate = document.getElementById("downloadBinTemplate");
+    const locationSection = document.getElementById("locationSection");
+    const binSection = document.getElementById("binSection");
+    const locationTableBody = document.querySelector("#locationTable tbody");
+    const binTableBody = document.querySelector("#binTable tbody");
+    const addLocationRowBtn = document.getElementById("addLocationRow");
+    const submitLocationBtn = document.getElementById("submitLocationBtn");
+    const addBinRowBtn = document.getElementById("addBinRow");
+    const submitBinBtn = document.getElementById("submitBinBtn");
+
+    // Elements for template upload
+    const uploadType = document.getElementById("uploadType");
+    const uploadSection = document.getElementById("uploadSection");
+    const uploadForm = document.getElementById("uploadForm");
+    const templateFileInput = document.getElementById("templateFile");
+
+    // Response alert
+    const responseAlert = document.getElementById("responseAlert");
+
+    // 1) Toggle manual entry sections based on movement type
+    movementType.addEventListener("change", () => {
+      responseAlert.classList.add("d-none");
+      responseAlert.innerHTML = "";
+      if (movementType.value === "location") {
+        locationSection.classList.remove("d-none");
+        binSection.classList.add("d-none");
+        downloadLocationTemplate.classList.remove("d-none");
+        downloadBinTemplate.classList.add("d-none");
+      } else if (movementType.value === "bin") {
+        binSection.classList.remove("d-none");
+        locationSection.classList.add("d-none");
+        downloadBinTemplate.classList.remove("d-none");
+        downloadLocationTemplate.classList.add("d-none");
+      } else {
+        locationSection.classList.add("d-none");
+        binSection.classList.add("d-none");
+        downloadLocationTemplate.classList.add("d-none");
+        downloadBinTemplate.classList.add("d-none");
+      }
+    });
+
+    // 2) Toggle upload section based on upload type
+    uploadType.addEventListener("change", () => {
+      responseAlert.classList.add("d-none");
+      responseAlert.innerHTML = "";
+      if (uploadType.value === "location" || uploadType.value === "bin") {
+        uploadSection.classList.remove("d-none");
+      } else {
+        uploadSection.classList.add("d-none");
+      }
+    });
+
+    // 3) Add row for Manual Location Moves
+    addLocationRowBtn.addEventListener("click", () => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><input type="number" class="form-control productCode" placeholder="e.g. 1001"></td>
+        <td><input type="text" class="form-control batchNumber" placeholder="e.g. BATCH001"></td>
+        <td><input type="text" class="form-control sourceLoc" placeholder="e.g. LOC001"></td>
+        <td><input type="text" class="form-control destLoc" placeholder="e.g. LOC002"></td>
+        <td><input type="number" class="form-control quantity" placeholder="e.g. 10"></td>
+        <td><input type="text" class="form-control remarks" placeholder="Optional"></td>
+        <td>
+          <button type="button" class="btn btn-danger btn-sm removeRow">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      `;
+      locationTableBody.appendChild(row);
+      row.querySelector(".removeRow").addEventListener("click", () => {
+        row.remove();
+      });
+    });
+
+    // 4) Submit Manual Location Moves
+    submitLocationBtn.addEventListener("click", async () => {
+      responseAlert.classList.add("d-none");
+      responseAlert.innerHTML = "";
+      const lines = [];
+      locationTableBody.querySelectorAll("tr").forEach(tr => {
+        const productCode = parseInt(tr.querySelector(".productCode").value.trim() || "0");
+        const batchNumber = tr.querySelector(".batchNumber").value.trim();
+        const sourceLoc = tr.querySelector(".sourceLoc").value.trim();
+        const destLoc = tr.querySelector(".destLoc").value.trim();
+        const quantity = parseInt(tr.querySelector(".quantity").value.trim() || "0");
+        const remarks = tr.querySelector(".remarks").value.trim();
+        if (productCode > 0 && batchNumber && sourceLoc && destLoc && quantity > 0) {
+          lines.push({
+            productCode,
+            batchNumber,
+            sourceLocationCode: sourceLoc,
+            destinationLocationCode: destLoc,
+            quantity,
+            remarks
+          });
+        }
+      });
+      if (lines.length === 0) {
+        showError("No valid lines found. Please add rows and fill them out properly.");
+        return;
+      }
+      const authToken = localStorage.getItem("authToken") || "";
+      try {
+        const response = await fetch(`${apiBase}/move/location/bulk`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ lines })
+        });
+        const result = await response.text();
+        if (!response.ok) {
+          showError(`Bulk location move failed: ${result}`);
+        } else {
+          showSuccess(`Bulk location move successful: ${result}`);
+        }
+      } catch (err) {
+        showError(`Error: ${err.message}`);
+      }
+    });
+
+    // 5) Add row for Manual Bin Moves
+    addBinRowBtn.addEventListener("click", () => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><input type="number" class="form-control productCode" placeholder="e.g. 2001"></td>
+        <td><input type="text" class="form-control batchNumber" placeholder="e.g. BATCH002"></td>
+        <td><input type="text" class="form-control storageLoc" placeholder="e.g. LOC001"></td>
+        <td><input type="text" class="form-control sourceBin" placeholder="e.g. BIN001"></td>
+        <td><input type="text" class="form-control destBin" placeholder="e.g. BIN002"></td>
+        <td><input type="number" class="form-control quantity" placeholder="e.g. 5"></td>
+        <td><input type="text" class="form-control remarks" placeholder="Optional"></td>
+        <td>
+          <button type="button" class="btn btn-danger btn-sm removeRow">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      `;
+      binTableBody.appendChild(row);
+      row.querySelector(".removeRow").addEventListener("click", () => {
+        row.remove();
+      });
+    });
+
+    // 6) Submit Manual Bin Moves
+    submitBinBtn.addEventListener("click", async () => {
+      responseAlert.classList.add("d-none");
+      responseAlert.innerHTML = "";
+      const lines = [];
+      binTableBody.querySelectorAll("tr").forEach(tr => {
+        const productCode = parseInt(tr.querySelector(".productCode").value.trim() || "0");
+        const batchNumber = tr.querySelector(".batchNumber").value.trim();
+        const storageLoc = tr.querySelector(".storageLoc").value.trim();
+        const sourceBin = tr.querySelector(".sourceBin").value.trim();
+        const destBin = tr.querySelector(".destBin").value.trim();
+        const quantity = parseInt(tr.querySelector(".quantity").value.trim() || "0");
+        const remarks = tr.querySelector(".remarks").value.trim();
+        if (productCode > 0 && batchNumber && storageLoc && sourceBin && destBin && quantity > 0) {
+          lines.push({
+            productCode,
+            batchNumber,
+            storageLocationCode: storageLoc,
+            sourceBinCode: sourceBin,
+            destinationBinCode: destBin,
+            quantity,
+            remarks
+          });
+        }
+      });
+      if (lines.length === 0) {
+        showError("No valid lines found. Please add rows and fill them out properly.");
+        return;
+      }
+      const authToken = localStorage.getItem("authToken") || "";
+      try {
+        const response = await fetch(`${apiBase}/move/bin/bulk`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ lines })
+        });
+        const result = await response.text();
+        if (!response.ok) {
+          showError(`Bulk bin move failed: ${result}`);
+        } else {
+          showSuccess(`Bulk bin move successful: ${result}`);
+        }
+      } catch (err) {
+        showError(`Error: ${err.message}`);
+      }
+    });
+
+    // 7) Handle Template Upload
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      responseAlert.classList.add("d-none");
+      responseAlert.innerHTML = "";
+      const file = templateFileInput.files[0];
+      if (!file) {
+        showError("Please choose a file to upload.");
+        return;
+      }
+      const uploadTypeValue = uploadType.value;
+      if (!uploadTypeValue) {
+        showError("Please select an upload type (Location or Bin).");
+        return;
+      }
+      const formData = new FormData();
+      formData.append("file", file);
+      let uploadEndpoint = "";
+      if (uploadTypeValue === "location") {
+        uploadEndpoint = `${apiBase}/bulkupload/location`;
+      } else if (uploadTypeValue === "bin") {
+        uploadEndpoint = `${apiBase}/bulkupload/bin`;
+      } else {
+        showError("Invalid upload type selected.");
+        return;
+      }
+      const authToken = localStorage.getItem("authToken") || "";
+      try {
+        const response = await fetch(uploadEndpoint, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${authToken}`
+          },
+          body: formData
+        });
+        const result = await response.text();
+        if (!response.ok) {
+          showError(`Template upload failed: ${result}`);
+        } else {
+          showSuccess(`Template upload successful: ${result}`);
+        }
+      } catch (err) {
+        showError(`Error: ${err.message}`);
+      }
+    });
+
+    // 8) Download Template Buttons
+    downloadLocationTemplate.addEventListener("click", () => {
+      window.location.href = `${apiBase}/template/location`;
+    });
+    downloadBinTemplate.addEventListener("click", () => {
+      window.location.href = `${apiBase}/template/bin`;
+    });
+
+    // Helper functions to show messages
+    function showError(msg) {
+      responseAlert.className = "alert alert-danger";
+      responseAlert.innerHTML = msg;
+      responseAlert.classList.remove("d-none");
+    }
+    function showSuccess(msg) {
+      responseAlert.className = "alert alert-success";
+      responseAlert.innerHTML = msg;
+      responseAlert.classList.remove("d-none");
+    }
+  });
+  </script>
+</body>
+</html>
