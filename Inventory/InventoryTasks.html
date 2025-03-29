@@ -82,70 +82,69 @@
 </head>
 <body>
   <div class="wrapper">
-<!-- Merged Top Navigation Bar -->
-<nav class="navbar navbar-expand-lg fixed-top">
-  <div class="container-fluid">
-    <!-- Back button -->
-    <a class="btn btn-secondary me-2" href="javascript:history.back()">
-      <i class="fas fa-arrow-left"></i> Back
-    </a>
-    <!-- Logo linking to the homepage -->
-    <a class="navbar-brand me-auto" href="../Dashboard.html">
-      <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-            data-bs-target="#navbarNav" aria-controls="navbarNav" 
-            aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <!-- Right Side Navbar -->
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav">
-        <!-- Home link -->
-        <li class="nav-item">
-          <a class="nav-link" href="../Dashboard.html">
-            <i class="fas fa-home"></i> Home
-          </a>
-        </li>
-        <!-- Notification Dropdown -->
-        <li class="nav-item dropdown notification-dropdown">
-          <a class="nav-link" href="#" id="notificationDropdown" role="button" 
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-bell"></i>
-            <span id="notificationBadge" class="notification-badge"></span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
-            <li><span class="dropdown-item">No notifications.</span></li>
+    <!-- Merged Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid">
+        <!-- Back button -->
+        <a class="btn btn-secondary me-2" href="javascript:history.back()">
+          <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <!-- Logo linking to the homepage -->
+        <a class="navbar-brand me-auto" href="../Dashboard.html">
+          <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                data-bs-target="#navbarNav" aria-controls="navbarNav" 
+                aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Right Side Navbar -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
+            <!-- Home link -->
+            <li class="nav-item">
+              <a class="nav-link" href="../Dashboard.html">
+                <i class="fas fa-home"></i> Home
+              </a>
+            </li>
+            <!-- Notification Dropdown -->
+            <li class="nav-item dropdown notification-dropdown">
+              <a class="nav-link" href="#" id="notificationDropdown" role="button" 
+                 data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-bell"></i>
+                <span id="notificationBadge" class="notification-badge"></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
+                <li><span class="dropdown-item">No notifications.</span></li>
+              </ul>
+            </li>
+            <!-- User Dropdown -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                 data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i> <span id="navbarUsername">User</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="User/ManageUsers.html">Manage Profile</a></li>
+                <li><a class="dropdown-item" href="User/UpdateUser.html">Update Profile</a></li>
+                <li><a class="dropdown-item" href="UserManagement/ChangePassword.html">Change Password</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="../logout.html">Logout</a></li>
+              </ul>
+            </li>
           </ul>
-        </li>
-        <!-- User Dropdown -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-user"></i> <span id="navbarUsername">User</span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="User/ManageUsers.html">Manage Profile</a></li>
-            <li><a class="dropdown-item" href="User/UpdateUser.html">Update Profile</a></li>
-            <li><a class="dropdown-item" href="UserManagement/ChangePassword.html">Change Password</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="../logout.html">Logout</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
+        </div>
+      </div>
+    </nav>
 
-<!-- Script to load dynamic username from localStorage -->
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    var displayName = localStorage.getItem("displayName") || "User";
-    document.getElementById("navbarUsername").textContent = displayName;
-  });
-</script>
+    <!-- Script to load dynamic username from localStorage -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        var displayName = localStorage.getItem("displayName") || "User";
+        document.getElementById("navbarUsername").textContent = displayName;
+      });
+    </script>
 
-    
     <!-- Main Content Area: Dashboard for Inventory Tasks -->
     <main class="container dashboard-container content">
       <div class="text-center mb-4">
@@ -153,7 +152,7 @@
         <p>Select a task to proceed</p>
       </div>
       
-      <!-- Grid row with auto-sizing columns to center returned cards -->
+      <!-- Grid row with auto-sizing columns to center cards -->
       <div class="row justify-content-center g-4">
         <!-- Adjust Inventory -->
         <div class="col-auto">
@@ -164,9 +163,9 @@
             </div>
           </div>
         </div>
-        <!-- Move Inventory Inventory -->
+        <!-- Move Inventory -->
         <div class="col-auto">
-          <div id="task-moveIventory" class="card dashboard-card" style="width: 25rem;" onclick="location.href='MoveInventory.html'">
+          <div id="task-moveInventory" class="card dashboard-card" style="width: 25rem;" onclick="location.href='MoveInventory.html'">
             <div class="card-body text-center">
               <i class="fas fa-truck-loading card-icon"></i>
               <h5 class="card-title mt-3">Move Inventory</h5>
@@ -191,7 +190,7 @@
             </div>
           </div>
         </div>
-        <!-- Search Inventory Summary -->
+        <!-- Display Inventory Summary -->
         <div class="col-auto">
           <div id="task-displayInventorySummary" class="card dashboard-card" style="width: 25rem;" onclick="location.href='DisplayInventorySummary.html'">
             <div class="card-body text-center">
@@ -251,21 +250,17 @@
         "task-adjustInventory":           ["Admin", "SuperUser"],
         "task-moveInventory":             ["Admin", "SuperUser"],
         "task-bulkInventoryMove":         ["Admin", "SuperUser"],
-        "task-displayInventory":          ["*"],  // Accessible to all users.
+        "task-displayInventory":          ["*"],
         "task-getMovementById":           ["*"],
         "task-searchInventoryMovements":  ["*"],
-        "task-displayInventorySummary":   ["*"]   // Accessible to all users.
+        "task-displayInventorySummary":   ["*"]
       };
       
       // Loop through each inventory task in the mapping.
       for (var taskId in taskAccess) {
         if (taskAccess.hasOwnProperty(taskId)) {
           var allowedRoles = taskAccess[taskId];
-          // If the wildcard "*" is present, allow the task for all users.
-          if (allowedRoles.indexOf("*") !== -1) {
-            continue;
-          }
-          // Otherwise, if the user's role is not allowed, hide the task.
+          if (allowedRoles.indexOf("*") !== -1) continue;
           if (allowedRoles.indexOf(userRole) === -1) {
             var elem = document.getElementById(taskId);
             if (elem) {
