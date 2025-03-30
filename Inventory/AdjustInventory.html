@@ -366,7 +366,8 @@
       batchLoading.style.display = "inline-block";
       try {
         console.log("Fetching batches for Product Code:", productCode, "and Storage Location:", storageLocationCode);
-        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories/GetBatches?productCode=${productCode}&storageLocationCode=${storageLocationCode}`, {
+        // Updated endpoint name to "GetBatchesByLocation"
+        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories/GetBatchesByLocation?productCode=${productCode}&storageLocationCode=${storageLocationCode}`, {
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + authToken
@@ -374,12 +375,14 @@
         });
         if (!response.ok) throw new Error(`Failed to fetch batches (Status: ${response.status})`);
         const data = await response.json();
-        batchNumberSelect.innerHTML = '<option value="">Select Batch</option>';
-        if (data.length === 0) {
+        // Filter out batches with zero available quantity.
+        const validBatches = data.filter(batch => batch.availableQty > 0);
+        if (validBatches.length === 0) {
           batchNumberSelect.innerHTML = '<option value="">No batches found</option>';
           return;
         }
-        data.forEach(batch => {
+        batchNumberSelect.innerHTML = '<option value="">Select Batch</option>';
+        validBatches.forEach(batch => {
           batchNumberSelect.innerHTML += `<option value="${batch.batchNumber}">${batch.batchNumber} - Available: ${batch.availableQty}</option>`;
         });
       } catch (error) {
