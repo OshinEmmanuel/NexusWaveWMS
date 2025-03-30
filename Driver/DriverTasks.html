@@ -190,12 +190,12 @@
           </div>
         </div>
         <!-- Delete Driver -->
-        <div id="task-deleteDriver" class="card dashboard-card" style="width: 25rem;" onclick="location.href='DeleteDriver.html'">
+        <!-- <div id="task-deleteDriver" class="card dashboard-card" style="width: 25rem;" onclick="location.href='DeleteDriver.html'">
           <div class="card-body text-center">
             <i class="fas fa-user-minus card-icon"></i>
             <h5 class="card-title mt-3">Delete Driver</h5>
           </div>
-        </div>
+        </div> -->
       </div>
     </main>
     
@@ -228,7 +228,6 @@
       var taskAccess = {
         "task-approveDriver": ["Admin", "LogisticsManager"],
         "task-createDriver":  ["Admin", "OutboundUser"],
-        "task-deleteDriver":  ["Admin"],
         "task-driverDetails": ["*"],
         "task-driversList":   ["*"],  // Accessible to all users.
         "task-updateDriver":  ["Admin", "OutboundUser", "Driver"]

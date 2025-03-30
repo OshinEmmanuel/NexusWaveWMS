@@ -165,20 +165,20 @@
             <h5 class="card-title mt-3">Approve Customer</h5>
           </div>
         </div>
-        <!-- Cancel Registration -->
+        <!-- Cancel Registration
         <div id="task-cancelRegistration" class="card dashboard-card" style="width: 25rem;" onclick="location.href='CancelRegisteration.html'">
           <div class="card-body text-center">
             <i class="fas fa-ban card-icon"></i>
             <h5 class="card-title mt-3">Cancel Registration</h5>
           </div>
-        </div>
-        <!-- Customers List (Accessible to all users) -->
+        </div> -->
+        <!-- Customers List (Accessible to all users)
         <div id="task-customersList" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Customers.html'">
           <div class="card-body text-center">
             <i class="fas fa-address-book card-icon"></i>
             <h5 class="card-title mt-3">Customers List</h5>
           </div>
-        </div>
+        </div> -->
         <!-- Get All Customers (Accessible to all users) -->
         <div id="task-getAllCustomers" class="card dashboard-card" style="width: 25rem;" onclick="location.href='GetAllCustomers.html'">
           <div class="card-body text-center">
@@ -186,13 +186,13 @@
             <h5 class="card-title mt-3">Get All Customers</h5>
           </div>
         </div>
-        <!-- Delete Customer -->
+        <!-- Delete Customer
         <div id="task-deleteCustomer" class="card dashboard-card" style="width: 25rem;" onclick="location.href='DeleteCustomer.html'">
           <div class="card-body text-center">
             <i class="fas fa-user-minus card-icon"></i>
             <h5 class="card-title mt-3">Delete Customer</h5>
           </div>
-        </div>
+        </div> -->
         <!-- Retrieve Customer Details -->
         <div id="task-retrieveCustomerDetails" class="card dashboard-card" style="width: 25rem;" onclick="location.href='RetrieveCustomerDetails.html'">
           <div class="card-body text-center">
@@ -246,10 +246,7 @@
       var taskAccess = {
         "task-createCustomer":           ["Admin", "SuperUser", "OutboundUser", "LogisticsManager"],
         "task-approveCustomer":          ["Admin", "LogisticsManager"],
-        "task-cancelRegistration":       ["Admin", "Customer"],
-        "task-customersList":            ["*"],  // Accessible to all users.
         "task-getAllCustomers":          ["*"],  // Accessible to all users.
-        "task-deleteCustomer":           ["Admin"],
         "task-retrieveCustomerDetails":  ["Admin", "LogisticsManager", "Customer"],
         "task-updateCustomerByAdmin":    ["Admin", "SuperUser", "LogisticsManager"],
         "task-updateCustomerPassword":   ["Admin", "Customer"]
