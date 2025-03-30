@@ -162,11 +162,15 @@
   </div>
 </nav>
 
-<!-- Script to load dynamic username from localStorage -->
+<!-- Script to load dynamic username and role from localStorage -->
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     var displayName = localStorage.getItem("displayName") || "User";
     document.getElementById("navbarUsername").textContent = displayName;
+    // Example: set a default user role if not already set
+    if (!localStorage.getItem("userRole")) {
+      localStorage.setItem("userRole", "User");
+    }
   });
 </script>
 
@@ -272,7 +276,6 @@
             <label for="binCapacity" class="form-label">Bin Capacity</label>
             <input type="number" class="form-control" id="binCapacity" name="binCapacity">
           </div>
-
           <!-- ADD THIS for StorageLocationId if your DTO requires it -->
           <div class="mb-3">
             <label for="storageLocationId" class="form-label">Storage Location Id</label>
@@ -333,7 +336,17 @@
         </tr>`;
       return;
     }
+    
+    // Retrieve the user role from localStorage (default to "User" if not set)
+    const userRole = localStorage.getItem("userRole") || "User";
+
     bins.forEach(bin => {
+      // Only add the edit button if the user role is Admin or SuperUser
+      const editButtonHtml = (userRole === "Admin" || userRole === "SuperUser") ? `
+        <button class="btn btn-sm btn-warning edit-btn" data-bin-code="${bin.binCode}">
+          <i class="fas fa-edit"></i> Edit
+        </button>` : "";
+      
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${bin.id}</td>
@@ -342,16 +355,12 @@
         <td>${bin.status}</td>
         <td>${bin.storageLocationCode || ""}</td>
         <td>${bin.binCapacity}</td>
-        <td>
-          <button class="btn btn-sm btn-warning edit-btn" data-bin-code="${bin.binCode}">
-            <i class="fas fa-edit"></i> Edit
-          </button>
-        </td>
+        <td>${editButtonHtml}</td>
       `;
       tableBody.appendChild(row);
     });
 
-    // Attach event listeners for each "Edit" button
+    // Attach event listeners for each "Edit" button if present
     document.querySelectorAll('.edit-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const binCode = btn.getAttribute('data-bin-code');
@@ -434,11 +443,9 @@
     document.getElementById('binCapacity').value = bin.binCapacity;
 
     // If the API also returns storageLocationId, set it here
-    // (Only if your GET returns that property. Otherwise, user can type it manually.)
     if (bin.storageLocationId) {
       document.getElementById('storageLocationId').value = bin.storageLocationId;
     } else {
-      // or set 1 as default, etc.
       document.getElementById('storageLocationId').value = "";
     }
 
