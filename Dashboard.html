@@ -64,13 +64,60 @@
     .dashboard-card {
       transition: transform 0.6s;
       cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     .dashboard-card:hover {
       transform: translateY(-5px);
     }
     .card-icon {
       font-size: 3rem;
-      color: #2c3e50;
+      margin-bottom: 1rem;
+    }
+    /* Lighter Colors for Task Cards */
+    #module-customers {
+      background-color: #66b3ff;
+      color: #fff;
+    }
+    #module-drivers {
+      background-color: #7ed957;
+      color: #fff;
+    }
+    #module-inventory {
+      background-color: #ffe680;
+      color: #000;
+    }
+    #module-orders {
+      background-color: #7adce6;
+      color: #fff;
+    }
+    #module-products {
+      background-color: #ff8080;
+      color: #fff;
+    }
+    #module-storagelocation {
+      background-color: #a6acb2;
+      color: #fff;
+    }
+    #module-purchaseorders {
+      background-color: #ffb366;
+      color: #fff;
+    }
+    #module-vehicles {
+      background-color: #a280f2;
+      color: #fff;
+    }
+    #module-shipments {
+      background-color: #6ddcc3;
+      color: #fff;
+    }
+    #module-suppliers {
+      background-color: #6b757e;
+      color: #fff;
+    }
+    #module-usermanagement {
+      background-color: #a792d6;
+      color: #fff;
     }
     /* Footer Styling */
     footer {
@@ -159,7 +206,7 @@
         <!-- Customers Card -->
         <div id="module-customers" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Customers/CustomerTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-users card-icon"></i>
+            <i class="fa-solid fa-user-friends card-icon"></i>
             <h5 class="card-title mt-3">Customers</h5>
             <p class="card-text">Manage customer details</p>
           </div>
@@ -167,7 +214,7 @@
         <!-- Drivers Card -->
         <div id="module-drivers" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Driver/DriverTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-id-badge card-icon"></i>
+            <i class="fa-solid fa-user-tie card-icon"></i>
             <h5 class="card-title mt-3">Drivers</h5>
             <p class="card-text">Manage driver information</p>
           </div>
@@ -183,7 +230,7 @@
         <!-- Orders Card -->
         <div id="module-orders" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Orders/OrderTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-cart-shopping card-icon"></i>
+            <i class="fa-solid fa-shopping-cart card-icon"></i>
             <h5 class="card-title mt-3">Orders</h5>
             <p class="card-text">Create and manage orders</p>
           </div>
@@ -191,7 +238,7 @@
         <!-- Products Card -->
         <div id="module-products" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Product/ProductTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-boxes card-icon"></i>
+            <i class="fa-solid fa-box-open card-icon"></i>
             <h5 class="card-title mt-3">Products</h5>
             <p class="card-text">View and update products</p>
           </div>
@@ -199,7 +246,7 @@
         <!-- Storage Location Card -->
         <div id="module-storagelocation" class="card dashboard-card" style="width: 25rem;" onclick="location.href='StorageLocation/StorageLocationTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-archive card-icon"></i>
+            <i class="fa-solid fa-location-dot card-icon"></i>
             <h5 class="card-title mt-3">Storage Location</h5>
             <p class="card-text">View and manage Storage Locations</p>
           </div>
@@ -207,7 +254,7 @@
         <!-- Purchase Orders Card -->
         <div id="module-purchaseorders" class="card dashboard-card" style="width: 25rem;" onclick="location.href='PurchaseOrder/PurchaseOrderTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-file-invoice-dollar card-icon"></i>
+            <i class="fa-solid fa-file-invoice card-icon"></i>
             <h5 class="card-title mt-3">Purchase Orders</h5>
             <p class="card-text">Manage purchase orders</p>
           </div>
@@ -228,7 +275,7 @@
             <p class="card-text">Manage shipments</p>
           </div>
         </div>
-        <!-- Suppliers Card (icon updated) -->
+        <!-- Suppliers Card -->
         <div id="module-suppliers" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Supplier/SupplierTasks.html'">
           <div class="card-body text-center">
             <i class="fa-solid fa-handshake card-icon"></i>
@@ -239,7 +286,7 @@
         <!-- User Management Card -->
         <div id="module-usermanagement" class="card dashboard-card" style="width: 25rem;" onclick="location.href='UserManagement/UserManagementTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-user-gear card-icon"></i>
+            <i class="fa-solid fa-user-cog card-icon"></i>
             <h5 class="card-title mt-3">User Management</h5>
             <p class="card-text">Administer and manage users</p>
           </div>

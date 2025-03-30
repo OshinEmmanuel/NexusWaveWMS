@@ -58,10 +58,23 @@
     .dashboard-container {
       margin-top: 20px;
     }
+    /* Keyframes for fadeInUp animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
     /* Styling for each card */
     .dashboard-card {
       transition: transform 0.2s;
       cursor: pointer;
+      opacity: 0;
+      animation: fadeInUp 0.5s ease forwards;
     }
     .dashboard-card:hover {
       transform: translateY(-5px);
@@ -70,6 +83,15 @@
       font-size: 3rem;
       color: #2c3e50;
     }
+    /* Stagger animation delays for cards inside the grid */
+    .col-auto:nth-child(1) .dashboard-card { animation-delay: 0.1s; }
+    .col-auto:nth-child(2) .dashboard-card { animation-delay: 0.2s; }
+    .col-auto:nth-child(3) .dashboard-card { animation-delay: 0.3s; }
+    .col-auto:nth-child(4) .dashboard-card { animation-delay: 0.4s; }
+    .col-auto:nth-child(5) .dashboard-card { animation-delay: 0.5s; }
+    .col-auto:nth-child(6) .dashboard-card { animation-delay: 0.6s; }
+    .col-auto:nth-child(7) .dashboard-card { animation-delay: 0.7s; }
+    /* Removed custom colors - cards will use default styling */
     /* Footer styling */
     footer {
       background-color: #2c3e50;
@@ -77,6 +99,19 @@
       text-align: center;
       padding: 10px 0;
       font-weight: normal;
+    }
+    /* Notification badge styling (if needed later) */
+    .notification-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      transform: translate(50%, -50%);
+      background-color: red;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      display: none;
     }
   </style>
 </head>
@@ -87,7 +122,7 @@
       <div class="container-fluid">
         <!-- Back button -->
         <a class="btn btn-secondary me-2" href="javascript:history.back()">
-          <i class="fas fa-arrow-left"></i> Back
+          <i class="fa-solid fa-arrow-left"></i> Back
         </a>
         <!-- Logo linking to the homepage -->
         <a class="navbar-brand me-auto" href="../Dashboard.html">
@@ -104,14 +139,14 @@
             <!-- Home link -->
             <li class="nav-item">
               <a class="nav-link" href="../Dashboard.html">
-                <i class="fas fa-home"></i> Home
+                <i class="fa-solid fa-house"></i> Home
               </a>
             </li>
             <!-- Notification Dropdown -->
             <li class="nav-item dropdown notification-dropdown">
               <a class="nav-link" href="#" id="notificationDropdown" role="button" 
                  data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-bell"></i>
+                <i class="fa-solid fa-bell"></i>
                 <span id="notificationBadge" class="notification-badge"></span>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
@@ -122,7 +157,7 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
                  data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user"></i> <span id="navbarUsername">User</span>
+                <i class="fa-solid fa-user"></i> <span id="navbarUsername">User</span>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li><a class="dropdown-item" href="User/ManageUsers.html">Manage Profile</a></li>
@@ -158,7 +193,7 @@
         <div class="col-auto">
           <div id="task-adjustInventory" class="card dashboard-card" style="width: 25rem;" onclick="location.href='AdjustInventory.html'">
             <div class="card-body text-center">
-              <i class="fas fa-edit card-icon"></i>
+              <i class="fa-solid fa-pen-to-square card-icon"></i>
               <h5 class="card-title mt-3">Adjust Inventory</h5>
             </div>
           </div>
@@ -167,7 +202,7 @@
         <div class="col-auto">
           <div id="task-moveInventory" class="card dashboard-card" style="width: 25rem;" onclick="location.href='MoveInventory.html'">
             <div class="card-body text-center">
-              <i class="fas fa-truck-loading card-icon"></i>
+              <i class="fa-solid fa-truck-loading card-icon"></i>
               <h5 class="card-title mt-3">Move Inventory</h5>
             </div>
           </div>
@@ -176,7 +211,7 @@
         <div class="col-auto">
           <div id="task-bulkInventoryMove" class="card dashboard-card" style="width: 25rem;" onclick="location.href='BulkInventoryMove.html'">
             <div class="card-body text-center">
-              <i class="fas fa-truck-loading card-icon"></i>
+              <i class="fa-solid fa-boxes card-icon"></i>
               <h5 class="card-title mt-3">Bulk Move Inventory</h5>
             </div>
           </div>
@@ -185,7 +220,7 @@
         <div class="col-auto">
           <div id="task-displayInventory" class="card dashboard-card" style="width: 25rem;" onclick="location.href='DisplayInventory.html'">
             <div class="card-body text-center">
-              <i class="fas fa-eye card-icon"></i>
+              <i class="fa-solid fa-eye card-icon"></i>
               <h5 class="card-title mt-3">Display Inventory By Batch</h5>
             </div>
           </div>
@@ -194,7 +229,7 @@
         <div class="col-auto">
           <div id="task-displayInventorySummary" class="card dashboard-card" style="width: 25rem;" onclick="location.href='DisplayInventorySummary.html'">
             <div class="card-body text-center">
-              <i class="fas fa-search card-icon"></i>
+              <i class="fa-solid fa-chart-line card-icon"></i>
               <h5 class="card-title mt-3">Display Inventory Summary</h5>
             </div>
           </div>
@@ -203,7 +238,7 @@
         <div class="col-auto">
           <div id="task-getMovementById" class="card dashboard-card" style="width: 25rem;" onclick="location.href='GetMovementById.html'">
             <div class="card-body text-center">
-              <i class="fas fa-hashtag card-icon"></i>
+              <i class="fa-solid fa-hashtag card-icon"></i>
               <h5 class="card-title mt-3">Get Movement By ID</h5>
             </div>
           </div>
@@ -212,7 +247,7 @@
         <div class="col-auto">
           <div id="task-searchInventoryMovements" class="card dashboard-card" style="width: 25rem;" onclick="location.href='SearchInventoryMovements.html'">
             <div class="card-body text-center">
-              <i class="fas fa-search card-icon"></i>
+              <i class="fa-solid fa-magnifying-glass card-icon"></i>
               <h5 class="card-title mt-3">Search Inventory Movements</h5>
             </div>
           </div>
