@@ -54,21 +54,26 @@
     }
     /* Container Card Styling */
     .container-card {
-      max-width: 600px;
+      max-width: 700px;
       margin: 20px auto;
       background: #ffffff;
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
-    /* Form Label Styling */
-    .form-label {
+    /* Table Form Styling */
+    table.form-table {
+      width: 100%;
+    }
+    table.form-table td {
+      vertical-align: middle;
+      padding: 8px;
+    }
+    table.form-table .form-label {
       font-weight: 600;
+      white-space: nowrap;
     }
-    .form-label i {
-      margin-right: 5px;
-    }
-    .form-control {
+    .form-control, .form-select {
       border-radius: 6px;
     }
     /* Custom Button Styling */
@@ -119,127 +124,158 @@
   </style>
 </head>
 <body>
-<!-- Merged Top Navigation Bar -->
-<nav class="navbar navbar-expand-lg fixed-top">
-  <div class="container-fluid">
-    <!-- Back button -->
-    <a class="btn btn-secondary me-2" href="javascript:history.back()">
-      <i class="fas fa-arrow-left"></i> Back
-    </a>
-    <!-- Logo linking to the homepage -->
-    <a class="navbar-brand me-auto" href="../Dashboard.html">
-      <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-            data-bs-target="#navbarNav" aria-controls="navbarNav" 
-            aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <!-- Right Side Navbar -->
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav">
-        <!-- Home link -->
-        <li class="nav-item">
-          <a class="nav-link" href="../Dashboard.html">
-            <i class="fas fa-home"></i> Home
-          </a>
-        </li>
-        <!-- Notification Dropdown -->
-        <li class="nav-item dropdown notification-dropdown">
-          <a class="nav-link" href="#" id="notificationDropdown" role="button" 
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-bell"></i>
-            <span id="notificationBadge" class="notification-badge"></span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
-            <li><span class="dropdown-item">No notifications.</span></li>
-          </ul>
-        </li>
-        <!-- User Dropdown -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-user"></i> <span id="navbarUsername">User</span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="User/ManageUsers.html">Manage Profile</a></li>
-            <li><a class="dropdown-item" href="User/UpdateUser.html">Update Profile</a></li>
-            <li><a class="dropdown-item" href="UserManagement/ChangePassword.html">Change Password</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="../logout.html">Logout</a></li>
-          </ul>
-        </li>
-      </ul>
+  <!-- Merged Top Navigation Bar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <!-- Back button -->
+      <a class="btn btn-secondary me-2" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <!-- Logo linking to the homepage -->
+      <a class="navbar-brand me-auto" href="../Dashboard.html">
+        <img src="../assets/img/logo.png" alt="Logo" style="height:40px; margin-right:10px;">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+              data-bs-target="#navbarNav" aria-controls="navbarNav" 
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- Right Side Navbar -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <!-- Home link -->
+          <li class="nav-item">
+            <a class="nav-link" href="../Dashboard.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+          <!-- Notification Dropdown -->
+          <li class="nav-item dropdown notification-dropdown">
+            <a class="nav-link" href="#" id="notificationDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-bell"></i>
+              <span id="notificationBadge" class="notification-badge"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
+              <li><span class="dropdown-item">No notifications.</span></li>
+            </ul>
+          </li>
+          <!-- User Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user"></i> <span id="navbarUsername">User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="User/ManageUsers.html">Manage Profile</a></li>
+              <li><a class="dropdown-item" href="User/UpdateUser.html">Update Profile</a></li>
+              <li><a class="dropdown-item" href="UserManagement/ChangePassword.html">Change Password</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="../logout.html">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<!-- Script to load dynamic username from localStorage -->
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    var displayName = localStorage.getItem("displayName") || "User";
-    document.getElementById("navbarUsername").textContent = displayName;
-  });
-</script>
+  <!-- Script to load dynamic username from localStorage -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var displayName = localStorage.getItem("displayName") || "User";
+      document.getElementById("navbarUsername").textContent = displayName;
+    });
+  </script>
 
-  
   <div class="wrapper">
     <!-- Adjust Inventory Form Container -->
     <div class="container-card" id="formContainer">
       <h2 class="text-center mb-4">
         <i class="fas fa-cogs"></i> Adjust Inventory
       </h2>
-  
-      <!-- Adjust Inventory Form -->
+
+      <!-- Table-based Form -->
       <form id="adjustInventoryForm">
-        <div class="mb-3">
-          <label for="productCode" class="form-label">
-            <i class="fas fa-barcode"></i> Product Code
-          </label>
-          <input type="number" id="productCode" class="form-control" placeholder="Enter Product Code" required>
-        </div>
-  
-        <div class="mb-3">
-          <label for="batchNumber" class="form-label">
-            <i class="fas fa-box-open"></i> Batch Number
-          </label>
-          <div class="d-flex align-items-center">
-            <select id="batchNumber" class="form-select flex-grow-1" required>
-              <option value="">Select Batch</option>
-            </select>
-            <div id="batchLoading" class="loading-spinner ms-2"></div>
-          </div>
-        </div>
-  
-        <div class="mb-3">
-          <label for="adjustmentType" class="form-label">
-            <i class="fas fa-exchange-alt"></i> Adjustment Type
-          </label>
-          <select id="adjustmentType" class="form-select" required>
-            <option value="IncreaseAvailable">Increase Available</option>
-            <option value="DecreaseAvailable">Decrease Available</option>
-            <option value="IncreaseOnOrder">Increase On Order</option>
-            <option value="DecreaseOnOrder">Decrease On Order</option>
-            <option value="MoveAvailableToDamaged">Move Available to Damaged</option>
-            <option value="MoveDamagedToAvailable">Move Damaged to Available</option>
-            <option value="MoveOnOrderToAvailable">Move On Order to Available</option>
-          </select>
-        </div>
-  
-        <div class="mb-3">
-          <label for="quantity" class="form-label">
-            <i class="fas fa-sort-numeric-up"></i> Quantity
-          </label>
-          <input type="number" id="quantity" class="form-control" placeholder="Enter Quantity" required>
-        </div>
-  
-        <div class="mb-3">
-          <label for="remarks" class="form-label">
-            <i class="fas fa-sticky-note"></i> Remarks (Optional)
-          </label>
-          <input type="text" id="remarks" class="form-control" placeholder="Enter Remarks">
-        </div>
-  
+        <table class="form-table table-borderless">
+          <tr>
+            <td class="form-label">
+              <i class="fas fa-map-marker-alt"></i> Storage Location
+            </td>
+            <td>
+              <select id="storageLocation" class="form-select" required>
+                <option value="">Select Storage Location</option>
+              </select>
+              <div id="storageLocationLoading" class="loading-spinner mt-2"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="form-label">
+              <i class="fas fa-barcode"></i> Product Code
+            </td>
+            <td>
+              <input type="number" id="productCode" class="form-control" placeholder="Enter Product Code" required>
+            </td>
+          </tr>
+          <tr>
+            <td class="form-label">
+              <i class="fas fa-box-open"></i> Batch Number
+            </td>
+            <td>
+              <select id="batchNumber" class="form-select" required>
+                <option value="">Select Batch</option>
+              </select>
+              <div id="batchLoading" class="loading-spinner ms-2"></div>
+            </td>
+          </tr>
+          <tr>
+            <td class="form-label">
+              <i class="fas fa-exchange-alt"></i> Adjustment Type
+            </td>
+            <td>
+              <select id="adjustmentType" class="form-select" required>
+                <option value="IncreaseAvailable">Increase Available</option>
+                <option value="DecreaseAvailable">Decrease Available</option>
+                <option value="IncreaseOnOrder">Increase On Order</option>
+                <option value="DecreaseOnOrder">Decrease On Order</option>
+                <option value="MoveAvailableToDamaged">Move Available to Damaged</option>
+                <option value="MoveDamagedToAvailable">Move Damaged to Available</option>
+                <option value="MoveOnOrderToAvailable">Move On Order to Available</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="form-label">
+              <i class="fas fa-sort-numeric-up"></i> Quantity
+            </td>
+            <td>
+              <input type="number" id="quantity" class="form-control" placeholder="Enter Quantity" required>
+            </td>
+          </tr>
+          <tr>
+            <td class="form-label">
+              <i class="fas fa-sticky-note"></i> Remarks (Optional)
+            </td>
+            <td>
+              <input type="text" id="remarks" class="form-control" placeholder="Enter Remarks">
+            </td>
+          </tr>
+          <tr>
+            <td class="form-label">
+              <i class="fas fa-map-marker-alt"></i> New Storage Location Code
+            </td>
+            <td>
+              <input type="text" id="newStorageLocationCode" class="form-control" placeholder="Enter New Location Code (if moving)">
+            </td>
+          </tr>
+          <tr>
+            <td class="form-label">
+              <i class="fas fa-warehouse"></i> New Storage Bin Code
+            </td>
+            <td>
+              <input type="text" id="newStorageBinCode" class="form-control" placeholder="Enter New Bin Code (if moving)">
+            </td>
+          </tr>
+        </table>
         <div class="d-flex justify-content-center gap-3 mt-3">
           <button type="submit" class="btn btn-custom btn-submit">
             <i class="fas fa-check"></i> Submit
@@ -249,11 +285,11 @@
           </button>
         </div>
       </form>
-  
+
       <!-- Response Message -->
       <div id="responseMessage" class="alert mt-3 d-none"></div>
     </div>
-  
+
     <!-- Adjust Again Container (Hidden until successful) -->
     <div class="container-card d-none" id="adjustAgainContainer">
       <div id="backendMessage" class="alert alert-success"></div>
@@ -267,11 +303,11 @@
       </div>
     </div>
   </div>
-  
+
   <footer>
     <p>&copy; 2025 Nexus Wave WMS. All rights reserved.</p>
   </footer>
-  
+
   <!-- Bootstrap JS Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
@@ -280,7 +316,9 @@
     if (!authToken) {
       window.location.href = "index.html";
     }
-  
+
+    const storageLocationSelect = document.getElementById("storageLocation");
+    const storageLocationLoading = document.getElementById("storageLocationLoading");
     const productCodeInput = document.getElementById("productCode");
     const batchNumberSelect = document.getElementById("batchNumber");
     const batchLoading = document.getElementById("batchLoading");
@@ -290,36 +328,57 @@
     const adjustAgainContainer = document.getElementById("adjustAgainContainer");
     const backendMessage = document.getElementById("backendMessage");
     const adjustAgainButton = document.getElementById("adjustAgainButton");
-  
-    // Fetch Batch Numbers when Product Code changes
-    productCodeInput.addEventListener("change", async function () {
-      const productCode = productCodeInput.value.trim();
-      batchNumberSelect.innerHTML = '<option value="">Select Batch</option>';
-  
-      if (!productCode) return;
-  
-      batchLoading.style.display = "inline-block"; // Show loading spinner
-  
+
+    // Fetch Storage Locations on page load.
+    async function fetchStorageLocations() {
+      storageLocationLoading.style.display = "inline-block";
       try {
-        console.log("Fetching batches for Product Code:", productCode);
-        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories/GetBatches?productCode=${productCode}`, {
+        const response = await fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/StorageLocation/GetAllStorageLocations", {
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + authToken
           }
         });
-  
-        if (!response.ok) throw new Error(`Failed to fetch batches (Status: ${response.status})`);
-  
+        if (!response.ok) throw new Error(`Failed to fetch storage locations (Status: ${response.status})`);
         const data = await response.json();
-        console.log("API Response:", data);
-  
+        storageLocationSelect.innerHTML = '<option value="">Select Storage Location</option>';
+        data.forEach(location => {
+          // Assuming each location has "storageLocationCode" and optionally "description"
+          storageLocationSelect.innerHTML += `<option value="${location.storageLocationCode}">${location.storageLocationCode} - ${location.description || ""}</option>`;
+        });
+      } catch (error) {
+        console.error("Error fetching storage locations:", error);
+        storageLocationSelect.innerHTML = '<option value="">Error fetching locations</option>';
+      } finally {
+        storageLocationLoading.style.display = "none";
+      }
+    }
+    // Call on page load.
+    fetchStorageLocations();
+
+    // Function to fetch batches filtered by product code and storage location.
+    async function fetchBatches() {
+      const productCode = productCodeInput.value.trim();
+      const storageLocationCode = storageLocationSelect.value.trim();
+      batchNumberSelect.innerHTML = '<option value="">Select Batch</option>';
+      if (!productCode || !storageLocationCode) return;
+
+      batchLoading.style.display = "inline-block";
+      try {
+        console.log("Fetching batches for Product Code:", productCode, "and Storage Location:", storageLocationCode);
+        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories/GetBatches?productCode=${productCode}&storageLocationCode=${storageLocationCode}`, {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + authToken
+          }
+        });
+        if (!response.ok) throw new Error(`Failed to fetch batches (Status: ${response.status})`);
+        const data = await response.json();
         batchNumberSelect.innerHTML = '<option value="">Select Batch</option>';
         if (data.length === 0) {
           batchNumberSelect.innerHTML = '<option value="">No batches found</option>';
           return;
         }
-  
         data.forEach(batch => {
           batchNumberSelect.innerHTML += `<option value="${batch.batchNumber}">${batch.batchNumber} - Available: ${batch.availableQty}</option>`;
         });
@@ -330,31 +389,37 @@
         responseMessage.textContent = "Error fetching batches: " + error.message;
         responseMessage.classList.remove("d-none");
       } finally {
-        batchLoading.style.display = "none"; // Hide loading spinner
+        batchLoading.style.display = "none";
       }
-    });
-  
+    }
+    // Fetch batches when product code or storage location changes.
+    productCodeInput.addEventListener("change", fetchBatches);
+    storageLocationSelect.addEventListener("change", fetchBatches);
+
     // Handle Inventory Adjustment Form Submission
     adjustInventoryForm.addEventListener("submit", async function (e) {
       e.preventDefault();
-  
+
       const productCode = productCodeInput.value.trim();
       const batchNumber = batchNumberSelect.value.trim();
       const adjustmentType = document.getElementById("adjustmentType").value;
       const quantity = document.getElementById("quantity").value.trim();
       const remarks = document.getElementById("remarks").value.trim();
-  
-      if (!productCode || !batchNumber || !adjustmentType || !quantity) {
+      const storageLocationCode = storageLocationSelect.value.trim();
+      const newStorageLocationCode = document.getElementById("newStorageLocationCode").value.trim();
+      const newStorageBinCode = document.getElementById("newStorageBinCode").value.trim();
+
+      if (!storageLocationCode || !productCode || !batchNumber || !adjustmentType || !quantity) {
         responseMessage.className = "alert alert-danger";
         responseMessage.textContent = "All fields are required!";
         responseMessage.classList.remove("d-none");
         return;
       }
-  
+
       responseMessage.className = "alert alert-info";
       responseMessage.textContent = "Processing...";
       responseMessage.classList.remove("d-none");
-  
+
       try {
         const response = await fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories/AdjustInventory", {
           method: "POST",
@@ -367,12 +432,15 @@
             batchNumber: batchNumber,
             quantity: parseInt(quantity),
             adjustmentType: adjustmentType,
-            remarks: remarks
+            remarks: remarks,
+            storageLocationCode: storageLocationCode,
+            newStorageLocationCode: newStorageLocationCode || null,
+            newStorageBinCode: newStorageBinCode || null
           })
         });
-  
+
         const data = await response.json();
-  
+
         if (response.ok) {
           backendMessage.innerHTML = data.message || "Inventory adjusted successfully!";
           // Hide the form container and show the adjust again container.
@@ -386,19 +454,15 @@
         responseMessage.className = "alert alert-danger";
         responseMessage.textContent = "Error: " + error.message;
       }
-  
+
       responseMessage.classList.remove("d-none");
     });
-  
+
     // Reset and show the form again when "Adjust Inventory Again" is clicked.
     adjustAgainButton.addEventListener("click", function () {
-      // Hide the adjust again container.
       adjustAgainContainer.classList.add("d-none");
-      // Reset the form fields.
       adjustInventoryForm.reset();
-      // Clear any response messages.
       responseMessage.innerHTML = "";
-      // Show the form container.
       formContainer.classList.remove("d-none");
     });
   </script>
