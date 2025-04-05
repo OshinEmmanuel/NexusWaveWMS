@@ -64,13 +64,60 @@
     .dashboard-card {
       transition: transform 0.6s;
       cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     .dashboard-card:hover {
       transform: translateY(-5px);
     }
     .card-icon {
       font-size: 3rem;
-      color: #2c3e50;
+      margin-bottom: 1rem;
+    }
+    /* Lighter Colors for Task Cards */
+    #module-customers {
+      background-color: #66b3ff;
+      color: #fff;
+    }
+    #module-drivers {
+      background-color: #7ed957;
+      color: #fff;
+    }
+    #module-inventory {
+      background-color: #ffe680;
+      color: #000;
+    }
+    #module-orders {
+      background-color: #7adce6;
+      color: #fff;
+    }
+    #module-products {
+      background-color: #ff8080;
+      color: #fff;
+    }
+    #module-storagelocation {
+      background-color: #a6acb2;
+      color: #fff;
+    }
+    #module-purchaseorders {
+      background-color: #ffb366;
+      color: #fff;
+    }
+    #module-vehicles {
+      background-color: #a280f2;
+      color: #fff;
+    }
+    #module-shipments {
+      background-color: #6ddcc3;
+      color: #fff;
+    }
+    #module-suppliers {
+      background-color: #6b757e;
+      color: #fff;
+    }
+    #module-usermanagement {
+      background-color: #a792d6;
+      color: #fff;
     }
     /* Footer Styling */
     footer {
@@ -122,7 +169,10 @@
                 <span id="notificationBadge" class="notification-badge"></span>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notificationList">
-                <li><span class="dropdown-item">No notifications.</span></li>
+                <li><span class="dropdown-item">No unread notifications.</span></li>
+                <!-- Link to the Notification History Page -->
+                <li class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-center" href="notificationHistory.html">View All Notifications</a></li>
               </ul>
             </li>
             <!-- User Dropdown -->
@@ -134,7 +184,7 @@
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li><a class="dropdown-item" href="UserManagement/ManageUsers.html">Manage Profile</a></li>
                 <li><a class="dropdown-item" href="UserManagement/UpdateUser.html">Update Profile</a></li>
-                <li><a class="dropdown-item" href="UserManagement/ChangePassword.html">Change Password</a></li>
+                <li><a class="dropdown-item" href="ResetPassword.html">Change Password</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="logout.html">Logout</a></li>
               </ul>
@@ -156,7 +206,7 @@
         <!-- Customers Card -->
         <div id="module-customers" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Customers/CustomerTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-users card-icon"></i>
+            <i class="fa-solid fa-user-friends card-icon"></i>
             <h5 class="card-title mt-3">Customers</h5>
             <p class="card-text">Manage customer details</p>
           </div>
@@ -164,7 +214,7 @@
         <!-- Drivers Card -->
         <div id="module-drivers" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Driver/DriverTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-id-badge card-icon"></i>
+            <i class="fa-solid fa-user-tie card-icon"></i>
             <h5 class="card-title mt-3">Drivers</h5>
             <p class="card-text">Manage driver information</p>
           </div>
@@ -180,7 +230,7 @@
         <!-- Orders Card -->
         <div id="module-orders" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Orders/OrderTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-cart-shopping card-icon"></i>
+            <i class="fa-solid fa-shopping-cart card-icon"></i>
             <h5 class="card-title mt-3">Orders</h5>
             <p class="card-text">Create and manage orders</p>
           </div>
@@ -188,7 +238,7 @@
         <!-- Products Card -->
         <div id="module-products" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Product/ProductTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-boxes card-icon"></i>
+            <i class="fa-solid fa-box-open card-icon"></i>
             <h5 class="card-title mt-3">Products</h5>
             <p class="card-text">View and update products</p>
           </div>
@@ -196,7 +246,7 @@
         <!-- Storage Location Card -->
         <div id="module-storagelocation" class="card dashboard-card" style="width: 25rem;" onclick="location.href='StorageLocation/StorageLocationTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-archive card-icon"></i>
+            <i class="fa-solid fa-location-dot card-icon"></i>
             <h5 class="card-title mt-3">Storage Location</h5>
             <p class="card-text">View and manage Storage Locations</p>
           </div>
@@ -204,7 +254,7 @@
         <!-- Purchase Orders Card -->
         <div id="module-purchaseorders" class="card dashboard-card" style="width: 25rem;" onclick="location.href='PurchaseOrder/PurchaseOrderTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-file-invoice-dollar card-icon"></i>
+            <i class="fa-solid fa-file-invoice card-icon"></i>
             <h5 class="card-title mt-3">Purchase Orders</h5>
             <p class="card-text">Manage purchase orders</p>
           </div>
@@ -225,7 +275,7 @@
             <p class="card-text">Manage shipments</p>
           </div>
         </div>
-        <!-- Suppliers Card (icon updated) -->
+        <!-- Suppliers Card -->
         <div id="module-suppliers" class="card dashboard-card" style="width: 25rem;" onclick="location.href='Supplier/SupplierTasks.html'">
           <div class="card-body text-center">
             <i class="fa-solid fa-handshake card-icon"></i>
@@ -236,7 +286,7 @@
         <!-- User Management Card -->
         <div id="module-usermanagement" class="card dashboard-card" style="width: 25rem;" onclick="location.href='UserManagement/UserManagementTasks.html'">
           <div class="card-body text-center">
-            <i class="fa-solid fa-user-gear card-icon"></i>
+            <i class="fa-solid fa-user-cog card-icon"></i>
             <h5 class="card-title mt-3">User Management</h5>
             <p class="card-text">Administer and manage users</p>
           </div>
@@ -266,7 +316,7 @@
     });
   </script>
   
-  <!-- Role-Based Module Access Script -->
+  <!-- Role-Based Module Access Script (unchanged) -->
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       var token = localStorage.getItem("authToken");
@@ -343,7 +393,6 @@
       console.log("Loading notifications for userId:", userId);
       
       try {
-        // Adjust the URL to match your API endpoint.
         const response = await fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/Notifications/user/" + userId, {
           method: "GET",
           headers: {
@@ -354,7 +403,7 @@
         if (response.ok) {
           const result = await response.json();
           console.log("Notifications API response:", result);
-          // Use the correct property name (lowercase "data") returned by the API.
+          // IMPORTANT: Use lowercase "data" because that's what the API returns.
           notifications = result.data || [];
           updateNotificationDropdown();
         } else {
@@ -365,6 +414,7 @@
       }
     }
 
+    // Establish a SignalR connection for real-time notifications.
     async function connectToNotificationHub() {
       const token = localStorage.getItem("authToken");
       if (!token) return;
@@ -385,7 +435,7 @@
       
       connection.on("ReceiveNotification", function(notification) {
         console.log("Received notification via SignalR:", notification);
-        // Prepend new notification to the array and update the dropdown.
+        // Add new notification and update the dropdown.
         notifications.unshift(notification);
         updateNotificationDropdown();
       });
@@ -398,25 +448,26 @@
       }
     }
 
+    // Update the dropdown to display only unread notifications.
     function updateNotificationDropdown() {
       const badge = document.getElementById("notificationBadge");
       const notificationList = document.getElementById("notificationList");
       
-      // Count unread notifications.
-      const unreadCount = notifications.filter(n => !n.isRead).length;
-      if (unreadCount > 0) {
-        badge.textContent = unreadCount;
+      // Filter unread notifications.
+      const unreadNotifications = notifications.filter(n => !n.isRead);
+      if (unreadNotifications.length > 0) {
+        badge.textContent = unreadNotifications.length;
         badge.style.display = "inline-block";
       } else {
         badge.style.display = "none";
       }
       
-      // Clear the list and repopulate.
+      // Clear and repopulate the list with unread notifications.
       notificationList.innerHTML = "";
-      if (notifications.length === 0) {
-        notificationList.innerHTML = `<li><span class="dropdown-item">No notifications.</span></li>`;
+      if (unreadNotifications.length === 0) {
+        notificationList.innerHTML = `<li><span class="dropdown-item">No unread notifications.</span></li>`;
       } else {
-        notifications.forEach(notification => {
+        unreadNotifications.forEach(notification => {
           const li = document.createElement("li");
           li.innerHTML = `<a class="dropdown-item" href="#" onclick="markNotificationAsRead(${notification.notificationId})">
               <strong>${notification.title}</strong><br>
@@ -426,12 +477,33 @@
           notificationList.appendChild(li);
         });
       }
+      // Add the "View All Notifications" link at the bottom if not already present.
+      if (notificationList.querySelector('li.view-all') === null) {
+        const viewAllItem = document.createElement("li");
+        viewAllItem.className = "view-all";
+        viewAllItem.innerHTML = `<a class="dropdown-item text-center" href="notificationHistory.html">View All Notifications</a>`;
+        notificationList.appendChild(viewAllItem);
+      }
     }
 
-    // Optional: Function to mark a notification as read.
+    // Mark a notification as read (calls API and updates local state).
     async function markNotificationAsRead(notificationId) {
-      // Example: API call to mark the notification as read.
-      // await fetch(`/api/notifications/markAsRead/${notificationId}`, { method: "POST" });
+      const token = localStorage.getItem("authToken");
+      try {
+        const response = await fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/Notifications/markasread/" + notificationId, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        });
+        if (!response.ok) {
+          console.error("Failed to mark notification as read:", response.statusText);
+          return;
+        }
+      } catch (error) {
+        console.error("Error marking notification as read:", error);
+      }
       notifications = notifications.map(n => n.notificationId === notificationId ? { ...n, isRead: true } : n);
       updateNotificationDropdown();
     }

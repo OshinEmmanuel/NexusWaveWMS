@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Wave WMS - Login</title>
+  <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo.png">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <!-- Font Awesome CSS -->
+  <link rel="stylesheet" href="assets/plugins/fontawesome/css/fontawesome.min.css">
+  <link rel="stylesheet" href="assets/plugins/fontawesome/css/all.min.css">
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* Full Page Background */
+    body {
+      background: url('assets/img/factory-capitalism-pilot-warehouse.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Arial', sans-serif;
+    }
+    /* Login Box */
+    .login-container {
+      width: 400px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    /* Centering */
+    .login-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    /* App Logo */
+    .login-logo img {
+      width: 120px;
+    }
+    /* App Name */
+    .app-name {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 10px;
+      text-transform: uppercase;
+    }
+    /* Input Fields */
+    .form-control {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+    }
+    .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    /* Sign In Button */
+    .btn-login {
+      background: #3498db;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      transition: 0.3s;
+      border: none;
+    }
+    .btn-login:hover {
+      background: #2980b9;
+    }
+    /* Forgot Password Link - Centered */
+    .forgot-password {
+      display: block;
+      margin-top: 10px;
+      color: lightblue;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.9rem;
+      text-align: center;
+      width: 100%;
+    }
+    /* Remember Me Checkbox */
+    .form-check-label {
+      color: white;
+      font-size: 0.9rem;
+    }
+    /* Footer */
+    .footer {
+      text-align: center;
+      color: white;
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      font-size: 14px;
+    }
+    /* Label Styling */
+    label {
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-container">
+      <div class="login-logo">
+        <img src="assets/img/logo.png" alt="Nexus Wave WMS Logo">
+      </div>
+      <div class="app-name">Nexus Wave WMS</div>
+      <h3>Sign In</h3>
+      <p>Please login to your account</p>
+      <form id="loginForm">
+        <div class="mb-3 text-start">
+          <label for="email">Email Address</label>
+          <input type="email" class="form-control" id="email" placeholder="Enter your email address" required>
+        </div>
+        <div class="mb-3 text-start">
+          <label for="password">Password</label>
+          <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+        </div>
+        <div class="mb-3 text-start">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="rememberMe">
+            <label class="form-check-label" for="rememberMe">
+              Remember Me
+            </label>
+          </div>
+        </div>
+        <div class="mb-3">
+          <!-- Centered Forgot Password text link -->
+          <a href="forgotpassword.html" class="forgot-password">Forgot Password?</a>
+        </div>
+        <button type="submit" class="btn btn-login w-100">Sign In</button>
+      </form>
+      <p class="mt-3">Don’t have an account? Please contact Admin for access.</p>
+      <div id="responseMessage" class="mt-3"></div>
+    </div>
+  </div>
+  <div class="footer">
+    &copy; 2025 Nexus Wave WMS. All rights reserved.
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/jquery-3.6.0.min.js"></script>
+  <script src="assets/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // Login Form Submission
+    document.getElementById('loginForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      let email = document.getElementById('email').value;
+      let password = document.getElementById('password').value;
+      let responseMessage = document.getElementById('responseMessage');
+      responseMessage.innerHTML = `<div class="alert alert-info">Logging in...</div>`;
+      try {
+        const response = await fetch('https://oshinemmanuel-001-site1.qtempurl.com/api/Auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.setItem("authToken", data.token);
+          localStorage.setItem("userRole", data.role);
+          localStorage.setItem("displayName", data.displayName);
+          localStorage.setItem("expireTime", data.expireTime);
+          localStorage.setItem("userId", data.userId);
+          Swal.fire({
+            icon: 'success',
+            title: 'Login Successful',
+            text: 'Redirecting...',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          setTimeout(() => {
+            window.location.href = "Dashboard.html";
+          }, 2000);
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Login Failed',
+            text: data.message || "Invalid credentials"
+          });
+          responseMessage.innerHTML = `<div class="alert alert-danger">${data.message || "Invalid credentials"}</div>`;
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'An error occurred',
+          text: error.message
+        });
+        responseMessage.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+      }
+    });
+  </script>
+</body>
+</html>
