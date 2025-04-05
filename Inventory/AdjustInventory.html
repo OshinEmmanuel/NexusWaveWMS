@@ -366,7 +366,6 @@
       batchLoading.style.display = "inline-block";
       try {
         console.log("Fetching batches for Product Code:", productCode, "and Storage Location:", storageLocationCode);
-        // Updated endpoint name to "GetBatchesByLocation"
         const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories/GetBatchesByLocation?productCode=${productCode}&storageLocationCode=${storageLocationCode}`, {
           headers: {
             "Content-Type": "application/json",
