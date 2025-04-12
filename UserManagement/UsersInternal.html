@@ -345,7 +345,7 @@
 
     async function viewUserDetails(userId) {
       try {
-        const url = `${API_CONFIG.baseUrl}/api/Users/GetUser${userId}`;
+        const url = `${API_CONFIG.baseUrl}/Users/GetUser${userId}`;
         const response = await fetch(url);
         const user = await response.json();
         const detailsHtml = generateUserDetailsTable(user);
