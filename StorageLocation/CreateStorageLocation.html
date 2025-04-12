@@ -239,10 +239,10 @@
   </footer>
 
   
-
+  <Script src ="../assets\js\config.js"></Script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/Users/byRole/logisticsmanager")
+      fetch(`${API_CONFIG.baseUrl}/Users/byRole/logisticsmanager`)
         .then(response => response.json())
         .then(data => {
           const logisticsManagerSelect = document.getElementById("logisticsManager");
@@ -275,7 +275,7 @@
       responseMessage.innerHTML = "";
 
       try {
-        const response = await fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/StorageLocation/CreateLocation", {
+        const response = await fetch(`${API_CONFIG.baseUrl}/StorageLocation/CreateLocation`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)

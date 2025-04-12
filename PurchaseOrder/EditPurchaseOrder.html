@@ -200,6 +200,7 @@
 
   <!-- Bootstrap JS Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <Script src ="../assets\js\config.js"></Script>
   <script>
     // Retrieve token from localStorage.
     const token = localStorage.getItem('authToken');
@@ -219,7 +220,7 @@
     // Fetch storage locations from the API and populate the dropdown.
     async function populateStorageLocations() {
       try {
-        const res = await fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/StorageLocation/GetAllStorageLocations", {
+        const res = await fetch(`${API_CONFIG.baseUrl}/StorageLocation/GetAllStorageLocations`, {
           method: "GET",
           headers: { "Accept": "application/json" }
         });
@@ -290,7 +291,7 @@
         const code = productCodeInput.value;
         if (!code || productNameInput.value) return;
         try {
-          const res = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Product/GetProductDetails/${code}`);
+          const res = await fetch(`${API_CONFIG.baseUrl}/Product/GetProductDetails/${code}`);
           if (!res.ok) throw new Error('Failed to fetch product details');
           const productData = await res.json();
           if (productData && productData.data) {
@@ -322,7 +323,7 @@
       const purchaseOrderId = purchaseOrderIdInput.value;
       if (!purchaseOrderId) return;
       try {
-        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/PurchaseOrder/${purchaseOrderId}/GetPurchaseOrderDetails`);
+        const response = await fetch(`${API_CONFIG.baseUrl}/PurchaseOrder/${purchaseOrderId}/GetPurchaseOrderDetails`);
         if (!response.ok) {
           throw new Error('Failed to fetch purchase order');
         }
@@ -369,7 +370,7 @@
           }))
         };
         
-        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/PurchaseOrder/${purchaseOrderId}/edit`, {
+        const response = await fetch(`${API_CONFIG.baseUrl}/PurchaseOrder/${purchaseOrderId}/edit`, {
             method: 'PUT',
             headers: { 
               'Content-Type': 'application/json', 

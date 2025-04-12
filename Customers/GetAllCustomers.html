@@ -300,6 +300,7 @@
 
   <!-- Bootstrap JS Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <Script src ="../assets\js\config.js"></Script>
   <script>
     let fullCustomersData = []; // Global variable to store full customer data for Excel export
 
@@ -328,7 +329,7 @@
       }).toString();
 
       try {
-        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Customers/GetAllCustomers?${queryParams}`);
+        const response = await fetch(`${API_CONFIG.baseUrl}/Customers/GetAllCustomers?${queryParams}`);
         if (response.ok) {
           const data = await response.json();
           fullCustomersData = Array.isArray(data) ? data : [];
@@ -387,7 +388,7 @@
     // Function to view full customer details in a modal.
     async function viewDetails(customerId) {
       try {
-        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Customers/${customerId}`, {
+        const response = await fetch(`${API_CONFIG.baseUrl}/Customers/${customerId}`, {
           method: 'GET',
           headers: { 'Accept': 'application/json' }
         });

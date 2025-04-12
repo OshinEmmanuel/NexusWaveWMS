@@ -260,7 +260,9 @@
   <!-- Bootstrap Bundle with Popper.js -->
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-  ></script>
+  >
+</script>
+<Script src ="../assets\js\config.js"></Script>
   <!-- Custom Script -->
   <script>
     // Global variable to store full supplier data for Excel download
@@ -276,7 +278,7 @@
       const isValid = document.getElementById("isValid").value;
       const supplierTypeFilter = document.getElementById("supplierTypeFilter").value;
 
-      const url = new URL("https://oshinemmanuel-001-site1.qtempurl.com/api/Suppliers/all-suppliers");
+      const url = new URL(`${API_CONFIG.baseUrl}/Suppliers/all-suppliers`);
       if (companyName) url.searchParams.append("companyName", companyName);
       if (supplierId) url.searchParams.append("supplierId", supplierId);
       if (isActive) url.searchParams.append("isActive", isActive);

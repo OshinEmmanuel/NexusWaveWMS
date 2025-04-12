@@ -162,6 +162,7 @@
 
   <!-- Bootstrap JS Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <Script src ="../assets\js\config.js"></Script>
 
   <script>
     // Retrieve the authorization token from localStorage.
@@ -191,7 +192,7 @@
         return;
       }
       try {
-        const url = `https://oshinemmanuel-001-site1.qtempurl.com/api/PurchaseOrder/ReprintGRN/${grnId}`;
+        const url = `${API_CONFIG.baseUrl}/PurchaseOrder/ReprintGRN/${grnId}`;
         console.log("Requesting reprint for GRN:", grnId, "URL:", url);
         const response = await fetch(url, {
           headers: {

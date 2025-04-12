@@ -318,6 +318,7 @@
   
   <!-- Bootstrap JS Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <Script src ="../assets\js\config.js"></Script>
   <script>
     let currentQuery = '';
     let allMovements = [];
@@ -424,7 +425,7 @@
     function fetchSummaries() {
       const queryString = buildQueryParams();
       currentQuery = queryString;
-      let url = "https://oshinemmanuel-001-site1.qtempurl.com/api/InventoryMovements/GetAllMovements";
+      let url = `${API_CONFIG.baseUrl}/InventoryMovements/GetAllMovements`;
       if (queryString) {
         url += `?${queryString}`;
       }

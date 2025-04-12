@@ -226,6 +226,7 @@
 
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <Script src ="../assets\js\config.js"></Script>
   <script>
     // Retrieve the auth token from localStorage and redirect if not found.
     const authToken = localStorage.getItem("authToken");
@@ -242,7 +243,7 @@
     // Function to fetch and populate the Approved By field.
     async function populateApprovedBy() {
       try {
-        const userResponse = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Users/GetUser${currentUserId}`, {
+        const userResponse = await fetch(`${API_CONFIG.baseUrl}/Users/GetUser${currentUserId}`, {
           headers: {
             'Authorization': 'Bearer ' + authToken
           }
@@ -281,7 +282,7 @@
       }
 
       try {
-        const driverResponse = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Drivers/${driverIdVal}`, {
+        const driverResponse = await fetch(`${API_CONFIG.baseUrl}/Drivers/${driverIdVal}`, {
           method: 'GET',
           headers: {
             'Authorization': 'Bearer ' + authToken
@@ -314,7 +315,7 @@
       const driverId = document.getElementById('driverId').value;
       const responseMessage = document.getElementById('responseMessage');
       try {
-        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/Drivers/approve?driverId=${driverId}`, {
+        const response = await fetch(`${API_CONFIG.baseUrl}/Drivers/approve?driverId=${driverId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

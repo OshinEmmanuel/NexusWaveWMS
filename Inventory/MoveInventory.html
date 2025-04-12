@@ -372,6 +372,7 @@
 
   <!-- Bootstrap JS Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <Script src ="../assets\js\config.js"></Script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const authToken = localStorage.getItem("authToken");
@@ -401,7 +402,7 @@
         srcSelect.innerHTML = '<option value="">Loading...</option>';
         destSelect.innerHTML = '<option value="">Loading...</option>';
         try {
-          const response = await fetch('https://oshinemmanuel-001-site1.qtempurl.com/api/StorageLocation/GetAllStorageLocations', {
+          const response = await fetch(`${API_CONFIG.baseUrl}/StorageLocation/GetAllStorageLocations`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
           });
           if (!response.ok) throw new Error('Failed to load storage locations');
@@ -430,7 +431,7 @@
         binLocSelect.innerHTML = '<option value="">Select Storage Location</option>';
         spinner.style.display = "inline-block";
         try {
-          const response = await fetch('https://oshinemmanuel-001-site1.qtempurl.com/api/Users/managed-storage-locations', {
+          const response = await fetch(`${API_CONFIG.baseUrl}/Users/managed-storage-locations`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
           });
           if (!response.ok) throw new Error('Failed to load managed storage locations');
@@ -457,7 +458,7 @@
         if (!productCode) return;
         loadingSpinner.style.display = "inline-block";
         try {
-          let url = `https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories/GetBatchesAndBinCode?productCode=${productCode}`;
+          let url = `${API_CONFIG.baseUrl}/Inventories/GetBatchesAndBinCode?productCode=${productCode}`;
           if (storageLocation) {
             url += `&storageLocationCode=${encodeURIComponent(storageLocation)}`;
           }
@@ -492,7 +493,7 @@
         if (!storageLocationCode) return;
         spinner.style.display = "inline-block";
         try {
-          let url = `https://oshinemmanuel-001-site1.qtempurl.com/api/StorageBin/GetAllBins?storageLocationCode=${encodeURIComponent(storageLocationCode)}`;
+          let url = `${API_CONFIG.baseUrl}/StorageBin/GetAllBins?storageLocationCode=${encodeURIComponent(storageLocationCode)}`;
           if (binCodeFilter && binCodeFilter.trim() !== "") {
             url += `&binCode=${encodeURIComponent(binCodeFilter.trim())}`;
           }
@@ -526,7 +527,7 @@
         targetSelect.innerHTML = '<option value="">Select Product Code</option>';
         spinner.style.display = "inline-block";
         try {
-          const url = `https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories/GetProductCodesInBin?storageLocationCode=${encodeURIComponent(storageLocationCode)}&binCode=${encodeURIComponent(binCode)}`;
+          const url = `${API_CONFIG.baseUrl}/Inventories/GetProductCodesInBin?storageLocationCode=${encodeURIComponent(storageLocationCode)}&binCode=${encodeURIComponent(binCode)}`;
           const res = await fetch(url, {
             headers: {
               "Authorization": `Bearer ${authToken}`
@@ -600,7 +601,7 @@
         responseMessageEl.classList.remove("d-none");
 
         try {
-          const res = await fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories/move/location", {
+          const res = await fetch(`${API_CONFIG.baseUrl}/Inventories/move/location`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -696,7 +697,7 @@
         responseMessageEl.classList.remove("d-none");
 
         try {
-          const res = await fetch("https://oshinemmanuel-001-site1.qtempurl.com/api/Inventories/move/storagebin", {
+          const res = await fetch(`${API_CONFIG.baseUrl}/Inventories/move/storagebin`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

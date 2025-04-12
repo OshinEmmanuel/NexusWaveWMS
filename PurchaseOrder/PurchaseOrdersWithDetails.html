@@ -253,6 +253,7 @@
   
   <!-- Bootstrap JS Bundle with Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <Script src ="../assets\js\config.js"></Script>
   <script>
     let allReports = [];
     let currentPage = 1;
@@ -276,7 +277,7 @@
       const endDate = document.getElementById('endDate').value;
       const status = document.getElementById('status').value;
       
-      const url = new URL('https://oshinemmanuel-001-site1.qtempurl.com/api/PurchaseOrder/GetPurchaseOrders');
+      const url = new URL(`${API_CONFIG.baseUrl}/PurchaseOrder/GetPurchaseOrders`);
       if (purchaseOrderNumber) url.searchParams.append('purchaseOrderId', purchaseOrderNumber);
       if (supplierCompanyName) url.searchParams.append('supplierCompanyName', supplierCompanyName);
       if (startDate) url.searchParams.append('startDate', startDate);
@@ -387,7 +388,7 @@
       if (e.target.classList.contains('view-details')) {
         const purchaseOrderId = e.target.dataset.id;
         try {
-          const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/PurchaseOrder/${purchaseOrderId}/GetPurchaseOrderDetails`);
+          const response = await fetch(`${API_CONFIG.baseUrl}/PurchaseOrder/${purchaseOrderId}/GetPurchaseOrderDetails`);
           if (!response.ok) throw new Error('Failed to fetch purchase order details.');
           const data = await response.json();
           if (!data.success) {
@@ -464,7 +465,7 @@
       if (status) params.append('status', status);
       
       try {
-        const response = await fetch(`https://oshinemmanuel-001-site1.qtempurl.com/api/PurchaseOrder/api/PurchaseOrderReceiptReport/ExportToXls?${params.toString()}`, {
+        const response = await fetch(`${API_CONFIG.baseUrl}/PurchaseOrder/api/PurchaseOrderReceiptReport/ExportToXls?${params.toString()}`, {
           method: 'GET'
         });
         if (!response.ok) throw new Error('Failed to download the report.');

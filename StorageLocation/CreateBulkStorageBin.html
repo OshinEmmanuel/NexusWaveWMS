@@ -191,11 +191,11 @@
   
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-  
+  <Script src ="../assets\js\config.js"></Script>
   <script>
     // Endpoints
-    const bulkUpsertUrl = 'https://oshinemmanuel-001-site1.qtempurl.com/api/StorageBin/BulkUpsert';
-    const downloadTemplateUrl = 'https://oshinemmanuel-001-site1.qtempurl.com/api/StorageBin/DownloadTemplate';
+    const bulkUpsertUrl = `${API_CONFIG.baseUrl}/StorageBin/BulkUpsert`;
+    const downloadTemplateUrl = `${API_CONFIG.baseUrl}/StorageBin/DownloadTemplate`;
 
     // "Download Template" button
     document.getElementById('downloadTemplateBtn').addEventListener('click', () => {
