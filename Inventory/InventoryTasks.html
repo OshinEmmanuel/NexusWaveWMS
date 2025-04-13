@@ -252,6 +252,15 @@
             </div>
           </div>
         </div>
+        <!-- Delete Inventory  -->
+        <div class="col-auto">
+          <div id="task-deleteinventory" class="card dashboard-card" style="width: 25rem;" onclick="location.href='DeleteInventory.html'">
+            <div class="card-body text-center">
+              <i class="fa-solid fa-magnifying-glass card-icon"></i>
+              <h5 class="card-title mt-3">Delete Inventory Lines</h5>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
     
@@ -289,7 +298,8 @@
         "task-displayInventory":          ["*"],
         "task-getMovementById":           ["*"],
         "task-searchInventoryMovements":  ["*"],
-        "task-displayInventorySummary":   ["*"]
+        "task-displayInventorySummary":   ["*"],
+        "task-deleteinventory":           ["Admin", "SuperUser"]
       };
       
       // Loop through each inventory task in the mapping.
